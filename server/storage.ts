@@ -219,7 +219,7 @@ export class MemStorage implements IStorage {
       weight: insertProduct.weight || null,
       requiresShipping: insertProduct.requiresShipping || false,
       salesCount: insertProduct.salesCount || 0,
-      appearanceSettings: insertProduct.appearanceSettings || null
+      appearanceSettings: (insertProduct.appearanceSettings as any) || null
     };
     this.products.set(id, product);
     return product;
