@@ -1,0 +1,159 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3'
+import { corsHeaders } from '../_shared/cors.ts'
+
+serve(async (req) => {
+    if (req.method === 'OPTIONS') {
+        return new Response('ok', { headers: corsHeaders })
+    }
+
+    try {
+        const supabaseAdmin = createClient(
+            Deno.env.get('SUPABASE_URL') ?? '',
+            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        )
+
+        // Get maker ID from request
+        let makerId: string | null = null
+        const authHeader = req.headers.get('Authorization')
+
+        if (authHeader) {
+            // Try robust manual parsing first
+            try {
+                const token = authHeader.replace('Bearer ', '');
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                makerId = payload.sub;
+            } catch (e) {
+                // Fallback to strict client check
+                const supabaseClient = createClient(
+                    Deno.env.get('SUPABASE_URL') ?? '',
+                    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+                    { global: { headers: { Authorization: authHeader } } }
+                )
+                const { data: { user } } = await supabaseClient.auth.getUser()
+                makerId = user?.id ?? null
+            }
+        }
+
+        if (!makerId) {
+            makerId = req.headers.get('x-user-id')
+        }
+
+        if (!makerId) {
+            // Try body
+            const body = await req.json().catch(() => ({}))
+            if (body.makerId) makerId = body.makerId
+        }
+
+        // Final body parse if not done
+        const body = await req.json().catch(() => ({}))
+
+        if (!makerId) {
+            console.error('get-maker-orders: No makerID found in token or headers')
+            throw new Error('Unauthorized: No maker ID provided')
+        }
+
+        // Check if user is admin
+        const { data: userRecord } = await supabaseAdmin
+            .from('users')
+            .select('role')
+            .eq('id', makerId)
+            .single()
+
+        const isAdmin = userRecord?.role === 'admin'
+
+        // Optional status filter
+        const statusFilter = body.status || null
+
+        // Fetch order items
+        let query = supabaseAdmin
+            .from('order_items')
+            .select(`
+                id,
+                order_id,
+                product_id,
+                price,
+                fulfillment_status,
+                tracking_number,
+                shipped_at,
+                accepted_at,
+                rejected_at,
+                rejection_reason,
+                delivered_at,
+                preparing_at,
+                estimated_delivery_days,
+                creator_id,
+                product:products(id, title, cover_url),
+                order:orders(id, user_id, created_at, shipping_address, status, is_verified)
+            `)
+
+        // Admins see all, others see only their own
+        if (!isAdmin) {
+            query = query.eq('creator_id', makerId)
+        }
+
+        query = query.order('created_at', { ascending: false, foreignTable: 'order' })
+
+        if (statusFilter) {
+            query = query.eq('fulfillment_status', statusFilter)
+        }
+
+        const { data: items, error } = await query
+
+        if (error) throw error
+
+        // Fetch user/creator info
+        const userIds = [...new Set(items?.map((item: any) => item.order?.user_id).filter(Boolean))]
+        const creatorIds = [...new Set(items?.map((item: any) => item.creator_id).filter(Boolean))]
+        const allUserIds = [...new Set([...userIds, ...creatorIds])]
+
+        const { data: users } = await supabaseAdmin
+            .from('users')
+            .select('id, display_name')
+            .in('id', allUserIds)
+
+        const usersMap = new Map(users?.map((u: any) => [u.id, u.display_name]))
+
+        // Format response
+        const orders = items?.map((item: any) => ({
+            orderItemId: item.id,
+            orderId: item.order_id,
+            productId: item.product_id,
+            productTitle: item.product?.title || 'Unknown Product',
+            productCoverUrl: item.product?.cover_url || '',
+            price: item.price,
+            fulfillmentStatus: item.fulfillment_status,
+            trackingNumber: item.tracking_number,
+            shippingAddress: item.order?.shipping_address || null,
+            buyerName: usersMap.get(item.order?.user_id) || 'Unknown',
+            buyerId: item.order?.user_id,
+            makerName: usersMap.get(item.creator_id) || 'Unknown Creator',
+            makerId: item.creator_id,
+            orderDate: item.order?.created_at,
+            acceptedAt: item.accepted_at,
+            shippedAt: item.shipped_at,
+            deliveredAt: item.delivered_at,
+            preparingAt: item.preparing_at,
+            rejectedAt: item.rejected_at,
+            rejectionReason: item.rejection_reason,
+            estimatedDeliveryDays: item.estimated_delivery_days,
+            isVerified: item.order?.is_verified || false,
+            orderStatus: item.order?.status
+        })) || []
+
+        // Filter out unverified orders (payment not confirmed)
+        const verifiedOrders = orders.filter((o: any) => o.isVerified)
+
+        return new Response(JSON.stringify({ orders: verifiedOrders }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200
+        })
+
+    } catch (error: any) {
+        console.error('get-maker-orders error:', error)
+        return new Response(JSON.stringify({ error: error.message }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400
+        })
+    }
+})

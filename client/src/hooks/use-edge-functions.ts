@@ -1,0 +1,215 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
+
+async function callEdgeFunction(
+    functionName: string,
+    data?: any,
+    method: 'GET' | 'POST' | 'PATCH' | 'DELETE' = 'POST'
+) {
+    console.log(`🚀 callEdgeFunction: Calling ${functionName} [${method}]`, data);
+
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        const headers: Record<string, string> = {
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+        };
+
+        if (session?.access_token) {
+            headers['Authorization'] = `Bearer ${session.access_token}`;
+        }
+
+        const { data: responseData, error } = await supabase.functions.invoke(functionName, {
+            method,
+            body: data,
+            headers
+        });
+
+        if (error) {
+            // Log full error details for debugging
+            console.error(`❌ Edge Function Error [${functionName}]:`, error);
+            console.error('Full error:', JSON.stringify(error, null, 2));
+
+            // Only retry on ACTUAL 401 unauthorized errors
+            const status = (error as any).status || (error as any).context?.status;
+            const isUnauthorized =
+                status === 401 ||
+                error.message?.toLowerCase().includes('jwt') ||
+                error.message?.toLowerCase().includes('unauthorized');
+
+            if (isUnauthorized) {
+                console.log("🔄 401 detected in invoke (edge), refreshing session...");
+                const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+
+                if (!refreshError && refreshData.session) {
+                    console.log("✅ Session refreshed, retrying invoke...");
+
+                    const retryHeaders: Record<string, string> = {
+                        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${refreshData.session.access_token}`
+                    };
+
+                    const { data: retryData, error: retryError } = await supabase.functions.invoke(functionName, {
+                        method,
+                        body: data,
+                        headers: retryHeaders
+                    });
+
+                    if (!retryError) return retryData;
+                    console.error("❌ Retry failed even after refresh:", retryError);
+                } else {
+                    console.error("❌ session refresh failed:", refreshError);
+                }
+            }
+            throw new Error(error.message || `Failed to call ${functionName}`);
+        }
+
+        if (responseData && responseData.error) {
+            console.error(`❌ Edge Function returned logical error [${functionName}]:`, responseData.error);
+            throw new Error(responseData.error);
+        }
+
+        console.log(`✅ callEdgeFunction Success [${functionName}]:`, responseData);
+        return responseData;
+    } catch (err: any) {
+        console.error(`❌ callEdgeFunction Exception [${functionName}]:`, err);
+        throw err;
+    }
+}
+
+// Calculate Shipping
+export function useCalculateShippingEdge() {
+    return useMutation({
+        mutationFn: async (data: { items: any[], city: string }) => {
+            return callEdgeFunction('calculate-shipping', data);
+        }
+    });
+}
+
+// Checkout
+export function useCheckoutEdge() {
+    const queryClient = useQueryClient();
+    const { toast } = useToast();
+
+    return useMutation({
+        mutationFn: async (data: {
+            items: any[],
+            totalAmount: number,
+            paymentMethod?: string,
+            paymentProofUrl?: string | null,
+            paymentReference?: string | null,
+            shippingAddress?: any,
+            shippingCost?: number,
+            shippingBreakdown?: any[]
+        }) => {
+            return callEdgeFunction('checkout', data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+            queryClient.invalidateQueries({ queryKey: ["/api/orders/user"] });
+            toast({ title: "Order Successful", description: "Thank you for your purchase!" });
+        },
+        onError: (error: Error) => {
+            toast({
+                title: "Checkout Failed",
+                description: error.message,
+                variant: "destructive"
+            });
+        }
+    });
+}
+
+// Request Payout
+export function useRequestPayoutEdge() {
+    const queryClient = useQueryClient();
+    const { toast } = useToast();
+
+    return useMutation({
+        mutationFn: async (data: { amount: number, method?: string }) => {
+            return callEdgeFunction('request-payout', data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['earnings-overview'] });
+            queryClient.invalidateQueries({ queryKey: ['payouts'] });
+            toast({ title: "Payout Requested", description: "Your payout will be processed soon." });
+        },
+        onError: (error: Error) => {
+            toast({
+                title: "Payout Failed",
+                description: error.message,
+                variant: "destructive"
+            });
+        }
+    });
+}
+
+// Earnings Overview
+export function useEarningsOverviewEdge() {
+    return useQuery({
+        queryKey: ['earnings-overview'],
+        queryFn: async () => {
+            return callEdgeFunction('earnings-overview', undefined, 'GET');
+        },
+    });
+}
+
+// Seller Orders
+export function useSellerOrdersEdge() {
+    return useQuery({
+        queryKey: ['seller-orders'],
+        queryFn: async () => {
+            return callEdgeFunction('seller-orders', undefined, 'GET');
+        },
+    });
+}
+
+// Update Fulfillment
+export function useUpdateFulfillmentEdge() {
+    const queryClient = useQueryClient();
+    const { toast } = useToast();
+
+    return useMutation({
+        mutationFn: async (data: {
+            orderItemId: number,
+            status: string,
+            trackingNumber?: string
+        }) => {
+            return callEdgeFunction('update-fulfillment', data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['seller-orders'] });
+            toast({ title: "Order Updated", description: "Fulfillment status updated successfully." });
+        },
+        onError: (error: Error) => {
+            toast({
+                title: "Update Failed",
+                description: error.message,
+                variant: "destructive"
+            });
+        }
+    });
+}
+
+// Admin: Verify Payment
+export function useVerifyPaymentEdge() {
+    const queryClient = useQueryClient();
+    const { toast } = useToast();
+
+    return useMutation({
+        mutationFn: async (data: { orderId: number }) => {
+            return callEdgeFunction('verify-payment', data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['pending-orders'] });
+            toast({ title: "Payment Verified", description: "Order has been verified and earnings created." });
+        },
+        onError: (error: Error) => {
+            toast({
+                title: "Verification Failed",
+                description: error.message,
+                variant: "destructive"
+            });
+        }
+    });
+}

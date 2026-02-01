@@ -1,0 +1,144 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3'
+import { corsHeaders } from '../_shared/cors.ts'
+
+serve(async (req) => {
+    if (req.method === 'OPTIONS') {
+        return new Response('ok', { headers: corsHeaders })
+    }
+
+    try {
+        const supabaseAdmin = createClient(
+            Deno.env.get('SUPABASE_URL') ?? '',
+            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        )
+
+        // Get user ID
+        let userId: string | null = null
+        const authHeader = req.headers.get('Authorization')
+
+        if (authHeader) {
+            try {
+                const token = authHeader.replace('Bearer ', '');
+                const parts = token.split('.');
+                if (parts.length === 3) {
+                    const payload = JSON.parse(atob(parts[1]));
+                    if (payload.sub) userId = payload.sub;
+                }
+            } catch (e) {
+                console.error("Manual JWT parse failed", e)
+            }
+
+            if (!userId) {
+                const supabaseClient = createClient(
+                    Deno.env.get('SUPABASE_URL') ?? '',
+                    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+                    { global: { headers: { Authorization: authHeader } } }
+                )
+                const { data: { user } } = await supabaseClient.auth.getUser()
+                userId = user?.id ?? null
+            }
+        }
+
+        if (!userId) userId = req.headers.get('x-user-id')
+
+        const body = await req.json().catch(() => ({}))
+        if (!userId && body.userId) userId = body.userId
+
+        if (!userId) throw new Error('Unauthorized')
+
+        // Fetch user's orders with items
+        const { data: orders, error: ordersError } = await supabaseAdmin
+            .from('orders')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+
+        if (ordersError) throw ordersError
+
+        // Fetch order items for each order with product and status history
+        const enrichedOrders = await Promise.all(
+            (orders || []).map(async (order: any) => {
+                const { data: items } = await supabaseAdmin
+                    .from('order_items')
+                    .select(`
+                        *,
+                        products(id, title, cover_url, type),
+                        status_history:order_status_history(status, note, created_at)
+                    `)
+                    .eq('order_id', order.id)
+
+                // Get creator names for each item
+                const creatorIds = [...new Set(items?.map((i: any) => i.creator_id).filter(Boolean))]
+                const { data: creators } = await supabaseAdmin
+                    .from('users')
+                    .select('id, display_name')
+                    .in('id', creatorIds)
+
+                const creatorsMap = new Map(creators?.map((c: any) => [c.id, c.display_name]))
+
+                const enrichedItems = items?.map((item: any) => ({
+                    orderItemId: item.id,
+                    productTitle: item.products?.title || 'Unknown Product',
+                    productCoverUrl: item.products?.cover_url || '',
+                    productType: item.products?.type || 'unknown',
+                    price: item.price,
+                    fulfillmentStatus: item.fulfillment_status,
+                    trackingNumber: item.tracking_number,
+                    estimatedDeliveryDays: item.estimated_delivery_days,
+                    makerName: creatorsMap.get(item.creator_id) || 'Unknown Maker',
+                    makerId: item.creator_id,
+                    shippedAt: item.shipped_at,
+                    deliveredAt: item.delivered_at,
+                    acceptedAt: item.accepted_at,
+                    preparingAt: item.preparing_at,
+                    rejectedAt: item.rejected_at,
+                    rejectionReason: item.rejection_reason,
+                    statusHistory: (item.status_history || [])
+                        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                        .map((h: any) => ({
+                            status: h.status,
+                            note: h.note,
+                            timestamp: h.created_at
+                        }))
+                }))
+
+                return {
+                    orderId: order.id,
+                    orderDate: order.created_at,
+                    totalAmount: order.total_amount,
+                    status: order.status,
+                    isVerified: order.is_verified,
+                    paymentMethod: order.payment_method,
+                    shippingAddress: order.shipping_address,
+                    shippingCost: order.shipping_cost,
+                    items: enrichedItems || []
+                }
+            })
+        )
+
+        // Filter to only show orders that have physical products or if none, allow all for debugging
+        const hasPhysical = enrichedOrders.some(order =>
+            order.items.some((item: any) => item.productType === 'physical')
+        )
+
+        // For now, let's return ALL orders to debug why they are missing
+        const finalOrders = enrichedOrders;
+
+        return new Response(JSON.stringify({
+            orders: finalOrders,
+            debug_userId: userId,
+            debug_count: finalOrders.length
+        }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200
+        })
+
+    } catch (error: any) {
+        console.error('get-user-orders error:', error)
+        return new Response(JSON.stringify({ error: error.message }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400
+        })
+    }
+})

@@ -1,0 +1,130 @@
+{
+    "welcome": "Welcome to Hekayaty",
+    "common": {
+        "egp": "EGP",
+        "cancel": "Cancel",
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "processing": "Processing..."
+    },
+    "loading": "Loading...",
+    "nav": {
+        "marketplace": "Marketplace",
+        "assets": "Art & Assets",
+        "worldbuilders": "Worldbuilders",
+        "writers": "For Writers",
+        "admin": "Admin",
+        "myStore": "My Store",
+        "dashboard": "Dashboard",
+        "profile": "Profile",
+        "logout": "Log out",
+        "login": "Log in",
+        "getStarted": "Get Started",
+        "cart": "Cart",
+        "studio": "Writer Studio"
+    },
+    "hero": {
+        "tagline": "The universe for storytellers",
+        "production": "A Clickers Company Production",
+        "title_line1": "Every Writer",
+        "title_line2": "Deserves a World",
+        "subtitle": "Build your own digital bookstore, connect with readers, and sell your stories directly. No gatekeepers, just magic.",
+        "cta_explore": "Explore Stories",
+        "cta_write": "Start Writing"
+    },
+    "dashboard": {
+        "title": "Creator Dashboard",
+        "subtitle": "Manage your empire: Stories, Assets, and Identity.",
+        "tabs": {
+            "overview": "Overview",
+            "products": "Products",
+            "orders": "Orders",
+            "wallet": "Wallet",
+            "shipping": "Shipping",
+            "branding": "Store Branding"
+        },
+        "stats": {
+            "totalProducts": "Total Products",
+            "totalUnitsSold": "Total Units Sold",
+            "grossSales": "Gross Sales",
+            "netEarnings": "Net Earnings",
+            "lifetimeEarnings": "Lifetime Earnings",
+            "availableBalance": "Available Balance",
+            "platformFees": "Platform Fees",
+            "platformEconomics": "Platform Economics: You keep 80% of every sale. Upgrade to VIP to keep more."
+        },
+        "wallet": {
+            "title": "Wallet & Payouts",
+            "balance": "Available Balance",
+            "requestPayout": "Request Payout",
+            "payoutHistory": "Payout History",
+            "noPayouts": "No payout history found.",
+            "payoutMethod": "Payout Method",
+            "submitRequest": "Submit Request",
+            "payoutNote": "Choose your preferred method and transfer your earnings.",
+            "details": {
+                "instapay": "InstaPay Address",
+                "bank": "Account Number / IBAN",
+                "phone": "Phone Number"
+            }
+        },
+        "products": {
+            "title": "Your Products",
+            "createNew": "Create New",
+            "noProducts": "No products created yet. Start by creating your first masterpiece!",
+            "editProduct": "Edit Product",
+            "deleteProduct": "Delete Product",
+            "publishTitle": "Publish New Item",
+            "publishDescription": "Create a new product to sell in your store. Choose between E-books, Physical Books, or Design Assets."
+        },
+        "branding": {
+            "title": "Store Branding",
+            "profileTitle": "Profile Settings",
+            "displayName": "Display Name",
+            "themeColor": "Theme Color",
+            "storeFont": "Store Font",
+            "headerLayout": "Header Layout",
+            "bio": "Store Bio",
+            "bioPlaceholder": "Tell your readers who you are...",
+            "welcomeMessage": "Welcome Message",
+            "welcomePlaceholder": "Welcome to my world!",
+            "images": "Store Images",
+            "imagesInfo": "Recommended: Logo (500x500px), Banner (1200x400px). Max 5MB."
+        }
+    },
+    "home": {
+        "bestSellers": {
+            "title": "Best Selling Stories",
+            "subtitle": "The community's favorite adventures.",
+            "viewAll": "View All",
+            "empty": "No best sellers yet. Be the first to break the charts!"
+        },
+        "featuredWriters": {
+            "title": "Featured Worldbuilders",
+            "subtitle": "Discover the voices shaping new realities.",
+            "viewAll": "View All"
+        },
+        "cta": {
+            "title": "Ready to publish your masterpiece?",
+            "subtitle": "Join thousands of writers who have found their home on Hekayaty. Keep 80% of your earnings and own your audience.",
+            "button": "Create Your Account"
+        }
+    },
+    "marketplace": {
+        "title": "Story Marketplace",
+        "subtitle": "Discover stories from independent creators across the multiverse.",
+        "assetsTitle": "Design Assets",
+        "assetsSubtitle": "Premium resources to build your world. Book covers, maps, and character art.",
+        "searchPlaceholder": "Search by title, author...",
+        "assetsSearchPlaceholder": "Search for covers, textures...",
+        "allGenres": "All Genres",
+        "allCategories": "All Categories",
+        "noStories": "No stories found",
+        "noAssets": "No assets found",
+        "tryAdjusting": "Try adjusting your search or filters.",
+        "tabs": {
+            "stories": "Stories",
+            "assets": "Design Assets"
+        }
+    }
+}
