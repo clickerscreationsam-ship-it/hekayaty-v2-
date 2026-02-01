@@ -218,7 +218,8 @@ export class MemStorage implements IStorage {
       stockQuantity: insertProduct.stockQuantity || null,
       weight: insertProduct.weight || null,
       requiresShipping: insertProduct.requiresShipping || false,
-      salesCount: insertProduct.salesCount || 0
+      salesCount: insertProduct.salesCount || 0,
+      appearanceSettings: insertProduct.appearanceSettings || null
     };
     this.products.set(id, product);
     return product;
@@ -227,7 +228,11 @@ export class MemStorage implements IStorage {
   async updateProduct(id: number, updates: Partial<InsertProduct>): Promise<Product> {
     const existing = this.products.get(id);
     if (!existing) throw new Error("Product not found");
-    const updated = { ...existing, ...updates };
+    const updated: Product = {
+      ...existing,
+      ...updates,
+      appearanceSettings: updates.appearanceSettings !== undefined ? (updates.appearanceSettings as any) : existing.appearanceSettings
+    };
     this.products.set(id, updated);
     return updated;
   }
