@@ -45,9 +45,9 @@ export default function Home() {
               </span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold mb-6 tracking-tight leading-tight text-white drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)]">
-              {t("hero.title_line1")} <br />
-              <span className="text-gradient">{t("hero.title_line2")}</span>
+            <h1 className="text-6xl md:text-8xl lg:text-[7.5rem] xl:text-[9rem] font-serif font-bold mb-8 tracking-tight leading-[1.1] text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)]">
+              <span className="block mb-2">{t("hero.title_line1")}</span>
+              <span className="text-gradient block transition-all duration-700 hover:scale-[1.02] cursor-default">{t("hero.title_line2")}</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-white font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] max-w-2xl mx-auto mb-10 leading-relaxed">
