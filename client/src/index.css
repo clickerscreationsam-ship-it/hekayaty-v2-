@@ -110,8 +110,9 @@
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-[#FFA500] to-primary;
-    /* Gold gradient */
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#FFD700] via-[#FFC107] to-[#FFB300];
+    /* Vibrant golden yellow gradient */
+    filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
   }
 
   .glow {
@@ -207,10 +208,12 @@
 /* Arabic Font Overrides - Luxury Edition */
 .font-arabic {
   font-family: 'Cairo', sans-serif !important;
-  line-height: 1.8;
-  /* More spacing for Arabic clarity */
-  font-size: 1.1rem;
+  line-height: 2;
+  /* Enhanced spacing for Arabic clarity */
+  font-size: 1.15rem;
   /* Bigger default text */
+  letter-spacing: 0.02em;
+  /* Subtle letter spacing for better readability */
 }
 
 .font-arabic h1,
@@ -221,16 +224,22 @@
 .font-arabic h6 {
   font-family: 'Amiri', serif !important;
   font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1.4;
-  /* Add a luxury gradient-like glow to Arabic headers */
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  letter-spacing: 0.03em;
+  /* Better spacing for Arabic headers */
+  line-height: 1.6;
+  /* More breathing room */
+  word-spacing: 0.1em;
+  /* Space between words */
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
 }
 
 .font-arabic h1 {
-  font-size: 1.35em;
+  font-size: 1.4em;
   /* Grand title */
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.3);
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  word-spacing: 0.15em;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 215, 0, 0.4);
 }
 
 .font-arabic h2 {
