@@ -50,7 +50,14 @@ export default function Home() {
               style={{ fontSize: 'clamp(3.5rem, 9vw, 10rem)' }}
             >
               <span className="block mb-4 filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]">{t("hero.title_line1")}</span>
-              <span className="text-gradient block transition-all duration-700 hover:scale-[1.05] cursor-default">
+              <span
+                className="block transition-all duration-700 hover:scale-[1.05] cursor-default"
+                style={{
+                  color: '#FFD700',
+                  textShadow: '0 0 40px rgba(255, 215, 0, 0.8), 0 4px 20px rgba(0, 0, 0, 0.9)',
+                  filter: 'drop-shadow(0 0 30px rgba(255, 215, 0, 0.6))'
+                }}
+              >
                 {t("hero.title_line2")}
               </span>
             </h1>
