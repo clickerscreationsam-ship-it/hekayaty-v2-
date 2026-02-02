@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useProducts } from "@/hooks/use-products";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
-import { Loader2, Globe, Twitter, Instagram, Settings, Plus, Palette, BarChart } from "lucide-react";
+import { Loader2, Globe, Twitter, Instagram, Settings, Plus, Palette } from "lucide-react";
 
 export default function WriterStore() {
   const [, params] = useRoute("/writer/:username");
@@ -111,11 +111,6 @@ export default function WriterStore() {
           <div className="flex-1 pb-2">
             <h1 className={`text-4xl md:text-5xl font-bold mb-2 ${fontClass}`}>{user.displayName}</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mb-4">{user.bio}</p>
-            <div className="flex items-center gap-6 text-sm font-medium">
-              <span className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full">
-                <BarChart className="w-4 h-4" /> {(user as any).totalSales || 0} Sales
-              </span>
-            </div>
           </div>
           <div className="flex gap-4 pb-4">
             {user.storeSettings?.socialLinks?.map((link: any, i: number) => (
