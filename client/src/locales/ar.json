@@ -5,7 +5,23 @@
         "cancel": "إلغاء",
         "save": "حفظ التغييرات",
         "saving": "جاري الحفظ...",
-        "processing": "جاري التنفيذ..."
+        "processing": "جاري التنفيذ...",
+        "delete": "حذف",
+        "edit": "تعديل",
+        "view": "عرض",
+        "search": "بحث",
+        "filter": "تصفية",
+        "sort": "ترتيب",
+        "close": "إغلاق",
+        "submit": "إرسال",
+        "confirm": "تأكيد",
+        "back": "رجوع",
+        "next": "التالي",
+        "previous": "السابق",
+        "loading": "جاري التحميل...",
+        "error": "حدث خطأ",
+        "success": "تم بنجاح",
+        "noData": "لا توجد بيانات"
     },
     "loading": "جاري التحميل...",
     "nav": {
@@ -21,7 +37,9 @@
         "login": "تسجيل الدخول",
         "getStarted": "ابدأ الآن",
         "cart": "السلة",
-        "studio": "استوديو الكاتب"
+        "studio": "استوديو الكاتب",
+        "orders": "الطلبات",
+        "trackOrders": "تتبع الطلبات"
     },
     "hero": {
         "tagline": "الكون الجامع لكل الرواة",
@@ -31,6 +49,129 @@
         "subtitle": "أنشئ مكتبتك الرقمية الخاصة، تواصل مع القراء، وبع قصصك مباشرة. لا حواجز، فقط سحر الكلمات.",
         "cta_explore": "تصفح القصص",
         "cta_write": "ابدأ الكتابة"
+    },
+    "auth": {
+        "login": {
+            "title": "مرحباً بعودتك",
+            "subtitle": "أدخل بياناتك للوصول إلى حسابك",
+            "email": "البريد الإلكتروني",
+            "password": "كلمة المرور",
+            "emailPlaceholder": "أدخل بريدك الإلكتروني",
+            "passwordPlaceholder": "أدخل كلمة المرور",
+            "button": "تسجيل الدخول",
+            "noAccount": "ليس لديك حساب؟",
+            "signUp": "سجل الآن"
+        },
+        "register": {
+            "title": "إنشاء حساب",
+            "subtitle": "أدخل بياناتك للبدء",
+            "email": "البريد الإلكتروني",
+            "username": "اسم المستخدم",
+            "displayName": "الاسم الكامل",
+            "password": "كلمة المرور",
+            "emailPlaceholder": "hello@example.com",
+            "usernamePlaceholder": "اختر اسم مستخدم",
+            "displayNamePlaceholder": "اسمك الكامل",
+            "passwordPlaceholder": "أنشئ كلمة مرور",
+            "role": "أريد أن أكون:",
+            "reader": "قارئ",
+            "writer": "كاتب",
+            "artist": "فنان",
+            "button": "إنشاء حساب",
+            "haveAccount": "لديك حساب بالفعل؟",
+            "logIn": "سجل الدخول"
+        },
+        "welcome": {
+            "title": "ابدأ رحلتك في عالم القصص",
+            "subtitle": "انضم إلى آلاف القراء والكتاب والفنانين الذين يشكلون مستقبل رواية القصص",
+            "copyright": "© 2026 حكاياتي. جميع الحقوق محفوظة.",
+            "production": "منتج من شركة كليكرز"
+        }
+    },
+    "cart": {
+        "title": "سلة التسوق",
+        "subtitle": "راجع مشترياتك",
+        "empty": "سلتك فارغة",
+        "emptySubtitle": "ابدأ بإضافة بعض القصص الرائعة!",
+        "browseTitles": "تصفح العناوين",
+        "items": "عنصر",
+        "subtotal": "المجموع الفرعي",
+        "shipping": "الشحن",
+        "total": "الإجمالي",
+        "checkout": "إتمام الشراء",
+        "continueShopping": "متابعة التسوق",
+        "remove": "إزالة",
+        "quantity": "الكمية"
+    },
+    "checkout": {
+        "title": "إتمام الشراء",
+        "shipping": {
+            "title": "معلومات الشحن",
+            "fullName": "الاسم الكامل",
+            "phone": "رقم الهاتف",
+            "city": "المدينة",
+            "address": "العنوان",
+            "required": "مطلوب للمنتجات المادية"
+        },
+        "payment": {
+            "title": "طريقة الدفع",
+            "method": "اختر طريقة الدفع",
+            "card": "بطاقة ائتمان",
+            "instapay": "إنستا باي",
+            "vodafone": "فودافون كاش",
+            "proof": "إثبات الدفع",
+            "reference": "رقم المرجع",
+            "upload": "رفع صورة",
+            "uploadProof": "ارفع صورة إثبات الدفع"
+        },
+        "summary": "ملخص الطلب",
+        "placeOrder": "تأكيد الطلب",
+        "processing": "جاري المعالجة..."
+    },
+    "orderTracking": {
+        "title": "تتبع طلباتك",
+        "subtitle": "تابع رحلة عجائبك",
+        "noOrders": "لا توجد طلبات بعد",
+        "noOrdersSubtitle": "ابدأ رحلتك بطلبك الأول!",
+        "orderId": "رقم الطلب",
+        "date": "التاريخ",
+        "status": "الحالة",
+        "total": "المجموع",
+        "items": "عنصر",
+        "viewDetails": "عرض التفاصيل",
+        "orderDetails": "تفاصيل الطلب",
+        "arrival": "الوصول المتوقع",
+        "trackingNumber": "رقم التتبع",
+        "shippingTo": "الشحن إلى",
+        "statuses": {
+            "pending": "قيد الانتظار",
+            "pending_verification": "في انتظار التحقق",
+            "paid": "مدفوع",
+            "shipped": "تم الشحن",
+            "delivered": "تم التسليم",
+            "cancelled": "ملغى"
+        }
+    },
+    "productDetails": {
+        "by": "بواسطة",
+        "rating": "التقييم",
+        "reviewCount": "تقييمات",
+        "price": "السعر",
+        "addToCart": "أضف للسلة",
+        "buyNow": "اشتر الآن",
+        "description": "الوصف",
+        "details": "التفاصيل",
+        "genre": "النوع",
+        "type": "الفئة",
+        "license": "الترخيص",
+        "fileFormat": "صيغة الملف",
+        "publishedDate": "تاريخ النشر",
+        "reviews": "المراجعات",
+        "noReviews": "لا توجد مراجعات بعد",
+        "writeReview": "اكتب مراجعة",
+        "yourRating": "تقييمك",
+        "yourReview": "مراجعتك",
+        "submitReview": "إرسال المراجعة"
     },
     "dashboard": {
         "title": "لوحة تحكم المبدع",
@@ -90,7 +231,33 @@
             "welcomePlaceholder": "مرحباً بكم في عالمي!",
             "images": "صور المتجر",
             "imagesInfo": "موصى به: الشعار (500x500 بكسل)، البانر (1200x400 بكسل). الحد الأقصى 5 ميجابايت."
+        },
+        "shipping": {
+            "title": "أسعار الشحن",
+            "addRate": "إضافة سعر",
+            "region": "المنطقة",
+            "cost": "التكلفة",
+            "deliveryTime": "وقت التسليم",
+            "days": "أيام",
+            "noRates": "لم يتم إضافة أسعار شحن بعد"
+        },
+        "orders": {
+            "title": "طلباتك",
+            "pending": "قيد الانتظار",
+            "completed": "مكتمل",
+            "all": "الكل",
+            "noOrders": "لا توجد طلبات",
+            "markShipped": "وضع علامة كمشحون",
+            "markDelivered": "وضع علامة كمسلم",
+            "addTracking": "إضافة رقم تتبع"
         }
+    },
+    "studio": {
+        "title": "استوديو الكاتب",
+        "welcome": "مرحباً بك في متجرك",
+        "welcomeSubtitle": "اجعله خاصاً بك! خصص مظهرك، أضف شعارك، وابدأ بنشر أعمالك الرائعة.",
+        "addProduct": "إضافة منتج",
+        "customize": "تخصيص المتجر"
     },
     "home": {
         "bestSellers": {
@@ -126,5 +293,45 @@
             "stories": "القصص",
             "assets": "أصول التصميم"
         }
+    },
+    "writerStore": {
+        "sales": "المبيعات",
+        "products": "منتج",
+        "followers": "متابع",
+        "follow": "متابعة",
+        "following": "متابع",
+        "noProducts": "لا توجد منتجات متاحة بعد",
+        "about": "نبذة عن"
+    },
+    "admin": {
+        "title": "لوحة تحكم المسؤول",
+        "users": "المستخدمين",
+        "orders": "الطلبات  ",
+        "products": "المنتجات",
+        "payouts": "السحوبات",
+        "settings": "الإعدادات",
+        "pendingOrders": "الطلبات المعلقة",
+        "verifyOrder": "تحقق من الطلب",
+        "rejectOrder": "رفض الطلب",
+        "noOrders": "لا توجد طلبات معلقة"
+    },
+    "footer": {
+        "about": "عن حكاياتي",
+        "aboutText": "منصة لتمكين الكتاب والفنانين من مشاركة إبداعاتهم مع العالم.",
+        "quickLinks": "روابط سريعة",
+        "forCreators": "للمبدعين",
+        "legal": "قانوني",
+        "terms": "الشروط والأحكام",
+        "privacy": "سياسة الخصوصية",
+        "copyright": "جميع الحقوق محفوظة.",
+        "madeWith": "صنع بـ",
+        "by": "بواسطة"
+    },
+    "errors": {
+        "notFound": "الصفحة غير موجودة",
+        "notFoundSubtitle": "الصفحة التي تبحث عنها غير موجودة.",
+        "backHome": "العودة للرئيسية",
+        "serverError": "خطأ في الخادم",
+        "tryAgain": "حاول مرة أخرى"
     }
 }
