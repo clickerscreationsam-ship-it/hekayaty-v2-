@@ -45,9 +45,11 @@ export default function Home() {
               </span>
             </div>
 
-            <h1 className="text-[4rem] sm:text-[5.5rem] md:text-[7rem] lg:text-[8rem] xl:text-[10rem] font-serif font-black mb-10 tracking-tighter leading-[0.95] text-white drop-shadow-[0_15px_35px_rgba(0,0,0,0.8)]">
-              <span className="block mb-2">{t("hero.title_line1")}</span>
-              <span className="text-gradient block transition-all duration-700 hover:scale-[1.03] cursor-default">{t("hero.title_line2")}</span>
+            <h1 className="text-[5rem] sm:text-[7rem] md:text-[9rem] lg:text-[11rem] xl:text-[13rem] font-serif font-black mb-12 tracking-tighter leading-[0.9] text-white drop-shadow-[0_20px_50px_rgba(0,0,0,0.9)]">
+              <span className="block mb-2 filter drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">{t("hero.title_line1")}</span>
+              <span className="text-gradient block transition-all duration-700 hover:scale-[1.05] cursor-default animate-pulse-slow">
+                {t("hero.title_line2")}
+              </span>
             </h1>
 
             <p className="text-xl md:text-2xl text-white font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] max-w-2xl mx-auto mb-10 leading-relaxed">
