@@ -1,4 +1,4 @@
-import { Feather, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Feather, Twitter, Instagram, Linkedin, Facebook } from "lucide-react";
 
 export function Footer() {
   return (
@@ -36,6 +36,9 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4 text-foreground">Follow Us</h4>
             <div className="flex gap-4">
+              <a href="https://www.facebook.com/share/1JgtgTtMiv/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-secondary/10 hover:bg-secondary/20 text-secondary-foreground transition-colors">
+                <Facebook className="w-5 h-5" />
+              </a>
               <a href="#" className="p-2 rounded-full bg-secondary/10 hover:bg-secondary/20 text-secondary-foreground transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
