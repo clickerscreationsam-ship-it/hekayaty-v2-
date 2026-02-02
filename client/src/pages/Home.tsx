@@ -46,8 +46,8 @@ export default function Home() {
             </div>
 
             <h1
-              className="text-[4rem] sm:text-[5.5rem] md:text-[7rem] lg:text-[9rem] xl:text-[11rem] 2xl:text-[12rem] font-serif font-black mb-12 tracking-tight leading-[0.9] text-white drop-shadow-[0_20px_50px_rgba(0,0,0,1)]"
-              style={{ fontSize: 'clamp(4rem, 10vw, 12rem)' }}
+              className="text-[3.5rem] sm:text-[5rem] md:text-[6.5rem] lg:text-[8rem] xl:text-[9.5rem] 2xl:text-[10rem] font-serif font-black mb-12 tracking-tight leading-[0.9] text-white drop-shadow-[0_20px_50px_rgba(0,0,0,1)]"
+              style={{ fontSize: 'clamp(3.5rem, 9vw, 10rem)' }}
             >
               <span className="block mb-4 filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]">{t("hero.title_line1")}</span>
               <span className="text-gradient block transition-all duration-700 hover:scale-[1.05] cursor-default">
