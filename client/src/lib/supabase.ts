@@ -165,6 +165,31 @@ export type Database = {
                     address_line?: string;
                 };
             };
+            chat_messages: {
+                Row: {
+                    id: string;
+                    store_id: string;
+                    sender_id: string;
+                    content: string;
+                    reply_to_id: string | null;
+                    is_pinned: boolean;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    store_id: string;
+                    sender_id: string;
+                    content: string;
+                    reply_to_id?: string | null;
+                    is_pinned?: boolean;
+                    created_at?: string;
+                };
+                Update: {
+                    content?: string;
+                    reply_to_id?: string | null;
+                    is_pinned?: boolean;
+                };
+            };
             // Add more table types as needed
         };
     };

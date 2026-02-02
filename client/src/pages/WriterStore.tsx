@@ -7,6 +7,7 @@ import { useProducts } from "@/hooks/use-products";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Loader2, Globe, Twitter, Instagram, Settings, Plus, Palette } from "lucide-react";
+import { StoreChat } from "@/components/StoreChat";
 
 export default function WriterStore() {
   const [, params] = useRoute("/writer/:username");
@@ -151,6 +152,8 @@ export default function WriterStore() {
           </div>
         </div>
       </div>
+
+      <StoreChat storeId={user.id} storeName={user.displayName} />
 
       <Footer />
     </div>

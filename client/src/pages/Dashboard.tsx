@@ -22,6 +22,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Redirect, Link } from "wouter";
 import { ShippingSettings } from "@/components/dashboard/ShippingSettings";
 import { SellerOrders } from "@/components/dashboard/SellerOrders";
+import { DashboardChat } from "@/components/dashboard/DashboardChat";
 import MakerOrders from "@/pages/creator/MakerOrders";
 import { useEarnings, usePayouts, useRequestPayout } from "@/hooks/use-earnings";
 import { formatDate, cn } from "@/lib/utils";
@@ -105,6 +106,7 @@ export default function Dashboard() {
             {user.role !== 'reader' && <TabsTrigger value="orders" className="rounded-lg px-6 py-2">{t("dashboard.tabs.orders")}</TabsTrigger>}
             {user.role !== 'reader' && <TabsTrigger value="wallet" className="rounded-lg px-6 py-2">{t("dashboard.tabs.wallet")}</TabsTrigger>}
             {user.role !== 'reader' && <TabsTrigger value="shipping" className="rounded-lg px-6 py-2">{t("dashboard.tabs.shipping")}</TabsTrigger>}
+            {user.role !== 'reader' && <TabsTrigger value="chat" className="rounded-lg px-6 py-2">{t("dashboard.tabs.chat", "Store Chat")}</TabsTrigger>}
             <TabsTrigger value="branding" className="rounded-lg px-6 py-2">
               {user.role === 'reader' ? 'Profile Settings' : t("dashboard.tabs.branding")}
             </TabsTrigger>
@@ -375,6 +377,10 @@ export default function Dashboard() {
               </div>
               {user && <ShippingSettings userId={user.id} />}
             </div>
+          </TabsContent>
+
+          <TabsContent value="chat">
+            <DashboardChat />
           </TabsContent>
 
           <TabsContent value="branding">

@@ -182,7 +182,8 @@
             "orders": "الطلبات",
             "wallet": "المحفظة",
             "shipping": "الشحن",
-            "branding": "هوية المتجر"
+            "branding": "هوية المتجر",
+            "chat": "محادثة المتجر"
         },
         "stats": {
             "totalProducts": "إجمالي المنتجات",

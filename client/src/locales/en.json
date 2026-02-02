@@ -41,7 +41,8 @@
             "orders": "Orders",
             "wallet": "Wallet",
             "shipping": "Shipping",
-            "branding": "Store Branding"
+            "branding": "Store Branding",
+            "chat": "Store Chat"
         },
         "stats": {
             "totalProducts": "Total Products",

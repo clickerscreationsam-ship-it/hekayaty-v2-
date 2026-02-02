@@ -104,46 +104,36 @@ export function useAuth() {
         mutationFn: async (credentials: SignUpData) => {
             console.log("📝 Starting registration for:", credentials.email);
 
-            // 1. Create auth user
+            // 1. Create auth user with metadata
+            // The database trigger 'on_auth_user_created' will automatically 
+            // create the public profile in the 'users' table using this metadata.
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email: credentials.email,
                 password: credentials.password,
+                options: {
+                    data: {
+                        username: credentials.username,
+                        display_name: credentials.displayName,
+                        role: credentials.role,
+                    }
+                }
             });
 
             console.log("🔐 Auth signup result:", { authData, authError });
 
-            if (authError) throw authError;
-            if (!authData.user) throw new Error('User creation failed');
-
-            // 2. Create user profile
-            const { error: profileError } = await supabase
-                .from('users')
-                .insert({
-                    id: authData.user.id,
-                    email: credentials.email,
-                    username: credentials.username,
-                    display_name: credentials.displayName,
-                    role: credentials.role,
-                    // Default values handled by DB, but good to know
-                });
-
-            console.log("👤 Profile creation result:", { profileError });
-
-            if (profileError) {
-                // Note: We cannot delete the auth user from the client (requires service role).
-                // If profile creation fails, the auth user remains (zombie state) but public profile is missing.
-                // In a real app, you'd use an Edge Function for atomic signup.
-
-                // Improve error message
-                if (profileError.message.includes("users_email_key")) {
+            if (authError) {
+                // Handle common auth errors with better messages
+                if (authError.message.includes("User already registered")) {
                     throw new Error("This email is already registered. Please login instead.");
                 }
-                if (profileError.message.includes("users_username_key")) {
-                    throw new Error("This username is already taken. Please choose another.");
-                }
-
-                throw profileError;
+                throw authError;
             }
+
+            if (!authData.user) throw new Error('User creation failed');
+
+            // 2. Profile creation is now handled by the database trigger!
+            // This prevents "Zombie Accounts" where auth exists but profile doesn't.
+            console.log("👤 Profile creation handled by DB Trigger.");
 
             return authData;
         },
