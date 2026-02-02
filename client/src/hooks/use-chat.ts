@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
@@ -25,8 +25,9 @@ export function useChat(storeId: string) {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const [isRealtimeEnabled, setIsRealtimeEnabled] = useState(false);
+    const channelRef = useRef<any>(null);
 
-    // Fetch messages
+    // Fetch initial messages
     const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
         queryKey: ['chat-messages', storeId],
         queryFn: async () => {
@@ -40,64 +41,43 @@ export function useChat(storeId: string) {
                 .order('created_at', { ascending: true });
 
             if (error) throw error;
-
-            // Manually handle replies for now or fetch them separately if needed.
-            // For MVP, we'll just map them.
-            const msgs = data as any[];
-            return msgs.map(m => ({
-                ...m,
-                reply_to: msgs.find(prev => prev.id === m.reply_to_id)
-            }));
+            return data as ChatMessage[];
         },
         enabled: !!storeId,
     });
 
-    // Real-time subscription
+    // Real-time Ultra-Speed Channel (Broadcast + DB)
     useEffect(() => {
         if (!storeId) return;
 
         const channel = supabase
-            .channel(`store_chat:${storeId}`)
+            .channel(`store_chat:${storeId}`, {
+                config: {
+                    broadcast: { self: false }, // Don't broadcast to self, we use Optimistic UI
+                    presence: { key: user?.id },
+                },
+            })
+            // 1. LISTEN FOR ULTRA-FAST BROADCASTS
+            .on('broadcast', { event: 'new_message' }, (payload) => {
+                const { message } = payload.payload;
+                queryClient.setQueryData(['chat-messages', storeId], (old: ChatMessage[] | undefined) => {
+                    if (!old) return [message];
+                    if (old.some(m => m.id === message.id)) return old; // Avoid dups
+                    return [...old, message];
+                });
+            })
+            // 2. LISTEN FOR UPDATES/DELETES IN DB
             .on(
                 'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'chat_messages',
-                    filter: `store_id=eq.${storeId}`,
-                },
-                async (payload) => {
-                    console.log('Realtime payload:', payload);
-
-                    if (payload.eventType === 'INSERT') {
-                        // Fetch sender info for the new message
-                        const { data: senderData } = await supabase
-                            .from('users')
-                            .select('username, display_name, avatar_url')
-                            .eq('id', payload.new.sender_id)
-                            .single();
-
-                        const newMessage = {
-                            ...payload.new,
-                            sender: senderData,
-                            reply_to: messages.find(m => m.id === payload.new.reply_to_id)
-                        } as ChatMessage;
-
+                { event: '*', schema: 'public', table: 'chat_messages', filter: `store_id=eq.${storeId}` },
+                (payload) => {
+                    if (payload.eventType === 'DELETE') {
                         queryClient.setQueryData(['chat-messages', storeId], (old: ChatMessage[] | undefined) => {
-                            if (!old) return [newMessage];
-                            // Avoid duplicates
-                            if (old.some(m => m.id === newMessage.id)) return old;
-                            return [...old, newMessage];
-                        });
-                    } else if (payload.eventType === 'DELETE') {
-                        queryClient.setQueryData(['chat-messages', storeId], (old: ChatMessage[] | undefined) => {
-                            if (!old) return [];
-                            return old.filter((m) => m.id !== payload.old.id);
+                            return old?.filter(m => m.id !== payload.old.id) || [];
                         });
                     } else if (payload.eventType === 'UPDATE') {
                         queryClient.setQueryData(['chat-messages', storeId], (old: ChatMessage[] | undefined) => {
-                            if (!old) return [];
-                            return old.map((m) => (m.id === payload.new.id ? { ...m, ...payload.new } : m));
+                            return old?.map(m => m.id === payload.new.id ? { ...m, ...payload.new } : m) || [];
                         });
                     }
                 }
@@ -106,19 +86,48 @@ export function useChat(storeId: string) {
                 setIsRealtimeEnabled(status === 'SUBSCRIBED');
             });
 
+        channelRef.current = channel;
+
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [storeId, queryClient, messages]);
+    }, [storeId, queryClient, user?.id]);
 
-    // Send message mutation
+    // Send message mutation (Optimistic & Fast)
     const sendMutation = useMutation({
         mutationFn: async ({ content, replyToId }: { content: string; replyToId?: string | null }) => {
             if (!user) throw new Error('Unauthorized');
 
+            const tempId = crypto.randomUUID();
+            const messageData = {
+                id: tempId,
+                store_id: storeId,
+                sender_id: user.id,
+                content,
+                reply_to_id: replyToId || null,
+                is_pinned: false,
+                created_at: new Date().toISOString(),
+                sender: {
+                    username: user.username,
+                    display_name: user.displayName,
+                    avatar_url: user.avatarUrl
+                }
+            } as ChatMessage;
+
+            // BROADCAST IMMEDIATELY TO EVERYONE ELSE
+            if (channelRef.current) {
+                channelRef.current.send({
+                    type: 'broadcast',
+                    event: 'new_message',
+                    payload: { message: messageData },
+                });
+            }
+
+            // SAVE TO DB FOR PERSISTENCE
             const { data, error } = await supabase
                 .from('chat_messages')
                 .insert({
+                    id: tempId,
                     store_id: storeId,
                     sender_id: user.id,
                     content,
@@ -130,13 +139,37 @@ export function useChat(storeId: string) {
             if (error) throw error;
             return data;
         },
-        onError: (error: any) => {
-            toast({
-                title: 'Error sending message',
-                description: error.message,
-                variant: 'destructive',
-            });
+        // OPTIMISTIC UI: Show message on our screen instantly
+        onMutate: async (newMsg) => {
+            await queryClient.cancelQueries({ queryKey: ['chat-messages', storeId] });
+            const previousMessages = queryClient.getQueryData(['chat-messages', storeId]);
+
+            const optimisticMsg = {
+                id: 'temp-' + Date.now(),
+                store_id: storeId,
+                sender_id: user?.id,
+                content: newMsg.content,
+                reply_to_id: newMsg.replyToId,
+                is_pinned: false,
+                created_at: new Date().toISOString(),
+                sender: {
+                    username: user?.username,
+                    display_name: user?.displayName,
+                    avatar_url: user?.avatarUrl
+                }
+            } as any;
+
+            queryClient.setQueryData(['chat-messages', storeId], (old: any) => [...(old || []), optimisticMsg]);
+
+            return { previousMessages };
         },
+        onError: (err, newMsg, context: any) => {
+            queryClient.setQueryData(['chat-messages', storeId], context.previousMessages);
+            toast({ title: 'Error sending message', description: err.message, variant: 'destructive' });
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['chat-messages', storeId] });
+        }
     });
 
     // Delete message mutation

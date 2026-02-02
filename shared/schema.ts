@@ -152,6 +152,16 @@ export const reviews = pgTable("reviews", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const chatMessages = pgTable("chat_messages", {
+  id: text("id").primaryKey(), // UUID from Supabase
+  storeId: text("store_id").notNull(), // UUID of the store owner
+  senderId: text("sender_id").notNull(), // UUID of the message sender
+  content: text("content").notNull(),
+  replyToId: text("reply_to_id"), // UUID of the message being replied to
+  isPinned: boolean("is_pinned").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // === 4. CART & ORDERS ===
 
 export const cartItems = pgTable("cart_items", {
@@ -258,6 +268,7 @@ export const insertEarningSchema = createInsertSchema(earnings).omit({ id: true,
 export const insertPayoutSchema = createInsertSchema(payouts).omit({ id: true, requestedAt: true, processedAt: true });
 export const insertShippingRateSchema = createInsertSchema(shippingRates).omit({ id: true, createdAt: true });
 export const insertShippingAddressSchema = createInsertSchema(shippingAddresses).omit({ id: true, createdAt: true });
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, createdAt: true });
 
 
 export type User = typeof users.$inferSelect;
@@ -294,6 +305,9 @@ export type InsertShippingRate = z.infer<typeof insertShippingRateSchema>;
 
 export type ShippingAddress = typeof shippingAddresses.$inferSelect;
 export type InsertShippingAddress = z.infer<typeof insertShippingAddressSchema>;
+
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 
 // Request Types
 export type CreateProductRequest = InsertProduct & { variants?: InsertVariant[] };
