@@ -8,6 +8,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Loader2, Globe, Twitter, Instagram, Settings, Plus, Palette } from "lucide-react";
 import { StoreChat } from "@/components/StoreChat";
+import { SEO } from "@/components/SEO";
 
 export default function WriterStore() {
   const [, params] = useRoute("/writer/:username");
@@ -56,6 +57,11 @@ export default function WriterStore() {
 
   return (
     <div className="min-h-screen relative">
+      <SEO
+        title={`${user.displayName}'s Store`}
+        description={user.bio || undefined}
+        image={user.avatarUrl || user.bannerUrl || undefined}
+      />
       <Navbar />
 
       {/* Full Page Background Image */}

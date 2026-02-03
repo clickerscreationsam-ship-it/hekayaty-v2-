@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertReviewSchema } from "@shared/schema";
 import { z } from "zod";
+import { SEO } from "@/components/SEO";
 
 export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
@@ -30,8 +31,36 @@ export default function ProductDetails() {
   if (isLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
   if (!product) return <div>Product not found</div>;
 
+  const productSchema = {
+    "@context": "https://schema.org/",
+    "@type": "Book",
+    "name": product.title,
+    "description": product.description,
+    "image": product.coverUrl,
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "EGP",
+      "price": product.price,
+      "availability": "https://schema.org/InStock",
+      "url": window.location.href
+    },
+    "aggregateRating": product.rating ? {
+      "@type": "AggregateRating",
+      "ratingValue": product.rating / 10,
+      "bestRating": "5",
+      "worstRating": "1"
+    } : undefined
+  };
+
   return (
     <div className="min-h-screen pb-20 relative">
+      <SEO
+        title={product.title}
+        description={product.description}
+        image={product.coverUrl}
+        type="book"
+        schema={productSchema}
+      />
       <Navbar />
 
       {/* Full Page Background (Product Cover) */}

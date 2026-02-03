@@ -9,6 +9,7 @@ import { FeaturedWriter } from "@/components/FeaturedWriter";
 import { ProductCard } from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
+import { SEO } from "@/components/SEO";
 
 export default function Home() {
   const { data: writers } = useWriters();
@@ -18,6 +19,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Home"
+        description="The ultimate universe for storytellers and worldbuilders. Publish your stories, build your digital bookstore, and connect with readers directly."
+      />
       <Navbar />
 
       {/* Hero Section */}
