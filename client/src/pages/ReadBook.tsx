@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 export default function ReadBook() {
     const [, params] = useRoute("/read/:id");
     const id = parseInt(params?.id || "0");
-    const { data: product, isLoading } = useProduct(id);
+    const { data: product, isLoading: productLoading } = useProduct(id);
+    const { data: fetchedContent, isLoading: contentLoading } = useProductContent(id);
     const updateProduct = useUpdateProduct();
     const { user } = useAuth(); // Get current user
 
@@ -20,13 +21,12 @@ export default function ReadBook() {
     const [isEditing, setIsEditing] = useState(false);
     const [textContent, setTextContent] = useState("");
 
+    const isLoading = productLoading || contentLoading;
+
     // Initialize text content and appearance when product loads
     useEffect(() => {
-        if (product?.content) {
-            setTextContent(product.content);
-        } else if (product?.description) {
-            setTextContent(product.description);
-        }
+        const actualContent = fetchedContent || product?.content || product?.description || "";
+        setTextContent(actualContent);
 
         if (product?.appearanceSettings) {
             const settings = product.appearanceSettings;
@@ -34,7 +34,7 @@ export default function ReadBook() {
             if (settings.fontSize) setFontSize(settings.fontSize);
             if (settings.fontFamily) setFontFamily(settings.fontFamily as any);
         }
-    }, [product]);
+    }, [product, fetchedContent]);
 
     const handleSave = () => {
         if (!product) return;

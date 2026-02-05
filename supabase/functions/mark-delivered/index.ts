@@ -13,26 +13,21 @@ serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         )
 
-        // Get user ID (maker or admin)
-        let userId: string | null = null
+        // Get user ID strictly from token
         const authHeader = req.headers.get('Authorization')
-
-        if (authHeader) {
-            const supabaseClient = createClient(
-                Deno.env.get('SUPABASE_URL') ?? '',
-                Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-                { global: { headers: { Authorization: authHeader } } }
-            )
-            const { data: { user } } = await supabaseClient.auth.getUser()
-            userId = user?.id ?? null
+        if (!authHeader) {
+            throw new Error('Unauthorized: Missing token')
         }
 
-        if (!userId) userId = req.headers.get('x-user-id')
+        const token = authHeader.replace('Bearer ', '')
+        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token)
 
-        const body = await req.json()
-        if (!userId && body.userId) userId = body.userId
+        if (authError || !authUser) {
+            throw new Error('Unauthorized: Invalid session')
+        }
 
-        if (!userId) throw new Error('Unauthorized')
+        const userId = authUser.id
+        const body = await req.json().catch(() => ({}))
 
         const { orderItemId } = body
 

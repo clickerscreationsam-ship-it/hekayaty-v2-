@@ -33,37 +33,17 @@ serve(async (req) => {
         )
 
         // Verify user is authenticated
-        let user: any = null;
         const { data: { user: authUser }, error: authError } = await supabaseClient.auth.getUser()
 
-        if (authUser) {
-            user = authUser;
-        } else {
-            console.log('getUser failed, attempting manual token parsing...');
-            if (authHeader) {
-                try {
-                    const token = authHeader.replace('Bearer ', '');
-                    const parts = token.split('.');
-                    if (parts.length === 3) {
-                        const payload = JSON.parse(atob(parts[1]));
-                        if (payload.sub) {
-                            user = { id: payload.sub };
-                            console.log('Manual token parsing successful for user:', user.id);
-                        }
-                    }
-                } catch (e) {
-                    console.error('Manual token parsing failed:', e);
-                }
-            }
-        }
-
-        if (!user) {
+        if (authError || !authUser) {
             console.error('Auth verification failed:', authError)
             return new Response(
-                JSON.stringify({ error: 'Unauthorized: Could not determine user', details: authError }),
+                JSON.stringify({ error: 'Unauthorized: Invalid session', details: authError }),
                 { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
+
+        const user = authUser;
 
         // Parse request body
         const {
@@ -80,36 +60,74 @@ serve(async (req) => {
         console.log('Processing checkout for user:', user.id)
         console.log('Items:', items.length)
 
-        // 1. Fetch product details
+        // 1. Fetch products and variants to get REAL prices (Server-side truth)
         const productIds = items.map((i: any) => i.productId)
-        const { data: productsData } = await supabaseAdmin
-            .from('products')
-            .select('id, type, writer_id')
-            .in('id', productIds)
+        const variantIds = items.map((i: any) => i.variantId).filter(Boolean)
 
-        const productMap = new Map(productsData?.map((p: any) => [p.id, p]) || [])
+        const [productsRes, variantsRes] = await Promise.all([
+            supabaseAdmin.from('products').select('id, type, writer_id, price').in('id', productIds),
+            variantIds.length > 0
+                ? supabaseAdmin.from('product_variants').select('id, product_id, price').in('id', variantIds)
+                : Promise.resolve({ data: [] })
+        ])
 
-        // 2. Calculate fees per item
+        const productsData = productsRes.data || []
+        const variantsData = variantsRes.data || []
+
+        const productMap = new Map(productsData.map((p: any) => [p.id, p]))
+        const variantMap = new Map(variantsData.map((v: any) => [v.id, v]))
+
+        // 2. Fetch Creator Rates
+        const creatorIds = Array.from(new Set(productsData.map((p: any) => p.writer_id)))
+        const { data: creatorsData } = await supabaseAdmin
+            .from('users')
+            .select('id, commission_rate')
+            .in('id', creatorIds)
+
+        const ratesMap = new Map(creatorsData?.map((c: any) => [c.id, c.commission_rate]) || [])
+
+        // 3. Calculate fees and totals using REAL prices
+        let serverCalculatedTotalAmount = 0
         let totalPlatformFee = 0
         let totalCreatorEarnings = 0
         const earningsByCreator = new Map<string, number>()
 
-        for (const item of items) {
+        const verifiedItems = items.map((item: any) => {
             const product = productMap.get(item.productId)
-            const type = product?.type || 'ebook'
-            const isPhysical = type === 'physical'
+            if (!product) throw new Error(`Product ${item.productId} no longer exists.`)
 
-            // Commission: 12% Physical, 20% Digital
-            const rate = isPhysical ? 12 : 20
-            const fee = Math.round(item.price * (rate / 100))
-            const earning = item.price - fee
+            // Priority: Variant Price > Product Price
+            let actualPrice = product.price
+            if (item.variantId) {
+                const variant = variantMap.get(item.variantId)
+                if (variant && variant.product_id === item.productId) {
+                    actualPrice = variant.price
+                }
+            }
+
+            const quantity = item.quantity || 1
+            const itemTotal = actualPrice * quantity
+            serverCalculatedTotalAmount += itemTotal
+
+            const isPhysical = product.type === 'physical'
+            const creatorId = product.writer_id
+            const writerRate = ratesMap.get(creatorId) ?? 20
+            const rate = isPhysical ? 12 : writerRate
+            const fee = Math.round(itemTotal * (rate / 100))
+            const earning = itemTotal - fee
 
             totalPlatformFee += fee
             totalCreatorEarnings += earning
 
-            const currentEarning = earningsByCreator.get(item.creatorId) || 0
-            earningsByCreator.set(item.creatorId, currentEarning + earning)
-        }
+            const currentEarning = earningsByCreator.get(creatorId) || 0
+            earningsByCreator.set(creatorId, currentEarning + earning)
+
+            return {
+                ...item,
+                price: actualPrice, // Use the real price for order_items
+                creatorId: creatorId
+            }
+        })
 
         // 2.1 Add shipping to creator earnings
         if (shippingBreakdown && Array.isArray(shippingBreakdown)) {
@@ -130,12 +148,14 @@ serve(async (req) => {
         ].includes(paymentMethod)
         const initialStatus = isManualPayment ? "pending" : "paid"
 
-        // 4. Create Order
+        // 4. Create Order (Using Server-Calculated Total)
+        const totalWithShipping = serverCalculatedTotalAmount + shippingCost
+
         const { data: order, error: orderError } = await supabaseAdmin
             .from('orders')
             .insert({
                 user_id: user.id,
-                total_amount: totalAmount,
+                total_amount: totalWithShipping,
                 platform_fee: totalPlatformFee,
                 creator_earnings: totalCreatorEarnings,
                 status: initialStatus,
@@ -156,8 +176,8 @@ serve(async (req) => {
 
         console.log('Order created:', order.id)
 
-        // 5. Create Order Items
-        const orderItemsToInsert = items.map((item: any) => ({
+        // 5. Create Order Items (Using Verified Prices)
+        const orderItemsToInsert = verifiedItems.map((item: any) => ({
             order_id: order.id,
             product_id: item.productId,
             variant_id: item.variantId,
@@ -174,6 +194,24 @@ serve(async (req) => {
         if (itemsError) {
             console.error('Order items error:', itemsError)
             throw new Error('Failed to create order items')
+        }
+
+        // 5.1 Atomic Stock Decrementing for physical products
+        for (const item of items) {
+            const product = productMap.get(item.productId)
+            if (product && product.type === 'physical') {
+                const { error: stockError } = await supabaseAdmin.rpc('decrement_product_stock', {
+                    p_product_id: item.productId,
+                    p_quantity: item.quantity || 1
+                })
+
+                if (stockError) {
+                    console.error('Stock decrement failed:', stockError)
+                    // Note: In a perfect world, we'd rollback the order here.
+                    // For now, we'll just throw the error so the user knows.
+                    throw new Error(`Inventory Error: ${stockError.message}`)
+                }
+            }
         }
 
         // 6. Create Earnings ONLY if paid immediately

@@ -1,5 +1,7 @@
-import "dotenv/config"; // Load environment variables first
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
+import helmet from "helmet";
+import { rateLimit } from "express-rate-limit";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -7,19 +9,46 @@ import { createServer } from "http";
 const app = express();
 const httpServer = createServer(app);
 
-declare module "http" {
-  interface IncomingMessage {
-    rawBody: unknown;
-  }
-}
-
-app.use(
-  express.json({
-    verify: (req, _res, buf) => {
-      req.rawBody = buf;
+// 1. SECURITY HEADERS (CORS, XSS, Clickjacking, etc.)
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "https://images.unsplash.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      connectSrc: ["'self'", "https://*.supabase.co", "wss://*.supabase.co", "https://res.cloudinary.com"],
     },
-  }),
-);
+  },
+}));
+
+// 2. RATE LIMITING (Prevent Brute Force / DDoS)
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1000, // limit each IP to 1000 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many requests from this IP, please try again later.",
+});
+
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 20, // 20 attempts per hour for login/registration
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many login attempts. Please try again in an hour.",
+});
+
+app.use("/api", generalLimiter);
+app.use("/api/auth", authLimiter);
+
+// 3. BODY LIMITING (Prevent Large Payload Attacks)
+app.use(express.json({
+  limit: "1mb", verify: (req, _res, buf) => {
+    (req as any).rawBody = buf;
+  }
+}));
 
 app.use(express.urlencoded({ extended: false }));
 

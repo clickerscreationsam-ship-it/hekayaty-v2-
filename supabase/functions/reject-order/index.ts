@@ -8,32 +8,30 @@ serve(async (req) => {
     }
 
     try {
-        const supabaseAdmin = createClient(
-            Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        )
-
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) {
             throw new Error('Unauthorized: Missing token')
         }
 
-        const body = await req.json()
+        const supabaseAdmin = createClient(
+            Deno.env.get('SUPABASE_URL') ?? '',
+            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        )
+
         const token = authHeader.replace('Bearer ', '');
-        let userId: string;
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            userId = payload.sub;
-        } catch (e) {
-            userId = req.headers.get('x-user-id') || body.userId || "";
-            if (!userId) throw new Error('Unauthorized: Invalid token')
+        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+        if (authError || !authUser) {
+            throw new Error('Unauthorized: Invalid session');
         }
 
-        if (!userId) throw new Error('Unauthorized')
+        const userId = authUser.id;
 
         // Check if user is admin
         const { data: userData } = await supabaseAdmin.from('users').select('role').eq('id', userId).single()
         if (userData?.role !== 'admin') throw new Error('Forbidden: Admin only')
+
+        const body = await req.json()
 
         const { orderId } = body
 

@@ -15,35 +15,28 @@ serve(async (req: Request) => {
 
         console.log(`Incoming request Headers:`, Object.fromEntries(req.headers.entries()))
 
-        // Get user ID from JWT
-        let userId: string | null = null
+        // Get user ID strictly from JWT
         const authHeader = req.headers.get('Authorization')
-
-        if (authHeader) {
-            const token = authHeader.replace('Bearer ', '')
-            const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
-
-            if (authError) {
-                console.error('Auth error verifying token:', authError)
-            } else {
-                userId = user?.id ?? null
-            }
-        }
-
-        // Fallback to headers or body for backward compatibility (careful with security here)
-        if (!userId) userId = req.headers.get('x-user-id')
-
-        const body = await req.json().catch(() => ({}))
-        if (!userId && body.userId) userId = body.userId
-
-        if (!userId) {
-            console.error('Unauthorized: No userId found in token, headers, or body')
-            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        if (!authHeader) {
+            return new Response(JSON.stringify({ error: 'Missing Authorization header' }), {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 status: 401
             })
         }
 
+        const token = authHeader.replace('Bearer ', '')
+        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+
+        if (authError || !user) {
+            console.error('Auth error verifying token:', authError)
+            return new Response(JSON.stringify({ error: 'Unauthorized: Invalid session' }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 401
+            })
+        }
+
+        const userId = user.id
+        const body = await req.json().catch(() => ({}))
         const onlyUnread = body.onlyUnread ?? false
 
         // Fetch notifications

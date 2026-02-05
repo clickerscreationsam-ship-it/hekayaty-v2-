@@ -13,39 +13,21 @@ serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         )
 
-        // Get user ID
-        let userId: string | null = null
+        // Get user ID strictly from token
         const authHeader = req.headers.get('Authorization')
-
-        if (authHeader) {
-            try {
-                const token = authHeader.replace('Bearer ', '');
-                const parts = token.split('.');
-                if (parts.length === 3) {
-                    const payload = JSON.parse(atob(parts[1]));
-                    if (payload.sub) userId = payload.sub;
-                }
-            } catch (e) {
-                console.error("Manual JWT parse failed", e)
-            }
-
-            if (!userId) {
-                const supabaseClient = createClient(
-                    Deno.env.get('SUPABASE_URL') ?? '',
-                    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-                    { global: { headers: { Authorization: authHeader } } }
-                )
-                const { data: { user } } = await supabaseClient.auth.getUser()
-                userId = user?.id ?? null
-            }
+        if (!authHeader) {
+            throw new Error('Unauthorized: Missing token')
         }
 
-        if (!userId) userId = req.headers.get('x-user-id')
+        const token = authHeader.replace('Bearer ', '')
+        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
 
+        if (authError || !user) {
+            throw new Error('Unauthorized: Invalid session')
+        }
+
+        const userId = user.id
         const body = await req.json().catch(() => ({}))
-        if (!userId && body.userId) userId = body.userId
-
-        if (!userId) throw new Error('Unauthorized')
 
         // Fetch user's orders with items
         const { data: orders, error: ordersError } = await supabaseAdmin

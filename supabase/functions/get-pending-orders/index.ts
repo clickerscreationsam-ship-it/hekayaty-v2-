@@ -19,22 +19,13 @@ serve(async (req: Request) => {
         }
 
         const token = authHeader.replace('Bearer ', '');
-        let userId: string;
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            userId = payload.sub;
-        } catch (e) {
-            userId = req.headers.get('x-user-id') || "";
-            if (!userId) {
-                try {
-                    const body = await req.json()
-                    userId = body.userId
-                } catch (be) { }
-            }
-            if (!userId) throw new Error('Unauthorized: Invalid token')
+        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+        if (authError || !authUser) {
+            throw new Error('Unauthorized: Invalid session');
         }
 
-        if (!userId) throw new Error('Unauthorized')
+        const userId = authUser.id;
 
         // Check if user is admin
         const { data: userData } = await supabaseAdmin.from('users').select('role').eq('id', userId).single()

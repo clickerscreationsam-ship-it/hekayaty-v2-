@@ -21,7 +21,7 @@ function mapProduct(p: ProductRow) {
     reviewCount: p.review_count ?? 0,
     price: p.price,
     licenseType: p.license_type ?? 'personal',
-    content: p.content, // Map content field
+    content: p.content || (p as any).content_data?.content, // Fallback to content_data if joined
     // Physical Fields
     stockQuantity: p.stock_quantity,
     weight: p.weight,
@@ -74,14 +74,38 @@ export function useProduct(id: number) {
   return useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
+      // Try to fetch from products (legacy) and product_contents (new)
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          content_data:product_contents(content)
+        `)
         .eq('id', id)
         .single();
 
       if (error) return null;
       return mapProduct(data);
+    },
+    enabled: !!id,
+  });
+}
+
+export function useProductContent(id: number) {
+  return useQuery({
+    queryKey: ["product-content", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_contents')
+        .select('content')
+        .eq('product_id', id)
+        .single();
+
+      if (error) {
+        console.warn("Content not found in product_contents, might still be in products table");
+        return null;
+      }
+      return data.content;
     },
     enabled: !!id,
   });
@@ -120,6 +144,15 @@ export function useCreateProduct() {
         .single();
 
       if (error) throw error;
+
+      // Handle content insertion into separate table
+      if (data.content) {
+        await supabase.from('product_contents').insert({
+          product_id: newProduct.id,
+          content: data.content
+        });
+      }
+
       return mapProduct(newProduct);
     },
     onSuccess: () => {
@@ -146,9 +179,8 @@ export function useUpdateProduct() {
       if (data.type) dbData.type = data.type;
       if (data.genre) dbData.genre = data.genre;
       if (data.isPublished !== undefined) dbData.is_published = data.isPublished;
-      if (data.price) dbData.price = data.price;
+      if (data.price !== undefined) dbData.price = data.price;
       if (data.licenseType) dbData.license_type = data.licenseType;
-      if (data.content) dbData.content = data.content;
       // Physical fields
       if (data.stockQuantity !== undefined) dbData.stock_quantity = data.stockQuantity;
       if (data.weight !== undefined) dbData.weight = data.weight;
@@ -163,11 +195,25 @@ export function useUpdateProduct() {
         .single();
 
       if (error) throw error;
+
+      // Handle content update
+      if (data.content) {
+        const { error: contentError } = await supabase
+          .from('product_contents')
+          .upsert({
+            product_id: id,
+            content: data.content,
+            updated_at: new Date().toISOString()
+          });
+        if (contentError) console.error("Failed to update product content table", contentError);
+      }
+
       return mapProduct(updated);
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["product", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["product-content", variables.id] });
       toast({ title: "Product updated" });
     },
   });
@@ -189,5 +235,35 @@ export function useDeleteProduct() {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast({ title: "Product deleted" });
     },
+  });
+}
+
+export function useDownloadFile() {
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (fileUrl: string) => {
+      if (!fileUrl) throw new Error("No file available for download");
+
+      // fileUrl is e.g. "product-files/123/asset.zip"
+      // Cleanup URL if it contains the full path or just the name
+      const cleanUrl = fileUrl.replace(/.*\/storage\/v1\/object\/public\//, '');
+      const parts = cleanUrl.split('/');
+      const bucket = parts[0];
+      const path = parts.slice(1).join('/');
+
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .createSignedUrl(path, 60); // 60 seconds
+
+      if (error) throw error;
+      return data.signedUrl;
+    },
+    onSuccess: (url) => {
+      window.open(url, '_blank');
+    },
+    onError: (err: any) => {
+      toast({ title: "Download Failed", description: err.message, variant: "destructive" });
+    }
   });
 }

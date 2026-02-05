@@ -20,26 +20,16 @@ serve(async (req) => {
             throw new Error('Unauthorized: Missing token')
         }
 
-        const body = await req.json()
+        // 1. VERIFY JWT SIGNATURE (Official Way)
         const token = authHeader.replace('Bearer ', '');
-        let userId: string = '';
-        try {
-            const parts = token.split('.');
-            if (parts.length === 3) {
-                const payload = JSON.parse(atob(parts[1]));
-                userId = payload.sub || '';
-            }
-        } catch (e) {
-            console.error("Manual JWT parse failed", e)
+        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+        if (authError || !authUser) {
+            throw new Error('Unauthorized: Invalid or expired token');
         }
 
-        if (!userId) {
-            userId = req.headers.get('x-user-id') || body.userId || "";
-        }
-
-        if (!userId) throw new Error('Unauthorized: Invalid token')
-
-        if (!userId) throw new Error('Unauthorized')
+        const userId = authUser.id;
+        const body = await req.json();
 
         // Check if user is admin
         const { data: userData } = await supabaseAdmin.from('users').select('role').eq('id', userId).single()

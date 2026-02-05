@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
-import { useProducts, useCreateProduct, useDeleteProduct } from "@/hooks/use-products";
+import { useProducts, useCreateProduct, useDeleteProduct, useDownloadFile } from "@/hooks/use-products";
 import { useUser, useUpdateUser } from "@/hooks/use-users";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -1080,9 +1080,7 @@ function ReaderLibraryContent({ user }: { user: any }) {
                         </Button>
                       </Link>
                     ) : (
-                      <Button className="rounded-full bg-white text-black hover:bg-white/90 font-bold">
-                        <Download className="w-4 h-4 mr-2" /> Download
-                      </Button>
+                      <DownloadButton fileUrl={item.fileUrl} />
                     )}
                   </div>
                 </div>
@@ -1096,5 +1094,23 @@ function ReaderLibraryContent({ user }: { user: any }) {
         )}
       </div>
     </TabsContent>
+  );
+}
+function DownloadButton({ fileUrl }: { fileUrl: string }) {
+  const download = useDownloadFile();
+
+  return (
+    <Button
+      onClick={() => download.mutate(fileUrl)}
+      disabled={download.isPending}
+      className="rounded-full bg-white text-black hover:bg-white/90 font-bold"
+    >
+      {download.isPending ? (
+        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+      ) : (
+        <Download className="w-4 h-4 mr-2" />
+      )}
+      Download
+    </Button>
   );
 }

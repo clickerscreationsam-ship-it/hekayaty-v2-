@@ -13,45 +13,23 @@ serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         )
 
-        // Get maker ID from request
-        let makerId: string | null = null
+        // Get auth token
         const authHeader = req.headers.get('Authorization')
-
-        if (authHeader) {
-            // Try robust manual parsing first
-            try {
-                const token = authHeader.replace('Bearer ', '');
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                makerId = payload.sub;
-            } catch (e) {
-                // Fallback to strict client check
-                const supabaseClient = createClient(
-                    Deno.env.get('SUPABASE_URL') ?? '',
-                    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-                    { global: { headers: { Authorization: authHeader } } }
-                )
-                const { data: { user } } = await supabaseClient.auth.getUser()
-                makerId = user?.id ?? null
-            }
+        if (!authHeader) {
+            throw new Error('Unauthorized: Missing token')
         }
 
-        if (!makerId) {
-            makerId = req.headers.get('x-user-id')
+        const token = authHeader.replace('Bearer ', '');
+        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+        if (authError || !authUser) {
+            throw new Error('Unauthorized: Invalid session');
         }
 
-        if (!makerId) {
-            // Try body
-            const body = await req.json().catch(() => ({}))
-            if (body.makerId) makerId = body.makerId
-        }
+        const makerId = authUser.id;
 
-        // Final body parse if not done
+        // Parse body once
         const body = await req.json().catch(() => ({}))
-
-        if (!makerId) {
-            console.error('get-maker-orders: No makerID found in token or headers')
-            throw new Error('Unauthorized: No maker ID provided')
-        }
 
         // Check if user is admin
         const { data: userRecord } = await supabaseAdmin

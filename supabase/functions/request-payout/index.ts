@@ -23,61 +23,74 @@ serve(async (req: Request) => {
             )
         }
 
-        // Extract JWT token from Authorization header
-        const token = authHeader.replace('Bearer ', '');
-        console.log(`🔑 request-payout: Token length: ${token.length}, First 20 chars: ${token.substring(0, 20)}...`);
-
         // Create service role client
         const supabaseAdmin = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         )
 
-        // Manually decode JWT to extract user ID (bypass signature validation for now)
-        let userId: string;
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            userId = payload.sub;
-            console.log(`👤 request-payout: Extracted user ID from JWT: ${userId}`);
+        // Extract JWT token from Authorization header
+        const token = authHeader.replace('Bearer ', '');
 
-            // Verify user exists in database
-            const { data: user, error: userError } = await supabaseAdmin
-                .from('users')
-                .select('id')
-                .eq('id', userId)
-                .single()
+        // CRYPTOGRAPHICALLY VERIFY TOKEN
+        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
 
-            if (userError || !user) {
-                console.error("❌ request-payout: User not found in database", userError)
-                return new Response(
-                    JSON.stringify({
-                        error: 'User not found',
-                        details: userError?.message
-                    }),
-                    { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-                )
-            }
-
-            console.log(`✅ request-payout: User ${userId} verified successfully`)
-
-        } catch (jwtError) {
-            console.error("❌ request-payout: JWT decoding failed", jwtError)
+        if (authError || !authUser) {
+            console.error("❌ request-payout: JWT Verification failed", authError);
             return new Response(
-                JSON.stringify({
-                    error: 'Invalid token',
-                    details: (jwtError as Error).message
-                }),
+                JSON.stringify({ error: 'Unauthorized: Invalid session' }),
                 { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
+        }
+
+        const userId = authUser.id;
+        console.log(`✅ request-payout: User ${userId} verified cryptographically`);
+
+        // Check if user is a reader
+        const { data: userProfile } = await supabaseAdmin
+            .from('users')
+            .select('role')
+            .eq('id', userId)
+            .single()
+
+        if (userProfile?.role === 'reader') {
+            return new Response(
+                JSON.stringify({ error: 'Readers cannot request payouts. Only creators are eligible.' }),
+                { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
 
         const body = await req.json()
         const { amount, method = 'vodafone_cash', methodDetails } = body
 
-        console.log(`✅ request-payout: User ${userId} authenticated. Processing payout of ${amount} via ${method}`)
+        // 1. Calculate REAL balance from database (Source of truth)
+        const [
+            { data: earningsRecords },
+            { data: payouts }
+        ] = await Promise.all([
+            supabaseAdmin.from('earnings').select('amount').eq('creator_id', userId),
+            supabaseAdmin.from('payouts').select('amount, status').eq('user_id', userId)
+        ])
+
+        const totalNetEarnings = earningsRecords?.reduce((sum, r) => sum + (r.amount || 0), 0) || 0;
+        const totalPaidOut = payouts?.filter(p => p.status === 'processed').reduce((sum, p) => sum + p.amount, 0) || 0;
+        const pendingPayouts = payouts?.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0) || 0;
+
+        const availableBalance = totalNetEarnings - totalPaidOut - pendingPayouts;
+
+        console.log(`💰 Balance Check for ${userId}: Net=${totalNetEarnings}, Paid=${totalPaidOut}, Pending=${pendingPayouts}, Available=${availableBalance}`);
+
+        if (amount > availableBalance) {
+            return new Response(
+                JSON.stringify({
+                    error: 'Insufficient balance',
+                    details: `You requested ${amount} EGP but only have ${availableBalance} EGP available.`
+                }),
+                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
+        }
 
         const MIN_PAYOUT = 200 // 200 EGP
-
         if (amount < MIN_PAYOUT) {
             return new Response(
                 JSON.stringify({ error: `Minimum payout is ${MIN_PAYOUT} EGP` }),

@@ -35,15 +35,13 @@ export function usePendingOrders() {
                 }
 
                 console.log("✅ usePendingOrders: Final userId:", userId);
-                console.log("🚀 usePendingOrders: Calling Edge Function via FETCH with UserID:", userId);
-
                 const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-pending-orders`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                        'Authorization': `Bearer ${session?.access_token}`,
                     },
-                    body: JSON.stringify({})
+                    body: JSON.stringify({ status: 'pending' })
                 });
 
                 console.log("📡 usePendingOrders: Response status:", response.status);
@@ -190,13 +188,11 @@ export function useAdminSellers() {
                 userId = userData.user?.id;
             }
 
-            console.log("useAdminSellers: Calling Edge Function via FETCH with UserID:", userId);
-
             const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-sellers`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                    'Authorization': `Bearer ${session?.access_token}`,
                 },
                 body: JSON.stringify({})
             });
@@ -313,10 +309,9 @@ export function useAdminPayoutHistory() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-                    ...(userId ? { 'x-user-id': userId } : {})
+                    'Authorization': `Bearer ${session?.access_token}`,
                 },
-                body: JSON.stringify({ userId, status: 'all' })
+                body: JSON.stringify({ status: 'all' })
             });
 
             if (!response.ok) throw new Error("Failed to fetch payout history");
@@ -338,10 +333,9 @@ export function useAdminOrderHistory() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-                    ...(userId ? { 'x-user-id': userId } : {})
+                    'Authorization': `Bearer ${session?.access_token}`,
                 },
-                body: JSON.stringify({ userId, status: 'all' })
+                body: JSON.stringify({ status: 'all' })
             });
 
             if (!response.ok) throw new Error("Failed to fetch order history");

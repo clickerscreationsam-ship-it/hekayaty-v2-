@@ -12,7 +12,7 @@ serve(async (req: Request) => {
     try {
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) {
-            return new Response(JSON.stringify({ error: 'Missing auth' }), { status: 401, headers: corsHeaders })
+            throw new Error('Unauthorized: Missing token')
         }
 
         const token = authHeader.replace('Bearer ', '');
@@ -21,8 +21,13 @@ serve(async (req: Request) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         )
 
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const userId = payload.sub;
+        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+        if (authError || !authUser) {
+            throw new Error('Unauthorized: Invalid session');
+        }
+
+        const userId = authUser.id;
 
         // Fetch everything
         const [
