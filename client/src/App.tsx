@@ -19,6 +19,7 @@ import OrderTracking from "@/pages/OrderTracking";
 import WriterStudio from "@/pages/WriterStudio";
 
 import Writers from "@/pages/Writers";
+import Legal from "@/pages/Legal";
 
 function Router() {
   return (
@@ -38,6 +39,7 @@ function Router() {
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/book/:id" component={ProductDetails} />
       <Route path="/read/:id" component={ReadBook} />
+      <Route path="/legal" component={Legal} />
       <Route component={NotFound} />
     </Switch>
   );
