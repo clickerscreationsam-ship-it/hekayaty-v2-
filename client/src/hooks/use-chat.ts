@@ -31,19 +31,25 @@ export function useChat(storeId: string) {
     const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
         queryKey: ['chat-messages', storeId],
         queryFn: async () => {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('chat_messages')
                 .select(`
           *,
           sender:users!chat_messages_sender_id_fkey(username, display_name, avatar_url)
-        `)
-                .eq('store_id', storeId)
-                .order('created_at', { ascending: true });
+        `);
+
+            if (storeId === 'global') {
+                query = query.is('store_id', null);
+            } else {
+                query = query.eq('store_id', storeId);
+            }
+
+            const { data, error } = await query.order('created_at', { ascending: true });
 
             if (error) throw error;
             return data as ChatMessage[];
         },
-        enabled: !!storeId,
+        enabled: storeId !== undefined,
     });
 
     // Real-time Ultra-Speed Channel (Broadcast + DB)
@@ -69,7 +75,12 @@ export function useChat(storeId: string) {
             // 2. LISTEN FOR UPDATES/DELETES IN DB
             .on(
                 'postgres_changes',
-                { event: '*', schema: 'public', table: 'chat_messages', filter: `store_id=eq.${storeId}` },
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'chat_messages',
+                    filter: storeId === 'global' ? `store_id=is.null` : `store_id=eq.${storeId}`
+                },
                 (payload) => {
                     if (payload.eventType === 'DELETE') {
                         queryClient.setQueryData(['chat-messages', storeId], (old: ChatMessage[] | undefined) => {
@@ -101,7 +112,7 @@ export function useChat(storeId: string) {
             const tempId = crypto.randomUUID();
             const messageData = {
                 id: tempId,
-                store_id: storeId,
+                store_id: storeId === 'global' ? null : storeId,
                 sender_id: user.id,
                 content,
                 reply_to_id: replyToId || null,
@@ -128,7 +139,7 @@ export function useChat(storeId: string) {
                 .from('chat_messages')
                 .insert({
                     id: tempId,
-                    store_id: storeId,
+                    store_id: storeId === 'global' ? null : storeId,
                     sender_id: user.id,
                     content,
                     reply_to_id: replyToId || null,
@@ -146,7 +157,7 @@ export function useChat(storeId: string) {
 
             const optimisticMsg = {
                 id: 'temp-' + Date.now(),
-                store_id: storeId,
+                store_id: storeId === 'global' ? null : storeId,
                 sender_id: user?.id,
                 content: newMsg.content,
                 reply_to_id: newMsg.replyToId,
@@ -210,6 +221,25 @@ export function useChat(storeId: string) {
         },
     });
 
+    // Report message mutation
+    const reportMutation = useMutation({
+        mutationFn: async ({ messageId, reason }: { messageId: string; reason: string }) => {
+            if (!user) throw new Error('Unauthorized');
+            const { error } = await supabase
+                .from('chat_reports')
+                .insert({
+                    message_id: messageId,
+                    reporter_id: user.id,
+                    reason
+                });
+
+            if (error) throw error;
+        },
+        onSuccess: () => {
+            toast({ title: 'Report submitted', description: 'Thank you for keeping Hekayaty safe.' });
+        },
+    });
+
     return {
         messages,
         isLoading,
@@ -218,5 +248,6 @@ export function useChat(storeId: string) {
         isSending: sendMutation.isPending,
         deleteMessage: deleteMutation.mutateAsync,
         pinMessage: pinMutation.mutateAsync,
+        reportMessage: reportMutation.mutateAsync,
     };
 }

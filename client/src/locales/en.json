@@ -128,6 +128,23 @@
             "assets": "Design Assets"
         }
     },
+    "chat": {
+        "global": {
+            "title": "Community Hub",
+            "live": "Global Chat",
+            "placeholder": "Talk to the universe...",
+            "loginToChat": "Login to join the discussion"
+        },
+        "actions": {
+            "report": "Report Message",
+            "confirmReport": "Submit Report"
+        },
+        "report": {
+            "title": "Safe Community",
+            "description": "Why are you reporting this message?",
+            "reasonPlaceholder": "Reason (e.g. spam, offensive...)"
+        }
+    },
     "footer": {
         "aboutText": "Empowering storytellers to build their worlds and share them with the universe.",
         "quickLinks": "Platform",

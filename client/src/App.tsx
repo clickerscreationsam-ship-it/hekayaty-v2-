@@ -49,6 +49,8 @@ import { useEffect } from "react";
 import "./lib/i18n"; // Import i18n configuration
 import { useTranslation } from "react-i18next";
 
+import { GlobalChat } from "@/components/GlobalChat";
+
 function AppContent() {
   const { i18n } = useTranslation();
 
@@ -62,7 +64,12 @@ function AppContent() {
     }
   }, [i18n.language]);
 
-  return <Router />;
+  return (
+    <>
+      <Router />
+      <GlobalChat />
+    </>
+  );
 }
 
 function App() {
