@@ -150,7 +150,7 @@ export default function Dashboard() {
               <div className="glass-card rounded-2xl p-8 border border-border mb-8">
                 <div className="flex items-center gap-3 mb-6">
                   <Wallet className="w-6 h-6 text-primary" />
-                  <h2 className="text-2xl font-bold">Financial Overview</h2>
+                  <h2 className="text-2xl font-bold">{t("dashboard.financial")}</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -160,19 +160,19 @@ export default function Dashboard() {
                       <p className="text-sm font-medium">{t("dashboard.stats.lifetimeEarnings")}</p>
                     </div>
                     <p className="text-3xl font-bold font-serif">{earnings.totalEarnings} {t("common.egp")}</p>
-                    <p className="text-xs text-muted-foreground mt-2">Gross revenue after platform fee</p>
+                    <p className="text-xs text-muted-foreground mt-2">{t("dashboard.stats.lifetimeEarnings_desc")}</p>
                   </div>
 
                   <div className="p-6 rounded-xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20">
                     <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-2">{t("dashboard.stats.availableBalance")}</p>
                     <p className="text-3xl font-bold font-serif">{earnings.currentBalance} {t("common.egp")}</p>
-                    <p className="text-xs text-muted-foreground mt-2">Ready for payout</p>
+                    <p className="text-xs text-muted-foreground mt-2">{t("dashboard.stats.availableBalance_desc")}</p>
                   </div>
 
                   <div className="p-6 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20">
                     <p className="text-sm font-medium text-purple-600 dark:text-purple-400 mb-2">{t("dashboard.stats.platformFees")}</p>
                     <p className="text-3xl font-bold font-serif text-muted-foreground">{totalCommission} {t("common.egp")}</p>
-                    <p className="text-xs text-muted-foreground mt-2">Commission Deducted</p>
+                    <p className="text-xs text-muted-foreground mt-2">{t("dashboard.stats.platformFees_desc")}</p>
                   </div>
                 </div>
 
@@ -195,12 +195,12 @@ export default function Dashboard() {
             <div className="grid gap-6">
               <div className="glass-card rounded-2xl p-6 border border-border flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-bold font-serif mb-1">Your Wallet</h2>
-                  <p className="text-muted-foreground">Manage your earnings and payouts.</p>
+                  <h2 className="text-2xl font-bold font-serif mb-1">{t("dashboard.wallet.title")}</h2>
+                  <p className="text-muted-foreground">{t("dashboard.wallet.subtitle")}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground mb-1">Available Balance</p>
-                  <p className="text-4xl font-bold font-serif text-primary">{earnings.currentBalance} EGP</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t("dashboard.wallet.balance")}</p>
+                  <p className="text-4xl font-bold font-serif text-primary">{earnings.currentBalance} {t("common.egp")}</p>
                 </div>
               </div>
 
@@ -218,10 +218,10 @@ export default function Dashboard() {
                 <Table>
                   <TableHeader className="bg-white/5">
                     <TableRow className="border-white/10 hover:bg-transparent">
-                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Date Requested</TableHead>
-                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Amount</TableHead>
-                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Method</TableHead>
-                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Status</TableHead>
+                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">{t("orderTracking.date")}</TableHead>
+                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">{t("orderTracking.total")}</TableHead>
+                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">{t("dashboard.wallet.payoutMethod")}</TableHead>
+                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">{t("orderTracking.status")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -258,14 +258,14 @@ export default function Dashboard() {
               <div className="glass-card rounded-2xl p-0 border border-white/10 overflow-hidden shadow-2xl mt-4">
                 <div className="p-6 bg-white/5 border-b border-white/5 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-green-500" />
-                  <h3 className="text-xl font-bold text-gradient">Recent Earnings</h3>
+                  <h3 className="text-xl font-bold text-gradient">{t("dashboard.wallet.recent")}</h3>
                 </div>
                 <Table>
                   <TableHeader className="bg-white/5">
                     <TableRow className="border-white/10 hover:bg-transparent">
-                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Date</TableHead>
-                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Order</TableHead>
-                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Amount</TableHead>
+                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">{t("orderTracking.date")}</TableHead>
+                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">{t("orderTracking.orderId")}</TableHead>
+                      <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">{t("orderTracking.total")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -280,7 +280,7 @@ export default function Dashboard() {
                       <TableRow>
                         <TableCell colSpan={3} className="text-center py-20 text-muted-foreground">
                           <Wallet className="w-12 h-12 mx-auto mb-4 opacity-10" />
-                          <p className="font-medium text-lg">No earnings found yet.</p>
+                          <p className="font-medium text-lg">{t("dashboard.wallet.noRecent")}</p>
                         </TableCell>
                       </TableRow>
                     )}
@@ -329,11 +329,11 @@ export default function Dashboard() {
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <BarChart className="w-4 h-4" />
-                          {((product as any).salesCount || (product as any).sales_count || 0)} Sold
+                          {((product as any).salesCount || (product as any).sales_count || 0)} {t("dashboard.products.sold")}
                         </span>
                         <span className="flex items-center gap-1 font-medium text-green-600">
                           <DollarSign className="w-4 h-4" />
-                          {(product.price * ((product as any).salesCount || (product as any).sales_count || 0))} EGP Rev
+                          {(product.price * ((product as any).salesCount || (product as any).sales_count || 0))} {t("common.egp")} {t("dashboard.products.revenue")}
                         </span>
                       </div>
                       <div className="flex gap-2">
@@ -344,7 +344,7 @@ export default function Dashboard() {
                           variant="destructive"
                           size="icon"
                           onClick={() => {
-                            if (confirm("Are you sure you want to delete this product?")) {
+                            if (confirm(t("dashboard.products.deleteConfirm"))) {
                               deleteProduct.mutate(product.id);
                             }
                           }}
@@ -358,7 +358,7 @@ export default function Dashboard() {
 
                   {(!products || products.length === 0) && (
                     <div className="text-center py-12 text-muted-foreground">
-                      You haven't published any products yet.
+                      {t("dashboard.products.noProducts")}
                     </div>
                   )}
                 </div>
@@ -371,8 +371,8 @@ export default function Dashboard() {
               <div className="flex items-center gap-3 mb-6">
                 <Truck className="w-6 h-6 text-amber-500" />
                 <div>
-                  <h2 className="text-xl font-bold">Shipping Settings</h2>
-                  <p className="text-muted-foreground text-sm">Manage your shipping rates and zones.</p>
+                  <h2 className="text-xl font-bold">{t("dashboard.shipping.title")}</h2>
+                  <p className="text-muted-foreground text-sm">{t("dashboard.shipping.subtitle")}</p>
                 </div>
               </div>
               {user && <ShippingSettings userId={user.id} />}
@@ -389,18 +389,17 @@ export default function Dashboard() {
                 {/* Welcome message for new users */}
                 {user.role !== 'reader' && (
                   <div className="glass-card rounded-2xl p-6 border border-primary/20 mb-6 bg-gradient-to-r from-primary/5 to-accent/5">
-                    <h3 className="text-xl font-bold mb-2">✨ Welcome to Your Creator Dashboard!</h3>
+                    <h3 className="text-xl font-bold mb-2">{t("dashboard.welcome_creator")}</h3>
                     <p className="text-muted-foreground">
-                      Customize your store below to create a unique brand identity.
-                      Choose your theme colors, fonts, and layout to make your store stand out!
+                      {t("dashboard.welcome_creator_desc")}
                     </p>
                   </div>
                 )}
                 {user.role === 'reader' && (
                   <div className="glass-card rounded-2xl p-6 border border-primary/20 mb-6 bg-gradient-to-r from-primary/5 to-accent/5">
-                    <h3 className="text-xl font-bold mb-2">👋 Welcome to Your Profile!</h3>
+                    <h3 className="text-xl font-bold mb-2">{t("dashboard.welcome_reader")}</h3>
                     <p className="text-muted-foreground">
-                      Manage your account settings and personalize your reading experience.
+                      {t("dashboard.welcome_reader_desc")}
                     </p>
                   </div>
                 )}
@@ -811,20 +810,20 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                   }
                 }}
               >
-                <option value="ebook">E-Book / Novel</option>
-                <option value="physical">Physical Book</option>
-                <option value="asset">Design Asset</option>
+                <option value="ebook">{t("dashboard.products.types.ebook")}</option>
+                <option value="physical">{t("dashboard.products.types.physical")}</option>
+                <option value="asset">{t("dashboard.products.types.asset")}</option>
               </select>
             </div>
 
             {type === "physical" && (
               <div className="col-span-2 grid grid-cols-2 gap-4 p-4 rounded-lg bg-muted/30 border border-border">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Stock Quantity</label>
+                  <label className="text-sm font-medium">{t("dashboard.products.stock")}</label>
                   <Input type="number" {...register("stockQuantity")} placeholder="e.g. 50" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Weight (grams)</label>
+                  <label className="text-sm font-medium">{t("dashboard.products.weight")}</label>
                   <Input type="number" step="10" {...register("weight")} placeholder="e.g. 500" />
                 </div>
                 <div className="flex items-center space-x-2 col-span-2 pt-2">
@@ -833,10 +832,10 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                     defaultChecked={true}
                     onCheckedChange={(c) => setValue("requiresShipping", c as boolean)}
                   />
-                  <label htmlFor="ship" className="text-sm font-medium">Requires Shipping</label>
+                  <label htmlFor="ship" className="text-sm font-medium">{t("dashboard.products.requiresShipping")}</label>
                 </div>
                 <p className="text-[10px] text-amber-500 col-span-2 italic">
-                  💡 Don't forget to set your delivery zones and rates in the <span className="font-bold">Shipping tab</span> after publishing.
+                  💡 {t("dashboard.products.shippingNote")}
                 </p>
               </div>
             )}
@@ -857,7 +856,7 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                       onClick={() => setShowImmersiveEditor(true)}
                     >
                       <PenTool className="w-3.5 h-3.5" />
-                      Immersive Writer Mode
+                      {t("dashboard.products.immersiveMode")}
                     </Button>
                   </label>
                   <Input
@@ -866,15 +865,15 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                     onChange={handleFileExtract}
                     disabled={isExtracting}
                   />
-                  {isExtracting && <p className="text-xs text-blue-500 animate-pulse">Extracting text from chapters...</p>}
+                  {isExtracting && <p className="text-xs text-blue-500 animate-pulse">{t("dashboard.products.extracting")}</p>}
                   {extractError && <p className="text-xs text-red-500">{extractError}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium mb-1 block">Content Preview & Editor:</label>
+                  <label className="text-sm font-medium mb-1 block">{t("dashboard.products.contentPreview")}</label>
                   <Textarea
                     {...register("content")}
-                    placeholder="Extracted text will appear here. You can also paste your story directly."
+                    placeholder={t("dashboard.products.contentPlaceholder")}
                     className="h-64 font-serif text-base leading-relaxed bg-background/50"
                   />
                 </div>
@@ -882,18 +881,18 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
             )}
 
             <div className="space-y-2 col-span-2">
-              <label className="text-sm font-medium">Title</label>
-              <Input {...register("title")} placeholder="Title of your work" />
+              <label className="text-sm font-medium">{t("dashboard.products.workTitle")}</label>
+              <Input {...register("title")} placeholder={t("dashboard.products.workTitlePlaceholder")} />
               {errors.title && <p className="text-red-500 text-xs">{String(errors.title.message)}</p>}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Genre / Category</label>
-              <Input {...register("genre")} placeholder={type === "asset" ? "Icons, Textures..." : "Fantasy, Sci-Fi..."} />
+              <label className="text-sm font-medium">{t("dashboard.products.genre")}</label>
+              <Input {...register("genre")} placeholder={type === "asset" ? "Icons, Textures..." : t("dashboard.products.genrePlaceholder")} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Price (EGP)</label>
+              <label className="text-sm font-medium">{t("dashboard.products.price")}</label>
               <div className="flex items-center gap-4">
                 <Input
                   type="number"
@@ -918,27 +917,27 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                     htmlFor="free-product"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                   >
-                    Free Product
+                    {t("dashboard.products.free")}
                   </label>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">{isFree ? "This product will be free due to 'Free Product' selection." : "Example: 50 = 50 EGP"}</p>
+              <p className="text-xs text-muted-foreground">{isFree ? t("dashboard.products.freeNote") : t("dashboard.products.priceExample")}</p>
             </div>
 
             {type === "asset" && (
               <div className="space-y-2 col-span-2">
-                <label className="text-sm font-medium">Default License</label>
+                <label className="text-sm font-medium">{t("dashboard.products.license")}</label>
                 <select {...register("licenseType")} className="w-full p-2 rounded-md border bg-background">
-                  <option value="personal">Personal Use</option>
-                  <option value="commercial">Commercial Use</option>
-                  <option value="extended">Extended Commercial</option>
+                  <option value="personal">{t("dashboard.products.licenseOptions.personal")}</option>
+                  <option value="commercial">{t("dashboard.products.licenseOptions.commercial")}</option>
+                  <option value="extended">{t("dashboard.products.licenseOptions.extended")}</option>
                 </select>
               </div>
             )}
 
             <div className="space-y-2 col-span-2">
               <CloudinaryUpload
-                label="Cover Image"
+                label={t("dashboard.products.cover")}
                 aspectRatio="square"
                 folder="hekayaty_covers"
                 onUpload={(url) => setValue("coverUrl", url)}
@@ -948,8 +947,8 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
             </div>
 
             <div className="space-y-2 col-span-2">
-              <label className="text-sm font-medium">Description</label>
-              <Textarea {...register("description")} className="h-32" placeholder="Describe your masterpiece..." />
+              <label className="text-sm font-medium">{t("dashboard.products.description")}</label>
+              <Textarea {...register("description")} className="h-32" placeholder={t("dashboard.products.descriptionPlaceholder")} />
             </div>
           </div>
 
@@ -963,14 +962,14 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
               onClick={handleSubmit((data) => performSubmit(data, false))}
               disabled={createProduct.isPending}
             >
-              {createProduct.isPending ? t("common.saving") : "Save as Draft"}
+              {createProduct.isPending ? t("common.saving") : t("dashboard.products.saveDraft")}
             </Button>
             <Button
               type="submit"
               disabled={createProduct.isPending}
               className="bg-primary hover:bg-primary/90 text-white font-bold px-8 shadow-lg shadow-primary/20"
             >
-              {createProduct.isPending ? t("common.processing") : "Publish Item"}
+              {createProduct.isPending ? t("common.processing") : t("dashboard.products.publishItem")}
             </Button>
           </div>
         </form>
@@ -981,16 +980,16 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
             <div className="p-4 border-b border-border flex justify-between items-center bg-muted/30">
               <div className="flex items-center gap-4">
                 <Button variant="ghost" onClick={() => setShowImmersiveEditor(false)}>
-                  <ChevronLeft className="w-5 h-5 mr-1" /> Back to Dashboard
+                  <ChevronLeft className="w-5 h-5 mr-1" /> {t("dashboard.studio_overlay.back")}
                 </Button>
-                <h2 className="text-xl font-serif font-bold italic text-primary">Hekayaty Writer Studio</h2>
+                <h2 className="text-xl font-serif font-bold italic text-primary">{t("dashboard.studio_overlay.title")}</h2>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground mr-4">
-                  Words: {watch("content")?.trim() ? watch("content")?.split(/\s+/).length : 0}
+                  {t("studio.words")}: {watch("content")?.trim() ? watch("content")?.split(/\s+/).length : 0}
                 </span>
                 <Button onClick={() => setShowImmersiveEditor(false)} className="bg-primary text-white font-bold">
-                  Save Changes
+                  {t("dashboard.studio_overlay.save")}
                 </Button>
               </div>
             </div>
@@ -999,13 +998,13 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                 <Textarea
                   value={watch("content")}
                   onChange={(e) => setValue("content", e.target.value)}
-                  placeholder="Once upon a time in a world far away..."
+                  placeholder={t("dashboard.studio_overlay.placeholder")}
                   className="w-full h-full text-xl md:text-2xl font-serif leading-relaxed resize-none p-12 bg-card border-none focus-visible:ring-0 shadow-2xl rounded-2xl placeholder:italic placeholder:opacity-30"
                 />
               </div>
             </div>
             <div className="p-4 border-t border-border text-center text-xs text-muted-foreground bg-muted/30 uppercase tracking-widest">
-              Magic happens when you write. Keep going.
+              {t("dashboard.studio_overlay.footer")}
             </div>
           </div>
         )}
@@ -1034,18 +1033,18 @@ function ReaderLibraryContent({ user }: { user: any }) {
       <div className="glass-card rounded-2xl p-8 border border-border">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-2xl font-bold font-serif mb-2">My Library</h2>
-            <p className="text-muted-foreground">Your collection of stories and assets.</p>
+            <h2 className="text-2xl font-bold font-serif mb-2">{t("dashboard.library.title")}</h2>
+            <p className="text-muted-foreground">{t("dashboard.library.subtitle")}</p>
           </div>
           <div className="flex gap-2">
             <Link href="/orders">
               <Button variant="outline" className="gap-2 border-primary/20 hover:bg-primary/5 hover:text-primary">
-                <Truck className="w-4 h-4" /> Track Orders
+                <Truck className="w-4 h-4" /> {t("dashboard.library.track_orders")}
               </Button>
             </Link>
             <Link href="/marketplace">
               <Button variant="outline" className="gap-2">
-                <ShoppingBag className="w-4 h-4" /> Browse Store
+                <ShoppingBag className="w-4 h-4" /> {t("dashboard.library.browse_store")}
               </Button>
             </Link>
           </div>
@@ -1054,12 +1053,12 @@ function ReaderLibraryContent({ user }: { user: any }) {
         {uniqueItems.length === 0 ? (
           <div className="text-center py-20 rounded-xl bg-muted/20 border border-dashed border-border/50">
             <BookOpen className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
-            <h3 className="text-xl font-bold mb-2">Your library is empty</h3>
+            <h3 className="text-xl font-bold mb-2">{t("dashboard.library.empty")}</h3>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              You haven't purchased any stories yet. Explore the marketplace to find your next adventure.
+              {t("dashboard.library.empty_desc")}
             </p>
             <Link href="/marketplace">
-              <Button className="bg-primary hover:bg-primary/90">Start Exploring</Button>
+              <Button className="bg-primary hover:bg-primary/90">{t("dashboard.library.start_exploring")}</Button>
             </Link>
           </div>
         ) : (
@@ -1076,7 +1075,7 @@ function ReaderLibraryContent({ user }: { user: any }) {
                     {item.type === 'ebook' ? (
                       <Link href={`/read/${item.id}`}>
                         <Button className="rounded-full bg-white text-black hover:bg-white/90 font-bold">
-                          <BookOpen className="w-4 h-4 mr-2" /> Read
+                          <BookOpen className="w-4 h-4 mr-2" /> {t("common.read")}
                         </Button>
                       </Link>
                     ) : (
@@ -1097,6 +1096,7 @@ function ReaderLibraryContent({ user }: { user: any }) {
   );
 }
 function DownloadButton({ fileUrl }: { fileUrl: string }) {
+  const { t } = useTranslation();
   const download = useDownloadFile();
 
   return (
@@ -1110,7 +1110,7 @@ function DownloadButton({ fileUrl }: { fileUrl: string }) {
       ) : (
         <Download className="w-4 h-4 mr-2" />
       )}
-      Download
+      {t("common.download")}
     </Button>
   );
 }

@@ -101,7 +101,7 @@ export default function WriterStudio() {
                     <div className="p-6 border-b border-white/5">
                         <h2 className="text-xl font-serif font-bold text-gradient flex items-center gap-2">
                             <PenTool className="w-5 h-5" />
-                            Writer Studio
+                            {t("studio.title")}
                         </h2>
                     </div>
 
@@ -113,11 +113,11 @@ export default function WriterStudio() {
                             disabled={createProduct.isPending}
                         >
                             {createProduct.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
-                            {createProduct.isPending ? "Starting Journey..." : "Create New Journey"}
+                            {createProduct.isPending ? t("studio.starting") : t("studio.createNew")}
                         </Button>
 
                         <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2 mb-4">
-                            Your Masterpieces
+                            {t("studio.masterpieces")}
                         </div>
 
                         {productsLoading ? (
@@ -136,7 +136,7 @@ export default function WriterStudio() {
                                 <div className="font-bold truncate pr-6">{p.title}</div>
                                 <div className="text-xs opacity-50 flex items-center gap-2 mt-1">
                                     <div className={cn("w-2 h-2 rounded-full", p.isPublished ? "bg-green-500" : "bg-amber-500")} />
-                                    {p.isPublished ? "Published" : "Draft"} • {p.genre}
+                                    {p.isPublished ? t("studio.published_simple") : t("studio.draft_simple")} • {p.genre}
                                 </div>
                                 {selectedId === p.id && (
                                     <motion.div
@@ -153,7 +153,7 @@ export default function WriterStudio() {
                     <div className="p-4 border-t border-white/5 text-center">
                         <Link href="/dashboard">
                             <Button variant="ghost" className="w-full gap-2 text-muted-foreground hover:text-white">
-                                <ChevronLeft className="w-4 h-4" /> Exit Studio
+                                <ChevronLeft className="w-4 h-4" /> {t("studio.exit")}
                             </Button>
                         </Link>
                     </div>
@@ -167,10 +167,10 @@ export default function WriterStudio() {
                                 <div className="w-24 h-24 bg-primary/10 text-primary rounded-3xl flex items-center justify-center mx-auto ring-1 ring-primary/20">
                                     <Book className="w-12 h-12" />
                                 </div>
-                                <h2 className="text-3xl font-serif font-bold">Select a Story</h2>
-                                <p className="text-muted-foreground">Choose a novel from the sidebar to start writing or refine its appearance.</p>
+                                <h2 className="text-3xl font-serif font-bold">{t("studio.selectStory")}</h2>
+                                <p className="text-muted-foreground">{t("studio.selectDescription")}</p>
                                 <Link href="/dashboard">
-                                    <Button className="bg-primary text-white px-8">Return to Dashboard</Button>
+                                    <Button className="bg-primary text-white px-8">{t("studio.returnDashboard")}</Button>
                                 </Link>
                             </div>
                         </div>
@@ -187,7 +187,7 @@ export default function WriterStudio() {
                                     <div>
                                         <h1 className="font-serif font-bold text-xl">{currentProduct.title}</h1>
                                         <p className="text-xs text-muted-foreground uppercase tracking-widest leading-none mt-0.5">
-                                            {currentProduct.isPublished ? "Public Marketplace" : "Draft Mode"}
+                                            {currentProduct.isPublished ? t("studio.public") : t("studio.draft")}
                                         </p>
                                     </div>
                                 </div>
@@ -195,9 +195,9 @@ export default function WriterStudio() {
                                 <div className="flex items-center gap-4">
                                     <Tabs value={activeTab} onValueChange={setActiveTab} className="bg-white/5 p-1 rounded-full">
                                         <TabsList className="bg-transparent h-8 border-none p-0">
-                                            <TabsTrigger value="write" className="rounded-full px-4 text-xs">Write</TabsTrigger>
-                                            <TabsTrigger value="appearance" className="rounded-full px-4 text-xs">Appearance</TabsTrigger>
-                                            <TabsTrigger value="market" className="rounded-full px-4 text-xs">Market</TabsTrigger>
+                                            <TabsTrigger value="write" className="rounded-full px-4 text-xs">{t("studio.tabs.write")}</TabsTrigger>
+                                            <TabsTrigger value="appearance" className="rounded-full px-4 text-xs">{t("studio.tabs.appearance")}</TabsTrigger>
+                                            <TabsTrigger value="market" className="rounded-full px-4 text-xs">{t("studio.tabs.market")}</TabsTrigger>
                                         </TabsList>
                                     </Tabs>
 
@@ -205,7 +205,7 @@ export default function WriterStudio() {
 
                                     <Link href={`/read/${selectedId}`} className="hidden sm:block">
                                         <Button variant="outline" size="sm" className="gap-2 rounded-full border-white/10 hover:bg-white/5">
-                                            <Eye className="w-4 h-4" /> Preview
+                                            <Eye className="w-4 h-4" /> {t("studio.preview")}
                                         </Button>
                                     </Link>
 
@@ -227,7 +227,7 @@ export default function WriterStudio() {
                                                 <Textarea
                                                     value={content}
                                                     onChange={(e) => setContent(e.target.value)}
-                                                    placeholder="Once upon a time..."
+                                                    placeholder={t("studio.placeholder")}
                                                     className={cn(
                                                         "flex-grow min-h-[70vh] text-xl leading-relaxed resize-none bg-transparent border-none focus-visible:ring-0 p-0 selection:bg-primary/20",
                                                         appSettings.fontFamily === 'serif' ? 'font-serif' : 'font-sans'
@@ -239,8 +239,8 @@ export default function WriterStudio() {
                                                     dir="auto"
                                                 />
                                                 <div className="mt-12 py-6 border-t border-white/5 flex justify-between items-center text-xs text-muted-foreground uppercase tracking-widest">
-                                                    <span>Words: {content?.trim() ? content.split(/\s+/).length : 0}</span>
-                                                    <span>Auto-save enabled</span>
+                                                    <span>{t("studio.words")}: {content?.trim() ? content.split(/\s+/).length : 0}</span>
+                                                    <span>{t("studio.autosave")}</span>
                                                 </div>
                                             </motion.div>
                                         )}
@@ -253,7 +253,7 @@ export default function WriterStudio() {
                                                 className="max-w-4xl mx-auto p-12 space-y-12"
                                             >
                                                 <section>
-                                                    <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-6">Reader Themes</h3>
+                                                    <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-6">{t("studio.appearance.themes")}</h3>
                                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                                                         {['light', 'dark', 'sepia', 'fantasy'].map((t) => (
                                                             <button
@@ -276,10 +276,10 @@ export default function WriterStudio() {
                                                 </section>
 
                                                 <section>
-                                                    <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-6">Typography</h3>
+                                                    <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-6">{t("studio.appearance.typography")}</h3>
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                                                         <div className="space-y-4">
-                                                            <label className="text-xs font-medium text-muted-foreground mr-4">Font Family</label>
+                                                            <label className="text-xs font-medium text-muted-foreground mr-4">{t("studio.appearance.fontFamily")}</label>
                                                             <div className="flex gap-2">
                                                                 <Button
                                                                     variant={appSettings.fontFamily === 'serif' ? 'default' : 'outline'}
@@ -287,7 +287,7 @@ export default function WriterStudio() {
                                                                     className="rounded-full"
                                                                     onClick={() => setAppSettings({ ...appSettings, fontFamily: 'serif' })}
                                                                 >
-                                                                    Serif (Classic)
+                                                                    {t("studio.appearance.serif")}
                                                                 </Button>
                                                                 <Button
                                                                     variant={appSettings.fontFamily === 'sans' ? 'default' : 'outline'}
@@ -295,13 +295,13 @@ export default function WriterStudio() {
                                                                     className="rounded-full"
                                                                     onClick={() => setAppSettings({ ...appSettings, fontFamily: 'sans' })}
                                                                 >
-                                                                    Sans (Modern)
+                                                                    {t("studio.appearance.sans")}
                                                                 </Button>
                                                             </div>
                                                         </div>
 
                                                         <div className="space-y-4">
-                                                            <label className="text-xs font-medium text-muted-foreground mb-2 block">Font Size ({appSettings.fontSize}px)</label>
+                                                            <label className="text-xs font-medium text-muted-foreground mb-2 block">{t("studio.appearance.fontSize")} ({appSettings.fontSize}px)</label>
                                                             <input
                                                                 type="range"
                                                                 min="12"
@@ -316,7 +316,7 @@ export default function WriterStudio() {
 
                                                 <div className="p-8 rounded-2xl bg-primary/5 border border-primary/20">
                                                     <h4 className="text-sm font-bold mb-4 flex items-center gap-2">
-                                                        <Eye className="w-4 h-4 text-primary" /> Live Style Preview
+                                                        <Eye className="w-4 h-4 text-primary" /> {t("studio.appearance.previewTitle")}
                                                     </h4>
                                                     <div className={cn(
                                                         "p-6 rounded-xl border border-white/5 h-48 overflow-hidden",
@@ -325,7 +325,7 @@ export default function WriterStudio() {
                                                                 'bg-white text-gray-950',
                                                         appSettings.fontFamily === 'serif' ? 'font-serif' : 'font-sans'
                                                     )} style={{ fontSize: `${appSettings.fontSize}px`, lineHeight: appSettings.lineHeight }}>
-                                                        This is a preview of how your readers will see your masterpiece. You can customize the font, size, and ambient themes to match the mood of your story.
+                                                        {t("studio.appearance.previewText")}
                                                     </div>
                                                 </div>
                                             </motion.div>
@@ -340,27 +340,27 @@ export default function WriterStudio() {
                                             >
                                                 <section className="grid grid-cols-1 sm:grid-cols-2 gap-12">
                                                     <div className="space-y-6">
-                                                        <h3 className="text-sm font-bold uppercase tracking-widest text-primary">Market Identity</h3>
+                                                        <h3 className="text-sm font-bold uppercase tracking-widest text-primary">{t("studio.market.identity")}</h3>
                                                         <div className="space-y-4">
                                                             <div className="space-y-2">
-                                                                <label className="text-xs font-bold text-muted-foreground uppercase">Story Title</label>
+                                                                <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.title")}</label>
                                                                 <Input defaultValue={currentProduct.title} className="bg-white/5 border-white/10" />
                                                             </div>
                                                             <div className="space-y-2">
-                                                                <label className="text-xs font-bold text-muted-foreground uppercase">Genre</label>
+                                                                <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.genre")}</label>
                                                                 <Input defaultValue={currentProduct.genre} className="bg-white/5 border-white/10" />
                                                             </div>
                                                             <div className="space-y-2">
-                                                                <label className="text-xs font-bold text-muted-foreground uppercase">Pricing (EGP)</label>
+                                                                <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.price")}</label>
                                                                 <Input type="number" defaultValue={currentProduct.price} className="bg-white/5 border-white/10" />
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div className="space-y-6">
-                                                        <h3 className="text-sm font-bold uppercase tracking-widest text-primary">Cover Imagery</h3>
+                                                        <h3 className="text-sm font-bold uppercase tracking-widest text-primary">{t("studio.market.cover")}</h3>
                                                         <CloudinaryUpload
-                                                            label="Public Book Cover"
+                                                            label={t("studio.market.coverLabel")}
                                                             defaultImage={currentProduct.coverUrl}
                                                             folder="hekayaty_covers"
                                                             onUpload={(url) => console.log(url)}
@@ -378,11 +378,11 @@ export default function WriterStudio() {
                                                                 {currentProduct.isPublished ? <CheckCircle2 className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
                                                             </div>
                                                             <div>
-                                                                <h4 className="font-bold">{currentProduct.isPublished ? "Publicly Listed" : "Story in Draft Mode"}</h4>
+                                                                <h4 className="font-bold">{currentProduct.isPublished ? t("studio.market.status.publicTitle") : t("studio.market.status.draftTitle")}</h4>
                                                                 <p className="text-xs text-muted-foreground">
                                                                     {currentProduct.isPublished
-                                                                        ? "Your story is visible to thousands of readers in the marketplace."
-                                                                        : "Your story is only visible to you. Complete your first chapter to publish!"}
+                                                                        ? t("studio.market.status.publicDesc")
+                                                                        : t("studio.market.status.draftDesc")}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -403,6 +403,7 @@ export default function WriterStudio() {
 }
 
 function SaveButton({ product, content, appearanceSettings }: any) {
+    const { t } = useTranslation();
     const updateProduct = useUpdateProduct();
     const [saved, setSaved] = useState(false);
 
@@ -429,12 +430,13 @@ function SaveButton({ product, content, appearanceSettings }: any) {
             )}
         >
             {updateProduct.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-            {saved ? "Saved" : "Save Journey"}
+            {saved ? t("studio.saved") : t("studio.save")}
         </Button>
     );
 }
 
 function PublishToggle({ product }: any) {
+    const { t } = useTranslation();
     const updateProduct = useUpdateProduct();
     const isPublished = product.is_published;
 
@@ -448,7 +450,7 @@ function PublishToggle({ product }: any) {
                 isPublished ? "border-red-500/20 text-red-500 hover:bg-red-500/5 hover:border-red-500/50" : "bg-primary text-white"
             )}
         >
-            {isPublished ? "Take Offline" : "Publish to Market"}
+            {isPublished ? t("studio.market.offline") : t("studio.market.publish")}
         </Button>
     );
 }

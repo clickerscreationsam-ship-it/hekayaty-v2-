@@ -5,7 +5,9 @@
         "cancel": "Cancel",
         "save": "Save Changes",
         "saving": "Saving...",
-        "processing": "Processing..."
+        "processing": "Processing...",
+        "read": "Read",
+        "download": "Download"
     },
     "loading": "Loading...",
     "nav": {
@@ -41,18 +43,36 @@
             "orders": "Orders",
             "wallet": "Wallet",
             "shipping": "Shipping",
-            "branding": "Store Branding",
+            "branding": "Store Settings",
             "chat": "Store Chat"
         },
+        "welcome_reader": "👋 Welcome to Your Profile!",
+        "welcome_reader_desc": "Manage your account settings and personalize your reading experience.",
+        "welcome_creator": "✨ Welcome to Your Creator Dashboard!",
+        "welcome_creator_desc": "Customize your store below to create a unique brand identity. Choose your theme colors, fonts, and layout to make your store stand out!",
+        "financial": "Financial Overview",
         "stats": {
             "totalProducts": "Total Products",
             "totalUnitsSold": "Total Units Sold",
             "grossSales": "Gross Sales",
             "netEarnings": "Net Earnings",
             "lifetimeEarnings": "Lifetime Earnings",
+            "lifetimeEarnings_desc": "Gross revenue after platform fee",
             "availableBalance": "Available Balance",
+            "availableBalance_desc": "Ready for payout",
             "platformFees": "Platform Fees",
-            "platformEconomics": "Platform Economics: You keep 80% of every sale. Upgrade to VIP to keep more."
+            "platformFees_desc": "Commission Deducted",
+            "platformEconomics": "💡 Platform Economics: Our platform thrives with a community-first approach. Your success is our mission!"
+        },
+        "library": {
+            "title": "My Library",
+            "subtitle": "Your collection of stories and assets.",
+            "empty": "Your library is empty",
+            "empty_desc": "You haven't purchased any stories yet. Explore the marketplace to find your next adventure.",
+            "start_exploring": "Start Exploring",
+            "track_orders": "Track Orders",
+            "browse_store": "Browse Store",
+            "loading": "Loading library..."
         },
         "wallet": {
             "title": "Wallet & Payouts",
@@ -60,13 +80,30 @@
             "requestPayout": "Request Payout",
             "payoutHistory": "Payout History",
             "noPayouts": "No payout history found.",
+            "recent": "Recent Earnings",
+            "noRecent": "No earnings found yet.",
             "payoutMethod": "Payout Method",
             "submitRequest": "Submit Request",
-            "payoutNote": "Choose your preferred method and transfer your earnings.",
+            "payoutNote": "Withdrawals are processed within 2-5 business days. Minimum payout is 200 EGP.",
+            "errors": {
+                "invalidAmount": "Please enter a valid amount.",
+                "insufficient": "Insufficient balance.",
+                "minimum": "Minimum payout is 200 EGP",
+                "noDetails": "Please provide payment details."
+            },
+            "methods": {
+                "vodafoneCash": "Vodafone Cash",
+                "instapay": "InstaPay",
+                "bankTransfer": "Bank Transfer (Visa/Mastercard)",
+                "orangeMoney": "Orange Money",
+                "etisalatCash": "Etisalat Cash"
+            },
             "details": {
-                "instapay": "InstaPay Address",
-                "bank": "Account Number / IBAN",
-                "phone": "Phone Number"
+                "instapay": "InstaPay Address (IPA)",
+                "bank": "Bank Details (IBAN & Full Name)",
+                "phone": "Phone Number (Vodafone/Orange/Etisalat Cash)",
+                "placeholder": "Enter details here",
+                "instapayHint": "username@instapay"
             }
         },
         "products": {
@@ -76,7 +113,55 @@
             "editProduct": "Edit Product",
             "deleteProduct": "Delete Product",
             "publishTitle": "Publish New Item",
-            "publishDescription": "Create a new product to sell in your store. Choose between E-books, Physical Books, or Design Assets."
+            "publishDescription": "Create a new product to sell in your store. Choose between E-books, Physical Books, or Design Assets.",
+            "type": "Product Type",
+            "types": {
+                "ebook": "E-Book / Novel",
+                "physical": "Physical Book",
+                "asset": "Design Asset"
+            },
+            "stock": "Stock Quantity",
+            "weight": "Weight (grams)",
+            "requiresShipping": "Requires Shipping",
+            "shippingNote": "💡 Don't forget to set your delivery zones and rates in the Shipping tab after publishing.",
+            "uploadChapters": "Upload Story Content",
+            "immersiveMode": "Immersive Writer Mode",
+            "extracting": "Extracting text from chapters...",
+            "contentPreview": "Content Preview & Editor:",
+            "contentPlaceholder": "Extracted text will appear here. You can also paste your story directly.",
+            "workTitle": "Title",
+            "workTitlePlaceholder": "Title of your work",
+            "genre": "Genre / Category",
+            "genrePlaceholder": "e.g. Fantasy, Sci-Fi...",
+            "price": "Price (EGP)",
+            "free": "Free Product",
+            "freeNote": "This product will be free due to 'Free Product' selection.",
+            "priceExample": "Example: 50 = 50 EGP",
+            "license": "Default License",
+            "licenseOptions": {
+                "personal": "Personal Use",
+                "commercial": "Commercial Use",
+                "extended": "Extended Commercial"
+            },
+            "cover": "Cover Image",
+            "description": "Description",
+            "descriptionPlaceholder": "Describe your masterpiece...",
+            "saveDraft": "Save as Draft",
+            "publishItem": "Publish Item",
+            "deleteConfirm": "Are you sure you want to delete this product?",
+            "sold": "Sold",
+            "revenue": "Rev"
+        },
+        "shipping": {
+            "title": "Shipping Settings",
+            "subtitle": "Manage your delivery zones and rates."
+        },
+        "studio_overlay": {
+            "back": "Back to Dashboard",
+            "title": "Hekayaty Writer Studio",
+            "save": "Save Changes",
+            "footer": "Magic happens when you write. Keep going.",
+            "placeholder": "Once upon a time in a world far away..."
         },
         "branding": {
             "title": "Store Branding",
@@ -90,7 +175,14 @@
             "welcomeMessage": "Welcome Message",
             "welcomePlaceholder": "Welcome to my world!",
             "images": "Store Images",
-            "imagesInfo": "Recommended: Logo (500x500px), Banner (1200x400px). Max 5MB."
+            "imagesInfo": "Recommended: Logo (500x500px), Banner (1200x400px). Max size 5MB.",
+            "avatarLabel": "Store Logo / Avatar",
+            "bannerLabel": "Store Banner",
+            "layouts": {
+                "standard": "Standard (Banner + Avatar)",
+                "hero": "Hero (Full Image)",
+                "minimal": "Minimal (Text Only)"
+            }
         }
     },
     "home": {
@@ -126,6 +218,57 @@
         "tabs": {
             "stories": "Stories",
             "assets": "Design Assets"
+        }
+    },
+    "studio": {
+        "title": "Writer Studio",
+        "createNew": "Create New Journey",
+        "starting": "Starting Journey...",
+        "masterpieces": "Your Masterpieces",
+        "exit": "Exit Studio",
+        "selectStory": "Select a Story",
+        "selectDescription": "Choose a novel from the sidebar to start writing or refine its appearance.",
+        "returnDashboard": "Return to Dashboard",
+        "draft": "Draft Mode",
+        "draft_simple": "Draft",
+        "public": "Public Marketplace",
+        "published_simple": "Published",
+        "tabs": {
+            "write": "Write",
+            "appearance": "Appearance",
+            "market": "Market"
+        },
+        "preview": "Preview",
+        "save": "Save Journey",
+        "saved": "Saved",
+        "placeholder": "Once upon a time...",
+        "words": "Words",
+        "autosave": "Auto-save enabled",
+        "appearance": {
+            "themes": "Reader Themes",
+            "typography": "Typography",
+            "fontFamily": "Font Family",
+            "serif": "Serif (Classic)",
+            "sans": "Sans (Modern)",
+            "fontSize": "Font Size",
+            "previewTitle": "Live Style Preview",
+            "previewText": "This is a preview of how your readers will see your masterpiece. You can customize the font, size, and ambient themes to match the mood of your story."
+        },
+        "market": {
+            "identity": "Market Identity",
+            "title": "Story Title",
+            "genre": "Genre",
+            "price": "Pricing (EGP)",
+            "cover": "Cover Imagery",
+            "coverLabel": "Public Book Cover",
+            "status": {
+                "draftTitle": "Story in Draft Mode",
+                "draftDesc": "Your story is only visible to you. Any reader can find it once you publish.",
+                "publicTitle": "Publicly Listed",
+                "publicDesc": "Your story is visible to thousands of readers in the marketplace."
+            },
+            "publish": "Publish to Market",
+            "offline": "Take Offline"
         }
     },
     "chat": {
