@@ -313,7 +313,7 @@ export default function Dashboard() {
                       <div className="flex-1 text-center sm:text-left">
                         <h3 className="font-bold font-serif">{product.title}</h3>
                         <p className="text-sm text-muted-foreground capitalize">
-                          {product.type} • {product.genre} • {product.price} EGP
+                          {product.type} • {product.genre} {product.type !== 'promotional' && `• ${product.price} EGP`}
                         </p>
                         {product.type === 'asset' && (
                           <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
@@ -326,16 +326,18 @@ export default function Dashboard() {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <BarChart className="w-4 h-4" />
-                          {((product as any).salesCount || (product as any).sales_count || 0)} {t("dashboard.products.sold")}
-                        </span>
-                        <span className="flex items-center gap-1 font-medium text-green-600">
-                          <DollarSign className="w-4 h-4" />
-                          {(product.price * ((product as any).salesCount || (product as any).sales_count || 0))} {t("common.egp")} {t("dashboard.products.revenue")}
-                        </span>
-                      </div>
+                      {product.type !== 'promotional' && (
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <BarChart className="w-4 h-4" />
+                            {((product as any).salesCount || (product as any).sales_count || 0)} {t("dashboard.products.sold")}
+                          </span>
+                          <span className="flex items-center gap-1 font-medium text-green-600">
+                            <DollarSign className="w-4 h-4" />
+                            {(product.price * ((product as any).salesCount || (product as any).sales_count || 0))} {t("common.egp")} {t("dashboard.products.revenue")}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex gap-2">
                         <Button variant="outline" size="icon">
                           <Edit2 className="w-4 h-4" />
@@ -721,7 +723,7 @@ import { extractTextFromFile } from "@/lib/text-extractor";
 const createSchema = insertProductSchema.extend({
   price: z.coerce.number(),
   writerId: z.string(), // UUID string from Supabase
-  type: z.enum(["ebook", "physical", "asset", "bundle"]),
+  type: z.enum(["ebook", "physical", "asset", "bundle", "promotional"]),
   licenseType: z.enum(["personal", "commercial", "standard", "extended"]).optional(),
   content: z.string().optional(), // For extracted ebook text
   stockQuantity: z.coerce.number().optional(),
@@ -774,6 +776,9 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
 
   const performSubmit = (data: any, isPublished: boolean) => {
     const finalData = { ...data, isPublished };
+    if (finalData.type === 'promotional') {
+      finalData.price = 0;
+    }
     createProduct.mutate(finalData, {
       onSuccess: () => {
         reset();
@@ -813,6 +818,7 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                 <option value="ebook">{t("dashboard.products.types.ebook")}</option>
                 <option value="physical">{t("dashboard.products.types.physical")}</option>
                 <option value="asset">{t("dashboard.products.types.asset")}</option>
+                <option value="promotional">{t("dashboard.products.types.promotional")}</option>
               </select>
             </div>
 
@@ -891,38 +897,40 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
               <Input {...register("genre")} placeholder={type === "asset" ? "Icons, Textures..." : t("dashboard.products.genrePlaceholder")} />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t("dashboard.products.price")}</label>
-              <div className="flex items-center gap-4">
-                <Input
-                  type="number"
-                  {...register("price", { valueAsNumber: true })}
-                  disabled={isFree}
-                  className={isFree ? "opacity-50" : ""}
-                />
-                <div className="flex items-center space-x-2 shrink-0">
-                  <Checkbox
-                    id="free-product"
-                    checked={isFree}
-                    onCheckedChange={(checked) => {
-                      setIsFree(checked as boolean);
-                      if (checked) {
-                        setValue("price", 0);
-                      } else {
-                        setValue("price", 50); // Default 50 EGP
-                      }
-                    }}
+            {type !== "promotional" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("dashboard.products.price")}</label>
+                <div className="flex items-center gap-4">
+                  <Input
+                    type="number"
+                    {...register("price", { valueAsNumber: true })}
+                    disabled={isFree}
+                    className={isFree ? "opacity-50" : ""}
                   />
-                  <label
-                    htmlFor="free-product"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                  >
-                    {t("dashboard.products.free")}
-                  </label>
+                  <div className="flex items-center space-x-2 shrink-0">
+                    <Checkbox
+                      id="free-product"
+                      checked={isFree}
+                      onCheckedChange={(checked) => {
+                        setIsFree(checked as boolean);
+                        if (checked) {
+                          setValue("price", 0);
+                        } else {
+                          setValue("price", 50); // Default 50 EGP
+                        }
+                      }}
+                    />
+                    <label
+                      htmlFor="free-product"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      {t("dashboard.products.free")}
+                    </label>
+                  </div>
                 </div>
+                <p className="text-xs text-muted-foreground">{isFree ? t("dashboard.products.freeNote") : t("dashboard.products.priceExample")}</p>
               </div>
-              <p className="text-xs text-muted-foreground">{isFree ? t("dashboard.products.freeNote") : t("dashboard.products.priceExample")}</p>
-            </div>
+            )}
 
             {type === "asset" && (
               <div className="space-y-2 col-span-2">

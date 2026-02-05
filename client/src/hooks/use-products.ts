@@ -43,7 +43,11 @@ export function useProducts(filters?: { writerId?: string; genre?: string; searc
 
       if (filters?.writerId) query = query.eq('writer_id', filters.writerId);
       if (filters?.genre) query = query.eq('genre', filters.genre);
-      if (filters?.type) query = query.eq('type', filters.type);
+      if (filters?.type === 'ebook') {
+        query = query.in('type', ['ebook', 'physical', 'promotional', 'bundle']);
+      } else if (filters?.type) {
+        query = query.eq('type', filters.type);
+      }
       if (filters?.search) query = query.ilike('title', `%${filters.search}%`);
 
       const { data, error } = await query;

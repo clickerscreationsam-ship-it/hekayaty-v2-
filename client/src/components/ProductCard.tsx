@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Star, ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { Product } from "@shared/schema";
+import { useTranslation } from "react-i18next";
 
 interface ProductCardProps {
   product: Product;
@@ -9,6 +10,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, variant = "default" }: ProductCardProps) {
+  const { t } = useTranslation();
   const isCompact = variant === "compact";
 
   return (
@@ -69,7 +71,11 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
 
         <div className="flex items-center justify-between mt-auto">
           <div className="flex flex-col">
-            {product.salePrice ? (
+            {product.type === "promotional" ? (
+              <span className="font-bold text-lg text-primary uppercase tracking-wider opacity-60">
+                {t("dashboard.products.types.promotional")}
+              </span>
+            ) : product.salePrice ? (
               <>
                 <span className="text-xs text-muted-foreground line-through">
                   {product.price} EGP
@@ -84,7 +90,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
               </span>
             )}
           </div>
-          {isCompact && (
+          {isCompact && product.type !== "promotional" && (
             <button className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 text-primary transition-colors">
               <ShoppingCart className="w-4 h-4" />
             </button>

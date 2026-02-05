@@ -118,7 +118,8 @@
             "types": {
                 "ebook": "E-Book / Novel",
                 "physical": "Physical Book",
-                "asset": "Design Asset"
+                "asset": "Design Asset",
+                "promotional": "Promotional Content"
             },
             "stock": "Stock Quantity",
             "weight": "Weight (grams)",
@@ -210,6 +211,7 @@
         "assetsSubtitle": "Premium resources to build your world. Book covers, maps, and character art.",
         "searchPlaceholder": "Search by title, author...",
         "assetsSearchPlaceholder": "Search for covers, textures...",
+        "promotionalDesc": "This item is for showcase only and cannot be purchased.",
         "allGenres": "All Genres",
         "allCategories": "All Categories",
         "noStories": "No stories found",

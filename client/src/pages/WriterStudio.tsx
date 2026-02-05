@@ -350,10 +350,12 @@ export default function WriterStudio() {
                                                                 <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.genre")}</label>
                                                                 <Input defaultValue={currentProduct.genre} className="bg-white/5 border-white/10" />
                                                             </div>
-                                                            <div className="space-y-2">
-                                                                <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.price")}</label>
-                                                                <Input type="number" defaultValue={currentProduct.price} className="bg-white/5 border-white/10" />
-                                                            </div>
+                                                            {currentProduct.type !== 'promotional' && (
+                                                                <div className="space-y-2">
+                                                                    <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.price")}</label>
+                                                                    <Input type="number" defaultValue={currentProduct.price} className="bg-white/5 border-white/10" />
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
 

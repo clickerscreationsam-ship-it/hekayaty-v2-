@@ -15,8 +15,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertReviewSchema } from "@shared/schema";
 import { z } from "zod";
 import { SEO } from "@/components/SEO";
+import { useTranslation } from "react-i18next";
 
 export default function ProductDetails() {
+  const { t } = useTranslation();
   const [quantity, setQuantity] = useState(1);
   const [, params] = useRoute("/book/:id");
   const id = parseInt(params?.id || "0");
@@ -134,41 +136,53 @@ export default function ProductDetails() {
               )}
 
               <div className="flex flex-col sm:flex-row gap-4 items-center">
-
-                {product.price === 0 || product.price === 0.00 ? (
-                  <Link href={`/read/${product.id}`} className="w-full sm:w-auto">
-                    <Button className="w-full h-14 px-8 text-lg font-bold shadow-xl shadow-primary/20 bg-green-600 hover:bg-green-700 rounded-2xl transition-all hover:scale-[1.02]">
-                      <BookOpen className="mr-2 w-5 h-5" />
-                      Read Now (Free)
-                    </Button>
-                  </Link>
+                {product.type === "promotional" ? (
+                  <div className="w-full bg-primary/10 border border-primary/20 p-6 rounded-2xl text-center">
+                    <p className="font-bold text-primary mb-1 uppercase tracking-widest text-sm">
+                      {t("dashboard.products.types.promotional")}
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                      {t("marketplace.promotionalDesc") || "This item is for showcase only and cannot be purchased."}
+                    </p>
+                  </div>
                 ) : (
-                  <Button
-                    onClick={() => addToCart.mutate({
-                      productId: product.id,
-                      quantity: quantity,
-                      userId: user?.id || "1"
-                    })}
-                    disabled={addToCart.isPending}
-                    className="w-full sm:w-auto h-14 px-8 text-lg font-bold shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 rounded-2xl group transition-all hover:scale-[1.02]"
-                  >
-                    <ShoppingCart className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
-                    {addToCart.isPending ? "Adding..." : (
-                      <span>
-                        Add to Cart • <span className="font-serif">{(product.price * quantity)} EGP</span>
-                      </span>
+                  <>
+                    {product.price === 0 || product.price === 0.00 ? (
+                      <Link href={`/read/${product.id}`} className="w-full sm:w-auto">
+                        <Button className="w-full h-14 px-8 text-lg font-bold shadow-xl shadow-primary/20 bg-green-600 hover:bg-green-700 rounded-2xl transition-all hover:scale-[1.02]">
+                          <BookOpen className="mr-2 w-5 h-5" />
+                          Read Now (Free)
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button
+                        onClick={() => addToCart.mutate({
+                          productId: product.id,
+                          quantity: quantity,
+                          userId: user?.id || "1"
+                        })}
+                        disabled={addToCart.isPending}
+                        className="w-full sm:w-auto h-14 px-8 text-lg font-bold shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 rounded-2xl group transition-all hover:scale-[1.02]"
+                      >
+                        <ShoppingCart className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
+                        {addToCart.isPending ? "Adding..." : (
+                          <span>
+                            Add to Cart • <span className="font-serif">{(product.price * quantity)} EGP</span>
+                          </span>
+                        )}
+                      </Button>
                     )}
-                  </Button>
-                )}
 
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-14 w-14 rounded-full border-2 hover:border-red-500 hover:text-red-500 hover:bg-red-50"
-                  onClick={() => likeProduct.mutate(product.id)}
-                >
-                  <Heart className="w-6 h-6" />
-                </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-14 w-14 rounded-full border-2 hover:border-red-500 hover:text-red-500 hover:bg-red-50"
+                      onClick={() => likeProduct.mutate(product.id)}
+                    >
+                      <Heart className="w-6 h-6" />
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
 
