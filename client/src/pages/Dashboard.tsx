@@ -732,7 +732,8 @@ const createSchema = insertProductSchema.extend({
 });
 
 function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === 'ar';
   const { user } = useAuth();
   const createProduct = useCreateProduct();
   const [isExtracting, setIsExtracting] = useState(false);
@@ -865,6 +866,19 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                       {t("dashboard.products.immersiveMode")}
                     </Button>
                   </label>
+
+                  {/* Dev Notice for Arabic Extractor */}
+                  <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg flex flex-col gap-1 mb-2">
+                    <p className="text-[10px] md:text-xs font-bold text-amber-600 flex items-center gap-1">
+                      ⚠️ {isArabic ? "مستخرج النصوص العربي قيد التطوير حالياً." : "Arabic text extractor is in development."}
+                    </p>
+                    <p className="text-[10px] md:text-xs text-amber-600/80 leading-tight">
+                      {isArabic
+                        ? "يرجى الدخول إلى الاستوديو الخاص بك ونسخ قصتك ولصقها يدوياً لتجنب أي أخطاء في التنسيق. يمكنك تجاهل أي أخطاء تظهر أثناء المعالجة."
+                        : "Please enter your studio and copy-paste your story manually to avoid formatting errors. You can ignore any typing/processing errors for now."}
+                    </p>
+                  </div>
+
                   <Input
                     type="file"
                     accept=".pdf,.docx"
