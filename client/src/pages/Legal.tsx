@@ -60,8 +60,8 @@ export default function Legal() {
                         <div className={`space-y-8 text-lg leading-relaxed text-muted-foreground ${isArabic ? 'font-arabic' : ''}`} dir={isArabic ? 'rtl' : 'ltr'}>
                             <p className="text-white/90">
                                 {isArabic
-                                    ? "مرحبًا بك في Hekayaty! نحن ملتزمون بحماية خصوصيتك وبياناتك الشخصية. باستخدامك للمنصة، فإنك توافق على جمع واستخدام بياناتك كما هو موضح في هذه السياسة."
-                                    : "Welcome to Hekayaty! We are committed to protecting your privacy and personal data. By using the platform, you agree to the collection and use of your data as described in this policy."}
+                                    ? "مرحبًا بك في Hekayaty. نحن نحترم خصوصيتك ونلتزم بحماية بيانات المستخدمين. باستخدامك للمنصة، فإنك توافق على سياسة الخصوصية هذه بالكامل."
+                                    : "Welcome to Hekayaty. We respect your privacy and are committed to protecting user data. By using the platform, you agree to this Privacy Policy in full."}
                             </p>
 
                             <div>
@@ -69,23 +69,26 @@ export default function Legal() {
                                     <FileText className="w-5 h-5 text-primary" />
                                     {isArabic ? "1. البيانات التي نجمعها" : "1. Data We Collect"}
                                 </h3>
+                                <p className="mb-2">{isArabic ? "نقوم بجمع البيانات التالية فقط:" : "We collect the following data only:"}</p>
                                 <ul className={`list-disc list-inside space-y-2 ${isArabic ? 'mr-4' : 'ml-4'}`}>
                                     <li>{isArabic ? "بيانات التسجيل: الاسم، البريد الإلكتروني، كلمة المرور." : "Registration data: Name, email, password."}</li>
-                                    <li>{isArabic ? "المحتوى: القصص، الروايات، الصور أو أي محتوى ترفعه على المنصة." : "Content: Stories, novels, images, or any content you upload to the platform."}</li>
-                                    <li>{isArabic ? "النشاط: سجل النشاطات، المشاهدات، التفاعلات داخل الموقع." : "Activity: Log of activities, views, and interactions within the site."}</li>
+                                    <li>{isArabic ? "المحتوى الذي ينشره المستخدم (قصص، روايات، صور، نصوص)." : "User-published content (stories, novels, images, texts)."}</li>
+                                    <li>{isArabic ? "بيانات الاستخدام: التفاعلات، المشاهدات، الأنشطة داخل المنصة." : "Usage data: Interactions, views, activities within the platform."}</li>
+                                    <li className="text-primary font-bold">{isArabic ? "Hekayaty لا تجمع ولا تخزن أي بيانات دفع أو بيانات بنكية." : "Hekayaty does not collect or store any payment or bank data."}</li>
                                 </ul>
                             </div>
 
                             <div>
                                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                                     <Sparkles className="w-5 h-5 text-primary" />
-                                    {isArabic ? "2. كيفية استخدام البيانات" : "2. How We Use Data"}
+                                    {isArabic ? "2. استخدام البيانات" : "2. Use of Data"}
                                 </h3>
+                                <p className="mb-2">{isArabic ? "تُستخدم البيانات للأغراض التالية:" : "Data is used for the following purposes:"}</p>
                                 <ul className={`list-disc list-inside space-y-2 ${isArabic ? 'mr-4' : 'ml-4'}`}>
-                                    <li>{isArabic ? "لإدارة حسابك على المنصة." : "To manage your account on the platform."}</li>
-                                    <li>{isArabic ? "لتسهيل نشر وبيع أعمالك من خلال الحساب الداخلي للمنصة." : "To facilitate the publishing and selling of your work through the platform's internal account."}</li>
-                                    <li>{isArabic ? "لإرسال إشعارات مهمة حول الحساب أو التحديثات." : "To send important notifications about the account or updates."}</li>
-                                    <li>{isArabic ? "لتحليل البيانات بشكل مجهول لتحسين تجربة المستخدم." : "To analyze anonymous data to improve user experience."}</li>
+                                    <li>{isArabic ? "إدارة الحسابات وتشغيل المنصة." : "Account management and platform operation."}</li>
+                                    <li>{isArabic ? "تحسين تجربة المستخدم." : "Improving user experience."}</li>
+                                    <li>{isArabic ? "إرسال إشعارات تقنية أو إدارية." : "Sending technical or administrative notifications."}</li>
+                                    <li>{isArabic ? "التحليل الإحصائي الداخلي دون تحديد هوية المستخدم." : "Internal statistical analysis without identifying users."}</li>
                                 </ul>
                             </div>
 
@@ -95,20 +98,20 @@ export default function Legal() {
                                     {isArabic ? "3. حماية البيانات" : "3. Data Protection"}
                                 </h3>
                                 <ul className={`list-disc list-inside space-y-2 ${isArabic ? 'mr-4' : 'ml-4'}`}>
-                                    <li>{isArabic ? "جميع البيانات مشفرة أثناء النقل والتخزين." : "All data is encrypted during transport and storage."}</li>
-                                    <li>{isArabic ? "لا نشارك بياناتك مع أي طرف ثالث إلا إذا كان ذلك قانونيًا أو ضروريًا لتقديم الخدمة." : "We do not share your data with any third party unless legally required or necessary to provide the service."}</li>
-                                    <li>{isArabic ? "لدينا آليات لمنع الاختراق أو أي استخدام غير مصرح به." : "We have mechanisms to prevent hacking or any unauthorized use."}</li>
+                                    <li>{isArabic ? "يتم تأمين البيانات باستخدام تقنيات تشفير حديثة." : "Data is secured using modern encryption technologies."}</li>
+                                    <li>{isArabic ? "لا نشارك البيانات مع أي طرف ثالث إلا إذا كان ذلك مطلوبًا قانونيًا." : "We do not share data with any third party unless legally required."}</li>
+                                    <li>{isArabic ? "نتخذ إجراءات تقنية وتنظيمية لمنع الوصول غير المصرح به." : "We take technical and organizational measures to prevent unauthorized access."}</li>
                                 </ul>
                             </div>
 
                             <div>
                                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                                     <HelpCircle className="w-5 h-5 text-primary" />
-                                    {isArabic ? "4. حقوقك" : "4. Your Rights"}
+                                    {isArabic ? "4. حقوق المستخدم" : "4. User Rights"}
                                 </h3>
                                 <ul className={`list-disc list-inside space-y-2 ${isArabic ? 'mr-4' : 'ml-4'}`}>
-                                    <li>{isArabic ? "الاطلاع على بياناتك وحذفها عند الطلب." : "Accessing your data and deleting it upon request."}</li>
-                                    <li>{isArabic ? "سحب الموافقة على استخدام بياناتك في أي وقت." : "Withdrawing consent to use your data at any time."}</li>
+                                    <li>{isArabic ? "طلب الوصول إلى بياناته أو حذفها." : "Requesting access to or deletion of their data."}</li>
+                                    <li>{isArabic ? "إيقاف الحساب في أي وقت." : "Deactivating the account at any time."}</li>
                                     <li>{isArabic ? "الاعتراض على أي استخدام غير قانوني للبيانات." : "Objecting to any illegal use of data."}</li>
                                 </ul>
                             </div>
@@ -131,81 +134,103 @@ export default function Legal() {
                         </div>
 
                         <div className={`space-y-8 text-lg leading-relaxed text-muted-foreground ${isArabic ? 'font-arabic' : ''}`} dir={isArabic ? 'rtl' : 'ltr'}>
+                            <p className="text-white/90">
+                                {isArabic
+                                    ? "باستخدامك لمنصة Hekayaty، فإنك توافق على جميع الشروط التالية دون أي استثناء."
+                                    : "By using the Hekayaty platform, you agree to all of the following terms without exception."}
+                            </p>
+
                             <div>
                                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                                    <PenTool className="w-5 h-5 text-primary" />
-                                    {isArabic ? "1. الحساب والمحتوى" : "1. Account & Content"}
+                                    <HelpCircle className="w-5 h-5 text-primary" />
+                                    {isArabic ? "1. طبيعة المنصة" : "1. Nature of the Platform"}
                                 </h3>
                                 <ul className={`list-disc list-inside space-y-2 ${isArabic ? 'mr-4' : 'ml-4'}`}>
-                                    <li>{isArabic ? "أنت مسؤول عن أي محتوى ترفعه على المنصة." : "You are responsible for any content you upload to the platform."}</li>
-                                    <li>{isArabic ? "يجب ألا ينتهك محتواك حقوق أي طرف ثالث أو القوانين المحلية والدولية." : "Your content must not violate the rights of any third party or local and international laws."}</li>
+                                    <li>{isArabic ? "Hekayaty هي منصة وسيط تقني (Marketplace) فقط." : "Hekayaty is a technical intermediary platform (Marketplace) only."}</li>
+                                    <li>{isArabic ? "المنصة لا تُنشئ، لا تُراجع، ولا تُدقق المحتوى المنشور." : "The platform does not create, review, or audit the published content."}</li>
+                                    <li>{isArabic ? "دور المنصة يقتصر على إتاحة مساحة نشر وعرض المحتوى بين المستخدمين." : "The platform's role is limited to providing space for publishing and displaying content among users."}</li>
                                 </ul>
                             </div>
 
                             <div>
                                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                                    <DollarSign className="w-5 h-5 text-primary" />
-                                    {isArabic ? "2. البيع على Hekayaty" : "2. Selling on Hekayaty"}
+                                    <Scale className="w-5 h-5 text-primary" />
+                                    {isArabic ? "2. المسؤولية الكاملة عن المحتوى (إخلاء مسؤولية صريح)" : "2. Full Responsibility for Content (Explicit Disclaimer)"}
                                 </h3>
                                 <p className="mb-2">
                                     {isArabic
-                                        ? "بعد أول بيع لك، ستحصل على حصة من الأرباح مباشرة حسب نظام الحساب الداخلي للمنصة (افتراضياً 80% للمبدع)."
-                                        : "After your first sale, you will receive a share of the profits directly according to the platform's internal account system (typically 80% for creators)."}
+                                        ? "Hekayaty غير مسؤولة مسؤولية قانونية أو أخلاقية أو مالية عن أي محتوى يتم نشره على المنصة. المسؤولية الكاملة تقع على عاتق المستخدم الذي قام بنشر المحتوى ويشمل ذلك النصوص والقصص والصور والأغلفة."
+                                        : "Hekayaty is not legally, morally, or financially responsible for any content published on the platform. Full responsibility lies with the user who published the content, including texts, stories, images, and covers."}
                                 </p>
+                            </div>
+
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                    <Lock className="w-5 h-5 text-primary" />
+                                    {isArabic ? "3. المحتوى المسروق أو المخالف" : "3. Stolen or Violating Content"}
+                                </h3>
+                                <p className="mb-2">{isArabic ? "يُمنع منعًا باتًا نشر أي محتوى:" : "It is strictly forbidden to publish any content that is:"}</p>
                                 <ul className={`list-disc list-inside space-y-2 ${isArabic ? 'mr-4' : 'ml-4'}`}>
-                                    <li>{isArabic ? "المنصة تحتفظ بحق تعديل نسب الأرباح مع إعلام المستخدمين قبل أي تغييرات." : "The platform reserves the right to modify profit shares, with prior notice to users before any changes."}</li>
+                                    <li>{isArabic ? "مسروق أو منسوخ." : "Stolen or copied."}</li>
+                                    <li>{isArabic ? "ينتهك حقوق الملكية الفكرية." : "Violates intellectual property rights."}</li>
+                                    <li>{isArabic ? "مخالف للقوانين أو الآداب العامة." : "Violates laws or public morals."}</li>
+                                </ul>
+                                <p className="mt-4 font-bold text-white">{isArabic ? "في حال اكتشاف أي انتهاك، تحتفظ Hekayaty بالحق في حذف المحتوى فورًا، حظر المستخدم نهائيًا، وإغلاق المتجر بدون أي تعويض." : "If any violation is detected, Hekayaty reserves the right to immediately delete the content, permanently ban the user, and close the store without any compensation."}</p>
+                            </div>
+
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                    <DollarSign className="w-5 h-5 text-primary" />
+                                    {isArabic ? "4. البيع والأرباح" : "4. Sales and Profits"}
+                                </h3>
+                                <p>
+                                    {isArabic
+                                        ? "بعد أول عملية بيع، يحصل المستخدم على 20% من الأرباح وفق نظام المنصة الداخلي. النسب قابلة للتعديل مستقبلًا مع إشعار المستخدمين."
+                                        : "After the first sale, the user receives 20% of the profits according to the platform's internal system. Ratios are subject to future adjustment with user notification."}
+                                </p>
+                            </div>
+
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                    <Scale className="w-5 h-5 text-primary" />
+                                    {isArabic ? "5. تحديد المسؤولية القانونية" : "5. Limitation of Legal Liability"}
+                                </h3>
+                                <ul className={`list-disc list-inside space-y-2 ${isArabic ? 'mr-4' : 'ml-4'}`}>
+                                    <li>{isArabic ? "المنصة تُقدم “كما هي”." : "The platform is provided 'as is'."}</li>
+                                    <li>{isArabic ? "Hekayaty غير مسؤولة عن أي خسائر مباشرة أو غير مباشرة أو نزاعات قانونية بين المستخدمين." : "Hekayaty is not responsible for any direct or indirect losses or legal disputes between users."}</li>
                                 </ul>
                             </div>
 
                             <div>
                                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                                     <Shield className="w-5 h-5 text-primary" />
-                                    {isArabic ? "3. الالتزامات القانونية" : "3. Legal Obligations"}
+                                    {isArabic ? "6. إساءة الاستخدام والتلاعب" : "6. Misuse and Manipulation"}
                                 </h3>
-                                <ul className={`list-disc list-inside space-y-2 ${isArabic ? 'mr-4' : 'ml-4'}`}>
-                                    <li>{isArabic ? "يجب على كل مستخدم الالتزام بالقوانين المحلية المتعلقة بحقوق النشر والتجارة الإلكترونية." : "Every user must comply with local laws regarding copyright and e-commerce."}</li>
-                                    <li>{isArabic ? "Hekayaty ليست مسؤولة عن أي انتهاك قانوني يقوم به المستخدم خارج نطاق المنصة." : "Hekayaty is not responsible for any legal violation committed by the user outside the platform's scope."}</li>
-                                </ul>
-                            </div>
-
-                            <div>
-                                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                                    <HelpCircle className="w-5 h-5 text-primary" />
-                                    {isArabic ? "4. المسؤولية" : "4. Liability"}
-                                </h3>
-                                <ul className={`list-disc list-inside space-y-2 ${isArabic ? 'mr-4' : 'ml-4'}`}>
-                                    <li>{isArabic ? "المنصة متاحة “كما هي”، ولا تتحمل أي خسائر مالية ناتجة عن استخدام المنصة من قبل المستخدمين." : "The platform is available 'as is,' and does not assume any financial losses resulting from the use of the platform by users."}</li>
-                                    <li>{isArabic ? "نحتفظ بالحق في تعليق أو إنهاء أي حساب ينتهك القوانين أو الشروط." : "We reserve the right to suspend or terminate any account that violates laws or terms."}</li>
-                                </ul>
-                            </div>
-
-                            <div>
-                                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                                    <Lock className="w-5 h-5 text-primary" />
-                                    {isArabic ? "5. حماية Hekayaty" : "5. Hekayaty Protection"}
-                                </h3>
-                                <ul className={`list-disc list-inside space-y-2 ${isArabic ? 'mr-4' : 'ml-4'}`}>
-                                    <li>{isArabic ? "جميع البيانات والأصول محمية بموجب قوانين الملكية الفكرية." : "All data and assets are protected under intellectual property laws."}</li>
-                                    <li>{isArabic ? "أي محاولة للتلاعب بالنظام أو الاحتيال ستؤدي لاتخاذ الإجراءات القانونية الفورية." : "Any attempt to manipulate the system or fraud will lead to immediate legal action."}</li>
-                                </ul>
+                                <p>
+                                    {isArabic
+                                        ? "أي محاولة اختراق أو تحايل أو تلاعب بالنظام تُعد مخالفة جسيمة تؤدي إلى الحظر الدائم وإلغاء الحساب والمتجر واتخاذ الإجراءات القانونية."
+                                        : "Any attempt to hack, circumvent, or manipulate the system is a gross violation leading to a permanent ban, cancellation of the account and store, and taking legal action."}
+                                </p>
                             </div>
 
                             <div>
                                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                                     <Edit2 className="w-5 h-5 text-primary" />
-                                    {isArabic ? "6. التعديلات" : "6. Amendments"}
+                                    {isArabic ? "7. التعديلات" : "7. Amendments"}
                                 </h3>
                                 <p>
                                     {isArabic
-                                        ? "نحتفظ بحق تعديل هذه السياسة والشروط في أي وقت، مع إعلام المستخدمين بالتغييرات المهمة."
-                                        : "We reserve the right to modify this policy and terms at any time, with users informed of significant changes."}
+                                        ? "يحق لـ Hekayaty تعديل هذه الشروط في أي وقت، واستمرار استخدام المنصة يُعد موافقة صريحة على التعديلات."
+                                        : "Hekayaty reserves the right to modify these terms at any time, and continued use of the platform constitutes explicit consent to the amendments."}
                                 </p>
                             </div>
                         </div>
                     </section>
                 </div>
-            </div>
-            <Footer />
+            </section>
         </div>
+            </div >
+        <Footer />
+        </div >
     );
 }

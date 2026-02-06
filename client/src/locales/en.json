@@ -220,6 +220,11 @@
         "tabs": {
             "stories": "Stories",
             "assets": "Design Assets"
+        },
+        "sell": {
+            "title": "Turn your passion into profit",
+            "subtitle": "Join our community of creators. Sell your stories and assets directly to your audience.",
+            "button": "Start Selling Now"
         }
     },
     "studio": {

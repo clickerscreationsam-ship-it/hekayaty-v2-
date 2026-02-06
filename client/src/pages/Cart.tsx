@@ -128,33 +128,38 @@ export default function Cart() {
     const paymentInstructions: Record<string, any> = {
         instapay: {
             title: "InstaPay Transfer",
-            details: "Send exact amount to: @hekayaty or 01000000000 (IPA)",
+            details: "Transfer to number: 01272404623",
             icon: Smartphone,
-            color: "text-purple-600"
+            color: "text-purple-600",
+            disabled: false
         },
         vodafone_cash: {
-            title: "Vodafone Cash",
-            details: "Transfer to Wallet: 01012345678",
+            title: "Vodafone Cash (Soon / قريباً)",
+            details: "Service integration in progress.",
             icon: Smartphone,
-            color: "text-red-600"
+            color: "text-red-600",
+            disabled: true
         },
         orange_cash: {
-            title: "Orange Cash",
-            details: "Transfer to Wallet: 01212345678",
+            title: "Orange Cash (Soon / قريباً)",
+            details: "Service integration in progress.",
             icon: Smartphone,
-            color: "text-orange-600"
+            color: "text-orange-600",
+            disabled: true
         },
         etisalat_cash: {
-            title: "Etisalat Cash",
-            details: "Transfer to Wallet: 01112345678",
+            title: "Etisalat Cash (Soon / قريباً)",
+            details: "Service integration in progress.",
             icon: Smartphone,
-            color: "text-green-600"
+            color: "text-green-600",
+            disabled: true
         },
         bank_transfer: {
-            title: "Bank Transfer",
-            details: "CIB Account: 100020003000, Name: Hekayaty Inc.",
+            title: "Bank Transfer (Soon / قريباً)",
+            details: "Direct bank transfer will be available soon.",
             icon: Banknote,
-            color: "text-blue-600"
+            color: "text-blue-600",
+            disabled: true
         }
     };
 
@@ -365,9 +370,15 @@ export default function Cart() {
                                     <Label className="text-base font-semibold">1. Select Payment Method</Label>
                                     <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="grid grid-cols-1 gap-3">
                                         {Object.entries(paymentInstructions).map(([key, info]) => (
-                                            <div key={key} className={`flex items-center space-x-3 border p-3 rounded-lg cursor-pointer hover:bg-accent/5 ${paymentMethod === key ? 'border-primary ring-1 ring-primary bg-primary/5' : 'border-border'}`}>
-                                                <RadioGroupItem value={key} id={key} />
-                                                <Label htmlFor={key} className="flex-1 cursor-pointer flex items-center gap-2 font-medium">
+                                            <div
+                                                key={key}
+                                                className={`flex items-center space-x-3 border p-3 rounded-lg transition-all ${info.disabled ? 'opacity-50 cursor-not-allowed bg-muted/20 grayscale' : 'cursor-pointer hover:bg-accent/5'} ${paymentMethod === key ? 'border-primary ring-1 ring-primary bg-primary/5' : 'border-border'}`}
+                                            >
+                                                <RadioGroupItem value={key} id={key} disabled={info.disabled} />
+                                                <Label
+                                                    htmlFor={key}
+                                                    className={`flex-1 flex items-center gap-2 font-medium ${info.disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                                                >
                                                     <info.icon className={`w-4 h-4 ${info.color}`} />
                                                     {info.title}
                                                 </Label>
