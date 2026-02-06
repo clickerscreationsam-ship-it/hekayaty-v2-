@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Feather, Loader2 } from "lucide-react";
+import { Feather, Loader2, Eye, EyeOff } from "lucide-react";
 import { insertUserSchema } from "@shared/schema";
 
 const loginSchema = z.object({
@@ -106,7 +106,7 @@ export default function AuthPage() {
 }
 
 function LoginForm() {
-    const { loginMutation } = useAuth();
+    const [showPassword, setShowPassword] = useState(false);
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
     });
@@ -132,7 +132,25 @@ function LoginForm() {
                     </div>
                     <div className="space-y-2">
                         <Label>Password</Label>
-                        <Input type="password" {...form.register("password")} placeholder="Enter your password" />
+                        <div className="relative">
+                            <Input
+                                type={showPassword ? "text" : "password"}
+                                {...form.register("password")}
+                                placeholder="Enter your password"
+                                className="pr-10"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground focus:outline-none"
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
+                            </button>
+                        </div>
                         {form.formState.errors.password && (
                             <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>
                         )}
@@ -158,6 +176,7 @@ function LoginForm() {
 
 function RegisterForm() {
     const { registerMutation } = useAuth();
+    const [showPassword, setShowPassword] = useState(false);
     const form = useForm<z.infer<typeof registerSchema>>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
@@ -209,7 +228,25 @@ function RegisterForm() {
 
                     <div className="space-y-2">
                         <Label>Password</Label>
-                        <Input type="password" {...form.register("password")} placeholder="Create a password" />
+                        <div className="relative">
+                            <Input
+                                type={showPassword ? "text" : "password"}
+                                {...form.register("password")}
+                                placeholder="Create a password"
+                                className="pr-10"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground focus:outline-none"
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
+                            </button>
+                        </div>
                         {form.formState.errors.password && (
                             <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>
                         )}
