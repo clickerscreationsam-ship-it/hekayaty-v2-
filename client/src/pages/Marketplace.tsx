@@ -3,10 +3,9 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useProducts } from "@/hooks/use-products";
 import { ProductCard } from "@/components/ProductCard";
-import { Search, Book, Palette, Layers, ArrowRight } from "lucide-react";
+import { Search, Book, Palette, Layers } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useLocation, Link } from "wouter";
-import { motion } from "framer-motion";
+import { useLocation } from "wouter";
 import marketplaceBg from "@/assets/d2c8245c-c591-4cc9-84d2-27252be8dffb.png";
 
 export default function Marketplace() {
@@ -142,38 +141,6 @@ export default function Marketplace() {
             </div>
           )}
         </div>
-
-        {/* Sell CTA Section */}
-        <section className="py-24 relative overflow-hidden mt-12">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="glass animate-in fade-in slide-in-from-bottom-10 duration-1000 p-8 md:p-16 rounded-[2.5rem] text-center border border-white/10 shadow-2xl overflow-hidden relative"
-            >
-              {/* Decorative elements */}
-              <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 rounded-full blur-[80px]" />
-              <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-accent/20 rounded-full blur-[80px]" />
-
-              <div className="relative z-10">
-                <h2 className="text-3xl md:text-5xl font-serif font-bold mb-6 text-white leading-tight">
-                  {t("marketplace.sell.title")}
-                </h2>
-                <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-                  {t("marketplace.sell.subtitle")}
-                </p>
-                <Link href="/dashboard">
-                  <button className="px-10 py-5 rounded-2xl bg-primary text-white font-bold text-xl shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all flex items-center gap-3 mx-auto group">
-                    {t("marketplace.sell.button")}
-                    <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </Link>
-              </div>
-            </motion.div>
-          </div>
-        </section>
 
         <Footer />
       </div>
