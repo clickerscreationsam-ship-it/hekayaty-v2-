@@ -106,6 +106,7 @@ export default function AuthPage() {
 }
 
 function LoginForm() {
+    const { loginMutation } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
