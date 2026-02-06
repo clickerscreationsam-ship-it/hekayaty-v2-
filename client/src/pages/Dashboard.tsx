@@ -97,20 +97,22 @@ export default function Dashboard() {
         </div>
 
         <Tabs defaultValue={user.role === 'reader' ? "library" : "overview"} className="w-full">
-          <TabsList className="mb-8 p-1 bg-muted/50 rounded-xl justify-start h-auto">
-            {user.role === 'reader' && (
-              <TabsTrigger value="library" className="rounded-lg px-6 py-2">My Library</TabsTrigger>
-            )}
-            {user.role !== 'reader' && <TabsTrigger value="overview" className="rounded-lg px-6 py-2">{t("dashboard.tabs.overview")}</TabsTrigger>}
-            {user.role !== 'reader' && <TabsTrigger value="products" className="rounded-lg px-6 py-2">{t("dashboard.tabs.products")}</TabsTrigger>}
-            {user.role !== 'reader' && <TabsTrigger value="orders" className="rounded-lg px-6 py-2">{t("dashboard.tabs.orders")}</TabsTrigger>}
-            {user.role !== 'reader' && <TabsTrigger value="wallet" className="rounded-lg px-6 py-2">{t("dashboard.tabs.wallet")}</TabsTrigger>}
-            {user.role !== 'reader' && <TabsTrigger value="shipping" className="rounded-lg px-6 py-2">{t("dashboard.tabs.shipping")}</TabsTrigger>}
-            {user.role !== 'reader' && <TabsTrigger value="chat" className="rounded-lg px-6 py-2">{t("dashboard.tabs.chat", "Store Chat")}</TabsTrigger>}
-            <TabsTrigger value="branding" className="rounded-lg px-6 py-2">
-              {user.role === 'reader' ? 'Profile Settings' : t("dashboard.tabs.branding")}
-            </TabsTrigger>
-          </TabsList>
+          <div className="w-full overflow-x-auto pb-2 -mb-2">
+            <TabsList className="mb-8 p-1 bg-muted/50 rounded-xl justify-start h-auto w-full md:w-auto inline-flex min-w-full md:min-w-0">
+              {user.role === 'reader' && (
+                <TabsTrigger value="library" className="rounded-lg px-6 py-2 flex-shrink-0">My Library</TabsTrigger>
+              )}
+              {user.role !== 'reader' && <TabsTrigger value="overview" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.overview")}</TabsTrigger>}
+              {user.role !== 'reader' && <TabsTrigger value="products" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.products")}</TabsTrigger>}
+              {user.role !== 'reader' && <TabsTrigger value="orders" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.orders")}</TabsTrigger>}
+              {user.role !== 'reader' && <TabsTrigger value="wallet" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.wallet")}</TabsTrigger>}
+              {user.role !== 'reader' && <TabsTrigger value="shipping" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.shipping")}</TabsTrigger>}
+              {user.role !== 'reader' && <TabsTrigger value="chat" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.chat", "Store Chat")}</TabsTrigger>}
+              <TabsTrigger value="branding" className="rounded-lg px-6 py-2 flex-shrink-0">
+                {user.role === 'reader' ? 'Profile Settings' : t("dashboard.tabs.branding")}
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="overview">
             {/* Stats Grid */}
