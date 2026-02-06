@@ -137,6 +137,15 @@ function LoginForm() {
                             <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>
                         )}
                     </div>
+
+                    <div className="flex justify-end">
+                        <Link href="/forgot-password">
+                            <span className="text-sm text-primary hover:underline cursor-pointer">
+                                Forgot password?
+                            </span>
+                        </Link>
+                    </div>
+
                     <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
                         {loginMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Log In

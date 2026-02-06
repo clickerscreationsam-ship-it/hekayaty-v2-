@@ -20,12 +20,16 @@ import WriterStudio from "@/pages/WriterStudio";
 
 import Writers from "@/pages/Writers";
 import Legal from "@/pages/Legal";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/reset-password" component={ResetPassword} />
       <Route path="/marketplace" component={Marketplace} />
       <Route path="/assets" component={Marketplace} />
       <Route path="/worldbuilders" component={Writers} />
