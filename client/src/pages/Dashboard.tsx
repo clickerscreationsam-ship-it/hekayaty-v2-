@@ -587,28 +587,21 @@ function BrandingForm({ user }: { user: any }) {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Account Type Selector */}
+        {/* Account Type (Read Only) */}
         <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 mb-6">
           <label className="text-sm font-bold flex items-center gap-2 mb-2 text-primary">
             <UserCog className="w-4 h-4" />
             {t("dashboard.branding.accountType")}
           </label>
-          <Select
-            defaultValue={user.role || "reader"}
-            onValueChange={(val) => {
-              setValue("role", val);
-              // Force form dirty/touched if needed, or rely on handleSubmit
-            }}
-          >
-            <SelectTrigger className="h-11 bg-background border-primary/20">
-              <SelectValue placeholder="Select account type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="reader">{t("dashboard.branding.roles.reader")}</SelectItem>
-              <SelectItem value="writer">{t("dashboard.branding.roles.writer")}</SelectItem>
-              <SelectItem value="artist">{t("dashboard.branding.roles.artist")}</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2 p-3 bg-background/50 border border-primary/10 rounded-lg">
+            <span className="font-serif font-bold capitalize text-lg">{(t(`dashboard.branding.roles.${user.role}`) || user.role)}</span>
+            <span className="text-xs text-muted-foreground bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
+              {t("dashboard.branding.status_active", "Active")}
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            {t("dashboard.branding.role_info", "Your account role determines your access level. Contact support to change.")}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
