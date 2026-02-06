@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Edit2, Package, DollarSign, Eye, BarChart, Settings, Palette, Image as ImageIcon, BookOpen, Wallet, TrendingUp, History, ArrowUpRight, ShoppingBag, Download, Loader2, Truck, PenTool, ChevronLeft } from "lucide-react";
+import { Plus, Trash2, Edit2, Package, DollarSign, Eye, BarChart, Settings, Palette, Image as ImageIcon, BookOpen, Wallet, TrendingUp, History, ArrowUpRight, ShoppingBag, Download, Loader2, Truck, PenTool, ChevronLeft, UserCog } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { z } from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -564,6 +564,7 @@ function BrandingForm({ user }: { user: any }) {
       bio: user.bio || "",
       avatarUrl: user.avatarUrl || "",
       bannerUrl: user.bannerUrl || "",
+      role: user.role || "reader",
       storeSettings: {
         themeColor: user.storeSettings?.themeColor || "#000000",
         welcomeMessage: user.storeSettings?.welcomeMessage || "",
@@ -586,6 +587,30 @@ function BrandingForm({ user }: { user: any }) {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Account Type Selector */}
+        <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 mb-6">
+          <label className="text-sm font-bold flex items-center gap-2 mb-2 text-primary">
+            <UserCog className="w-4 h-4" />
+            {t("dashboard.branding.accountType")}
+          </label>
+          <Select
+            defaultValue={user.role || "reader"}
+            onValueChange={(val) => {
+              setValue("role", val);
+              // Force form dirty/touched if needed, or rely on handleSubmit
+            }}
+          >
+            <SelectTrigger className="h-11 bg-background border-primary/20">
+              <SelectValue placeholder="Select account type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="reader">{t("dashboard.branding.roles.reader")}</SelectItem>
+              <SelectItem value="writer">{t("dashboard.branding.roles.writer")}</SelectItem>
+              <SelectItem value="artist">{t("dashboard.branding.roles.artist")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="text-sm font-medium">{t("dashboard.branding.displayName")}</label>

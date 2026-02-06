@@ -92,6 +92,7 @@ export function useUpdateUser() {
       if (updates.bannerUrl) dbUpdates.banner_url = updates.bannerUrl;
       if (updates.storeSettings) dbUpdates.store_settings = updates.storeSettings;
       if (updates.shippingPolicy !== undefined) dbUpdates.shipping_policy = updates.shippingPolicy;
+      if (updates.role) dbUpdates.role = updates.role;
 
       console.log("💾 Sending to Supabase:", dbUpdates);
 

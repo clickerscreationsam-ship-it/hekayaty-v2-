@@ -183,6 +183,12 @@
                 "standard": "Standard (Banner + Avatar)",
                 "hero": "Hero (Full Image)",
                 "minimal": "Minimal (Text Only)"
+            },
+            "accountType": "Account Type",
+            "roles": {
+                "reader": "Reader (Browse & Read)",
+                "writer": "Writer (Publish & Sell)",
+                "artist": "Artist (Sell Assets)"
             }
         }
     },
