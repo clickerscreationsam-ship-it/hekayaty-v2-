@@ -22,6 +22,7 @@ import Writers from "@/pages/Writers";
 import Legal from "@/pages/Legal";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
+import HekayatyGuide from "@/pages/HekayatyGuide";
 
 function Router() {
   return (
@@ -44,6 +45,7 @@ function Router() {
       <Route path="/book/:id" component={ProductDetails} />
       <Route path="/read/:id" component={ReadBook} />
       <Route path="/legal" component={Legal} />
+      <Route path="/guide" component={HekayatyGuide} />
       <Route component={NotFound} />
     </Switch>
   );

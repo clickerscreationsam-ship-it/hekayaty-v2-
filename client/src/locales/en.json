@@ -23,7 +23,8 @@
         "login": "Log in",
         "getStarted": "Get Started",
         "cart": "Cart",
-        "studio": "Writer Studio"
+        "studio": "Writer Studio",
+        "guide": "Platform Guide"
     },
     "hero": {
         "tagline": "The universe for storytellers",

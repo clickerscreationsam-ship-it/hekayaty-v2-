@@ -2,7 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, BookOpen, PenTool } from "lucide-react";
+import { ArrowRight, Sparkles, BookOpen, PenTool, Info } from "lucide-react";
 import { useWriters } from "@/hooks/use-users";
 import { useBestSellerProducts } from "@/hooks/use-products";
 import { FeaturedWriter } from "@/components/FeaturedWriter";
@@ -82,6 +82,12 @@ export default function Home() {
                 <button className="px-8 py-4 rounded-xl glass text-foreground font-bold text-lg hover:bg-white/50 transition-all flex items-center gap-2">
                   <PenTool className="w-5 h-5" />
                   {t("hero.cta_write")}
+                </button>
+              </Link>
+              <Link href="/guide">
+                <button className="px-8 py-4 rounded-xl border border-white/20 bg-white/5 backdrop-blur-md text-white font-bold text-lg hover:bg-white/10 transition-all flex items-center gap-2">
+                  <Info className="w-5 h-5 text-accent" />
+                  {t("nav.guide")}
                 </button>
               </Link>
             </div>

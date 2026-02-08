@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Feather, BookOpen, ShoppingBag, LayoutDashboard, User, Palette, Store, Users, ShieldCheck, Menu, X, PenTool } from "lucide-react";
+import { Feather, BookOpen, ShoppingBag, LayoutDashboard, User, Palette, Store, Users, ShieldCheck, Menu, X, PenTool, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
 import { useAuth } from "@/hooks/use-auth";
@@ -21,6 +21,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
     { label: t("nav.marketplace"), href: "/marketplace", icon: ShoppingBag },
     { label: t("nav.assets"), href: "/assets", icon: Palette },
     { label: t("nav.worldbuilders"), href: "/worldbuilders", icon: Users },
+    { label: t("nav.guide"), href: "/guide", icon: HelpCircle },
   ];
 
   if (user?.role === 'admin') {
