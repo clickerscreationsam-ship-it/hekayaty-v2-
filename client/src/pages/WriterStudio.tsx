@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useProducts, useProduct, useUpdateProduct, useCreateProduct } from "@/hooks/use-products";
+import { useChapters, useCreateChapter, useUpdateChapter, useDeleteChapter } from "@/hooks/use-chapters";
 import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -57,9 +58,16 @@ export default function WriterStudio() {
         lineHeight: 1.8
     });
 
+    const { data: chapters, isLoading: chaptersLoading } = useChapters(selectedId || 0);
+    const createChapter = useCreateChapter();
+    const updateChapter = useUpdateChapter();
+    const deleteChapter = useDeleteChapter();
+
+    const [activeChapterId, setActiveChapterId] = useState<number | null>(null);
+
+    // Initial load: Set content from product (legacy) OR first chapter
     useEffect(() => {
         if (currentProduct) {
-            setContent(currentProduct.content || "");
             setTitle(currentProduct.title || "");
             setGenre(currentProduct.genre || "");
             setPrice(currentProduct.price || 0);
@@ -68,6 +76,46 @@ export default function WriterStudio() {
             }
         }
     }, [currentProduct]);
+
+    // Handle Chapter Selection / Content Sync
+    useEffect(() => {
+        if (chapters && chapters.length > 0) {
+            // Logic: If no chapter selected, select the first one
+            if (!activeChapterId) {
+                setActiveChapterId(chapters[0].id);
+                setContent(chapters[0].content || "");
+            } else {
+                // If chapter selected, update content to match selected chapter
+                // (Only if we just switched chapters - simpler to just use effect on activeChapterId)
+            }
+        } else if (currentProduct) {
+            // Legacy mode: no chapters, use product content
+            setContent(currentProduct.content || "");
+        }
+    }, [chapters, currentProduct, activeChapterId]);
+
+    // Update content when switching chapters manually
+    const handleChapterSelect = (id: number) => {
+        setActiveChapterId(id);
+        const chapter = chapters?.find(c => c.id === id);
+        if (chapter) setContent(chapter.content || "");
+    };
+
+    const handleAddChapter = () => {
+        if (!selectedId) return;
+        const nextIndex = chapters ? chapters.length : 0;
+        createChapter.mutate({
+            productId: selectedId,
+            title: `Chapter ${nextIndex + 1}`,
+            content: "",
+            orderIndex: nextIndex
+        }, {
+            onSuccess: (newChapter) => {
+                setActiveChapterId(newChapter.id);
+                setContent("");
+            }
+        });
+    };
 
     const createProduct = useCreateProduct();
 
@@ -222,6 +270,8 @@ export default function WriterStudio() {
                                         genre={genre}
                                         price={price}
                                         appearanceSettings={appSettings}
+                                        activeChapterId={activeChapterId}
+                                        chapters={chapters}
                                     />
                                 </div>
                             </header>
@@ -231,31 +281,78 @@ export default function WriterStudio() {
                                 <div className="flex-grow overflow-y-auto">
                                     <AnimatePresence mode="wait">
                                         {activeTab === "write" && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -10 }}
-                                                className="max-w-4xl mx-auto p-12 min-h-full flex flex-col"
-                                            >
-                                                <Textarea
-                                                    value={content}
-                                                    onChange={(e) => setContent(e.target.value)}
-                                                    placeholder={t("studio.placeholder")}
-                                                    className={cn(
-                                                        "flex-grow min-h-[70vh] text-xl leading-relaxed resize-none bg-transparent border-none focus-visible:ring-0 p-0 selection:bg-primary/20",
-                                                        appSettings.fontFamily === 'serif' ? 'font-serif' : 'font-sans'
-                                                    )}
-                                                    style={{
-                                                        fontSize: `${appSettings.fontSize}px`,
-                                                        lineHeight: appSettings.lineHeight
-                                                    }}
-                                                    dir="auto"
-                                                />
-                                                <div className="mt-12 py-6 border-t border-white/5 flex justify-between items-center text-xs text-muted-foreground uppercase tracking-widest">
-                                                    <span>{t("studio.words")}: {content?.trim() ? content.split(/\s+/).length : 0}</span>
-                                                    <span>{t("studio.autosave")}</span>
+                                            <div className="flex h-full">
+                                                {/* Chapter Sidebar */}
+                                                <div className="w-64 border-r border-white/5 bg-black/20 flex flex-col">
+                                                    <div className="p-4 border-b border-white/5 flex items-center justify-between">
+                                                        <h3 className="font-bold text-sm uppercase tracking-wider">{t("studio.chapters")}</h3>
+                                                        <Button size="sm" variant="ghost" onClick={handleAddChapter} disabled={createChapter.isPending}>
+                                                            <Plus className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
+                                                    <div className="overflow-y-auto flex-grow p-2 space-y-1">
+                                                        {chapters && chapters.length > 0 ? (
+                                                            chapters.map((chapter) => (
+                                                                <button
+                                                                    key={chapter.id}
+                                                                    onClick={() => handleChapterSelect(chapter.id)}
+                                                                    className={cn(
+                                                                        "w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center justify-between group",
+                                                                        activeChapterId === chapter.id
+                                                                            ? "bg-primary/20 text-primary border border-primary/20"
+                                                                            : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                                                                    )}
+                                                                >
+                                                                    <span className="truncate">{chapter.title}</span>
+                                                                    {activeChapterId === chapter.id && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                                                                </button>
+                                                            ))
+                                                        ) : (
+                                                            <div className="p-4 text-center text-xs text-muted-foreground opacity-50">
+                                                                No chapters yet.<br />Click + to add.
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </motion.div>
+
+                                                {/* Editor */}
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    className="flex-grow p-12 min-h-full flex flex-col"
+                                                >
+                                                    {chapters && chapters.length > 0 && activeChapterId ? (
+                                                        <div className="mb-6">
+                                                            <input
+                                                                className="bg-transparent border-none text-2xl font-serif font-bold w-full focus:outline-none placeholder:text-muted-foreground/30"
+                                                                value={chapters.find(c => c.id === activeChapterId)?.title || ""}
+                                                                onChange={(e) => updateChapter.mutate({ id: activeChapterId, title: e.target.value })}
+                                                                placeholder="Chapter Title"
+                                                            />
+                                                        </div>
+                                                    ) : null}
+
+                                                    <Textarea
+                                                        value={content}
+                                                        onChange={(e) => setContent(e.target.value)}
+                                                        placeholder={t("studio.placeholder")}
+                                                        className={cn(
+                                                            "flex-grow min-h-[70vh] text-xl leading-relaxed resize-none bg-transparent border-none focus-visible:ring-0 p-0 selection:bg-primary/20",
+                                                            appSettings.fontFamily === 'serif' ? 'font-serif' : 'font-sans'
+                                                        )}
+                                                        style={{
+                                                            fontSize: `${appSettings.fontSize}px`,
+                                                            lineHeight: appSettings.lineHeight
+                                                        }}
+                                                        dir="auto"
+                                                    />
+                                                    <div className="mt-6 py-4 border-t border-white/5 flex justify-between items-center text-xs text-muted-foreground uppercase tracking-widest">
+                                                        <span>{t("studio.words")}: {content?.trim() ? content.split(/\s+/).length : 0}</span>
+                                                        <span>{t("studio.autosave")}</span>
+                                                    </div>
+                                                </motion.div>
+                                            </div>
                                         )}
 
                                         {activeTab === "appearance" && (
@@ -430,25 +527,40 @@ export default function WriterStudio() {
     );
 }
 
-function SaveButton({ product, content, title, genre, price, appearanceSettings }: any) {
+function SaveButton({ product, content, title, genre, price, appearanceSettings, activeChapterId, chapters }: any) {
     const { t } = useTranslation();
     const updateProduct = useUpdateProduct();
+    const updateChapter = useUpdateChapter();
     const [saved, setSaved] = useState(false);
 
     const handleSave = () => {
+        // 1. Save Product Metadata (always)
         updateProduct.mutate({
             id: product.id,
-            content,
+            // Only update legacy content if NOT using chapters
+            content: (!chapters || chapters.length === 0) ? content : undefined,
             title,
             genre,
             price,
             appearanceSettings
-        }, {
-            onSuccess: () => {
-                setSaved(true);
-                setTimeout(() => setSaved(false), 2000);
-            }
         });
+
+        // 2. Save Chapter Content (if chapters exist)
+        if (activeChapterId) {
+            updateChapter.mutate({
+                id: activeChapterId,
+                content
+            }, {
+                onSuccess: () => {
+                    setSaved(true);
+                    setTimeout(() => setSaved(false), 2000);
+                }
+            });
+        } else {
+            // Legacy save success feedback
+            setSaved(true);
+            setTimeout(() => setSaved(false), 2000);
+        }
     };
 
     return (

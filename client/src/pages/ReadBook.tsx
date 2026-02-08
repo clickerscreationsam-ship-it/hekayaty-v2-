@@ -1,4 +1,5 @@
 import { useProduct, useUpdateProduct, useProductContent } from "@/hooks/use-products";
+import { useChapters } from "@/hooks/use-chapters";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2, ArrowLeft, Settings, Type, Moon, Sun, Bookmark, Edit, Save, X } from "lucide-react";
 import { Link, useRoute } from "wouter";
@@ -11,6 +12,7 @@ export default function ReadBook() {
     const id = parseInt(params?.id || "0");
     const { data: product, isLoading: productLoading } = useProduct(id);
     const { data: fetchedContent, isLoading: contentLoading } = useProductContent(id);
+    const { data: chapters, isLoading: chaptersLoading } = useChapters(id);
     const updateProduct = useUpdateProduct();
     const { user } = useAuth(); // Get current user
 
@@ -20,12 +22,23 @@ export default function ReadBook() {
 
     const [isEditing, setIsEditing] = useState(false);
     const [textContent, setTextContent] = useState("");
+    const [activeChapterIndex, setActiveChapterIndex] = useState(0);
 
-    const isLoading = productLoading || contentLoading;
+    const isLoading = productLoading || contentLoading || chaptersLoading;
 
     // Initialize text content and appearance when product loads
     useEffect(() => {
-        const actualContent = fetchedContent || product?.content || product?.description || "";
+        let actualContent = "";
+
+        if (chapters && chapters.length > 0) {
+            // Chapter Mode
+            const chapter = chapters[activeChapterIndex];
+            actualContent = chapter ? (chapter.content || "") : "";
+        } else {
+            // Legacy Mode
+            actualContent = fetchedContent || product?.content || product?.description || "";
+        }
+
         setTextContent(actualContent);
 
         if (product?.appearanceSettings) {
@@ -34,7 +47,7 @@ export default function ReadBook() {
             if (settings.fontSize) setFontSize(settings.fontSize);
             if (settings.fontFamily) setFontFamily(settings.fontFamily as any);
         }
-    }, [product, fetchedContent]);
+    }, [product, fetchedContent, chapters, activeChapterIndex]);
 
     const handleSave = () => {
         if (!product) return;
@@ -113,6 +126,11 @@ export default function ReadBook() {
 
                     <h1 className={`${gTheme.font} font-bold truncate max-w-[200px] sm:max-w-md hidden sm:block`}>
                         {product.title}
+                        {chapters && chapters.length > 0 && (
+                            <span className="opacity-50 font-normal ml-2 text-sm">
+                                — {chapters[activeChapterIndex]?.title}
+                            </span>
+                        )}
                     </h1>
 
                     <div className="flex items-center gap-2">
@@ -190,9 +208,29 @@ export default function ReadBook() {
                     )}
 
                     <div className="mt-20 flex justify-between items-center border-t py-8 opacity-50">
-                        <Button variant="outline" disabled>Previous Chapter</Button>
-                        <span className="text-sm">Page 1 of 240</span>
-                        <Button variant="outline">Next Chapter</Button>
+                        <Button
+                            variant="outline"
+                            disabled={activeChapterIndex === 0}
+                            onClick={() => {
+                                window.scrollTo(0, 0);
+                                setActiveChapterIndex(prev => Math.max(0, prev - 1));
+                            }}
+                        >
+                            Previous Chapter
+                        </Button>
+                        <span className="text-sm">
+                            {chapters && chapters.length > 0 ? `Chapter ${activeChapterIndex + 1} of ${chapters.length}` : 'End'}
+                        </span>
+                        <Button
+                            variant="outline"
+                            disabled={!chapters || activeChapterIndex >= chapters.length - 1}
+                            onClick={() => {
+                                window.scrollTo(0, 0);
+                                setActiveChapterIndex(prev => prev + 1);
+                            }}
+                        >
+                            Next Chapter
+                        </Button>
                     </div>
                 </main>
             </div>

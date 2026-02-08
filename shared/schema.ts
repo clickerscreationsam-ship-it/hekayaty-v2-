@@ -66,6 +66,15 @@ export const products = pgTable("products", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const chapters = pgTable("chapters", {
+  id: serial("id").primaryKey(),
+  productId: integer("product_id").notNull(),
+  title: text("title").notNull(),
+  content: text("content"),
+  orderIndex: integer("order_index").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const shippingRates = pgTable("shipping_rates", {
   id: serial("id").primaryKey(),
   creatorId: text("creator_id").notNull(),
@@ -276,6 +285,10 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
+
+export const insertChapterSchema = createInsertSchema(chapters).omit({ id: true, createdAt: true });
+export type Chapter = typeof chapters.$inferSelect;
+export type InsertChapter = z.infer<typeof insertChapterSchema>;
 
 export type Variant = typeof productVariants.$inferSelect;
 export type InsertVariant = z.infer<typeof insertVariantSchema>;
