@@ -143,6 +143,9 @@ export async function registerRoutes(
       genre: req.query.genre as string,
       search: req.query.search as string,
       type: req.query.type as string,
+      // If writerId is provided (Dashboard), allow fetching all including drafts (undefined filter).
+      // If writerId is NOT provided (Marketplace), FORCE isPublished=true to hide drafts.
+      isPublished: req.query.writerId ? undefined : true,
     };
     const products = await storage.getProducts(filters);
     res.json(products);

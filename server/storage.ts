@@ -20,7 +20,7 @@ export interface IStorage {
   updateUser(id: string, updates: Partial<InsertUser>): Promise<User>;
 
   // Products & Variants
-  getProducts(filters?: { writerId?: string; genre?: string; search?: string; type?: string }): Promise<Product[]>;
+  getProducts(filters?: { writerId?: string; genre?: string; search?: string; type?: string; isPublished?: boolean }): Promise<Product[]>;
   getProduct(id: number): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product>;
@@ -181,7 +181,7 @@ export class MemStorage implements IStorage {
   }
 
   // Products
-  async getProducts(filters?: { writerId?: string; genre?: string; search?: string; type?: string }): Promise<Product[]> {
+  async getProducts(filters?: { writerId?: string; genre?: string; search?: string; type?: string; isPublished?: boolean }): Promise<Product[]> {
     let products = Array.from(this.products.values());
     if (filters) {
       if (filters.writerId) products = products.filter(p => p.writerId === filters.writerId);
@@ -191,6 +191,7 @@ export class MemStorage implements IStorage {
         products = products.filter(p => p.title.toLowerCase().includes(query) || p.description.toLowerCase().includes(query));
       }
       if (filters.type) products = products.filter(p => p.type === filters.type);
+      if (filters.isPublished !== undefined) products = products.filter(p => p.isPublished === filters.isPublished);
     }
     return products;
   }
