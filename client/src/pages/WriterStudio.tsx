@@ -47,6 +47,9 @@ export default function WriterStudio() {
 
     const [activeTab, setActiveTab] = useState("write");
     const [content, setContent] = useState("");
+    const [title, setTitle] = useState("");
+    const [genre, setGenre] = useState("");
+    const [price, setPrice] = useState(0);
     const [appSettings, setAppSettings] = useState<any>({
         theme: 'sepia',
         fontFamily: 'serif',
@@ -57,6 +60,9 @@ export default function WriterStudio() {
     useEffect(() => {
         if (currentProduct) {
             setContent(currentProduct.content || "");
+            setTitle(currentProduct.title || "");
+            setGenre(currentProduct.genre || "");
+            setPrice(currentProduct.price || 0);
             if (currentProduct.appearanceSettings) {
                 setAppSettings(currentProduct.appearanceSettings);
             }
@@ -209,7 +215,14 @@ export default function WriterStudio() {
                                         </Button>
                                     </Link>
 
-                                    <SaveButton product={currentProduct} content={content} appearanceSettings={appSettings} />
+                                    <SaveButton
+                                        product={currentProduct}
+                                        content={content}
+                                        title={title}
+                                        genre={genre}
+                                        price={price}
+                                        appearanceSettings={appSettings}
+                                    />
                                 </div>
                             </header>
 
@@ -344,16 +357,29 @@ export default function WriterStudio() {
                                                         <div className="space-y-4">
                                                             <div className="space-y-2">
                                                                 <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.title")}</label>
-                                                                <Input defaultValue={currentProduct.title} className="bg-white/5 border-white/10" />
+                                                                <Input
+                                                                    value={title}
+                                                                    onChange={(e) => setTitle(e.target.value)}
+                                                                    className="bg-white/5 border-white/10"
+                                                                />
                                                             </div>
                                                             <div className="space-y-2">
                                                                 <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.genre")}</label>
-                                                                <Input defaultValue={currentProduct.genre} className="bg-white/5 border-white/10" />
+                                                                <Input
+                                                                    value={genre}
+                                                                    onChange={(e) => setGenre(e.target.value)}
+                                                                    className="bg-white/5 border-white/10"
+                                                                />
                                                             </div>
                                                             {currentProduct.type !== 'promotional' && (
                                                                 <div className="space-y-2">
                                                                     <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.price")}</label>
-                                                                    <Input type="number" defaultValue={currentProduct.price} className="bg-white/5 border-white/10" />
+                                                                    <Input
+                                                                        type="number"
+                                                                        value={price}
+                                                                        onChange={(e) => setPrice(Number(e.target.value))}
+                                                                        className="bg-white/5 border-white/10"
+                                                                    />
                                                                 </div>
                                                             )}
                                                         </div>
@@ -404,7 +430,7 @@ export default function WriterStudio() {
     );
 }
 
-function SaveButton({ product, content, appearanceSettings }: any) {
+function SaveButton({ product, content, title, genre, price, appearanceSettings }: any) {
     const { t } = useTranslation();
     const updateProduct = useUpdateProduct();
     const [saved, setSaved] = useState(false);
@@ -413,6 +439,9 @@ function SaveButton({ product, content, appearanceSettings }: any) {
         updateProduct.mutate({
             id: product.id,
             content,
+            title,
+            genre,
+            price,
             appearanceSettings
         }, {
             onSuccess: () => {
