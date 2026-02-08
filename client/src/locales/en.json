@@ -242,6 +242,8 @@
         "draft_simple": "Draft",
         "public": "Public Marketplace",
         "published_simple": "Published",
+        "deleteMasterpiece": "Delete Masterpiece",
+        "deleteConfirm": "Are you sure you want to delete this masterpiece? This action cannot be undone.",
         "tabs": {
             "write": "Write",
             "appearance": "Appearance",

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { useProducts, useProduct, useUpdateProduct, useCreateProduct } from "@/hooks/use-products";
+import { useProducts, useProduct, useUpdateProduct, useCreateProduct, useDeleteProduct } from "@/hooks/use-products";
 import { useChapters, useCreateChapter, useUpdateChapter, useDeleteChapter } from "@/hooks/use-chapters";
 import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/Navbar";
@@ -62,6 +62,7 @@ export default function WriterStudio() {
     const createChapter = useCreateChapter();
     const updateChapter = useUpdateChapter();
     const deleteChapter = useDeleteChapter();
+    const deleteProduct = useDeleteProduct();
 
     const [activeChapterId, setActiveChapterId] = useState<number | null>(null);
 
@@ -143,6 +144,19 @@ export default function WriterStudio() {
         });
     };
 
+    const handleDeleteProduct = (e: React.MouseEvent, id: number) => {
+        e.stopPropagation();
+        if (confirm(t("studio.deleteConfirm") || "Are you sure you want to delete this masterpiece?")) {
+            deleteProduct.mutate(id, {
+                onSuccess: () => {
+                    if (selectedId === id) {
+                        setLocation("/studio");
+                    }
+                }
+            });
+        }
+    };
+
     if (!user) return <Redirect to="/auth" />;
 
     return (
@@ -187,7 +201,16 @@ export default function WriterStudio() {
                                         : "hover:bg-white/5 text-muted-foreground border border-transparent"
                                 )}
                             >
-                                <div className="font-bold truncate pr-6">{p.title}</div>
+                                <div className="flex justify-between items-start gap-2">
+                                    <div className="font-bold truncate flex-grow">{p.title}</div>
+                                    <button
+                                        onClick={(e) => handleDeleteProduct(e, p.id)}
+                                        className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/20 hover:text-red-500 rounded-lg transition-all"
+                                        title={t("studio.deleteMasterpiece")}
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
                                 <div className="text-xs opacity-50 flex items-center gap-2 mt-1">
                                     <div className={cn("w-2 h-2 rounded-full", p.isPublished ? "bg-green-500" : "bg-amber-500")} />
                                     {p.isPublished ? t("studio.published_simple") : t("studio.draft_simple")} • {p.genre}
@@ -195,9 +218,9 @@ export default function WriterStudio() {
                                 {selectedId === p.id && (
                                     <motion.div
                                         layoutId="active-line"
-                                        className="absolute right-4 top-1/2 -translate-y-1/2"
+                                        className="absolute right-2 bottom-4"
                                     >
-                                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                                     </motion.div>
                                 )}
                             </button>
