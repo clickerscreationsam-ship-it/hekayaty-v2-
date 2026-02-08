@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Edit2, Package, DollarSign, Eye, BarChart, Settings, Palette, Image as ImageIcon, BookOpen, Wallet, TrendingUp, History, ArrowUpRight, ShoppingBag, Download, Loader2, Truck, PenTool, ChevronLeft, UserCog, CheckCircle2 } from "lucide-react";
+import { Plus, Trash2, Edit2, Package, DollarSign, Eye, BarChart, Settings, Palette, Image as ImageIcon, BookOpen, Wallet, TrendingUp, History, ArrowUpRight, ShoppingBag, Download, Loader2, Truck, PenTool, ChevronLeft, UserCog, CheckCircle2, Layout } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { z } from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -895,6 +895,12 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                       💡 {isArabic ? "بعد النشر، سيتم توجيهك مباشرة إلى الاستوديو لإضافة فصولك." : "After publishing, you'll be taken to the studio to add your chapters."}
                     </p>
                   </div>
+                  <Link href="/studio">
+                    <Button type="button" variant="outline" className="w-full gap-2 border-primary/20 hover:bg-primary/5 hover:text-primary rounded-xl py-6">
+                      <Layout className="w-5 h-5 text-primary" />
+                      {t("nav.studio")}
+                    </Button>
+                  </Link>
                 </div>
               </div>
             )}
