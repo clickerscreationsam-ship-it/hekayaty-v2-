@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Edit2, Package, DollarSign, Eye, BarChart, Settings, Palette, Image as ImageIcon, BookOpen, Wallet, TrendingUp, History, ArrowUpRight, ShoppingBag, Download, Loader2, Truck, PenTool, ChevronLeft, UserCog } from "lucide-react";
+import { Plus, Trash2, Edit2, Package, DollarSign, Eye, BarChart, Settings, Palette, Image as ImageIcon, BookOpen, Wallet, TrendingUp, History, ArrowUpRight, ShoppingBag, Download, Loader2, Truck, PenTool, ChevronLeft, UserCog, CheckCircle2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { z } from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -801,9 +801,12 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
       finalData.price = 0;
     }
     createProduct.mutate(finalData, {
-      onSuccess: () => {
+      onSuccess: (newProduct) => {
         reset();
         onOpenChange(false);
+        if (newProduct.type === 'ebook') {
+          window.location.href = `/studio/${newProduct.id}`;
+        }
       }
     });
   };
@@ -869,53 +872,29 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
 
             {type === "ebook" && (
               <div className="col-span-2 space-y-4">
-                <div className="space-y-2 p-4 border border-dashed rounded-lg bg-muted/50">
-                  <label className="text-sm font-medium flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <BookOpen className="w-4 h-4" />
-                      {t("dashboard.products.uploadChapters")}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="gap-2 h-8"
-                      onClick={() => setShowImmersiveEditor(true)}
-                    >
-                      <PenTool className="w-3.5 h-3.5" />
-                      {t("dashboard.products.immersiveMode")}
-                    </Button>
-                  </label>
-
-                  {/* Dev Notice for Arabic Extractor */}
-                  <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg flex flex-col gap-1 mb-2">
-                    <p className="text-[10px] md:text-xs font-bold text-amber-600 flex items-center gap-1">
-                      ⚠️ {isArabic ? "مستخرج النصوص العربي قيد التطوير حالياً." : "Arabic text extractor is in development."}
-                    </p>
-                    <p className="text-[10px] md:text-xs text-amber-600/80 leading-tight">
-                      {isArabic
-                        ? "يرجى الدخول إلى الاستوديو الخاص بك ونسخ قصتك ولصقها يدوياً لتجنب أي أخطاء في التنسيق. يمكنك تجاهل أي أخطاء تظهر أثناء المعالجة."
-                        : "Please enter your studio and copy-paste your story manually to avoid formatting errors. You can ignore any typing/processing errors for now."}
+                <div className="space-y-4 p-6 border-2 border-primary/20 border-dashed rounded-2xl bg-primary/5">
+                  <div className="flex items-center gap-3 text-primary">
+                    <PenTool className="w-6 h-6" />
+                    <h4 className="font-bold text-lg">{t("studio.title")}</h4>
+                  </div>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {t("dashboard.products.ebookGuide")}
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 text-xs text-green-600 font-medium">
+                      <CheckCircle2 className="w-4 h-4" />
+                      {isArabic ? "لا يوجد رفع ملفات - جرب الأمان الحقيقي" : "No file uploads - Experience true security"}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-green-600 font-medium">
+                      <CheckCircle2 className="w-4 h-4" />
+                      {isArabic ? "حماية من نسخ الـ PDF والسرقة" : "Anti-PDF scraping & theft protection"}
+                    </div>
+                  </div>
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                    <p className="text-xs text-amber-600 font-bold">
+                      💡 {isArabic ? "بعد النشر، سيتم توجيهك مباشرة إلى الاستوديو لإضافة فصولك." : "After publishing, you'll be taken to the studio to add your chapters."}
                     </p>
                   </div>
-
-                  <Input
-                    type="file"
-                    accept=".pdf,.docx"
-                    onChange={handleFileExtract}
-                    disabled={isExtracting}
-                  />
-                  {isExtracting && <p className="text-xs text-blue-500 animate-pulse">{t("dashboard.products.extracting")}</p>}
-                  {extractError && <p className="text-xs text-red-500">{extractError}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium mb-1 block">{t("dashboard.products.contentPreview")}</label>
-                  <Textarea
-                    {...register("content")}
-                    placeholder={t("dashboard.products.contentPlaceholder")}
-                    className="h-64 font-serif text-base leading-relaxed bg-background/50"
-                  />
                 </div>
               </div>
             )}

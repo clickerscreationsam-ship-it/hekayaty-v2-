@@ -131,6 +131,9 @@ export default function ReadBook() {
                                 — {chapters[activeChapterIndex]?.title}
                             </span>
                         )}
+                        <span className="ml-4 px-2 py-0.5 rounded-full bg-green-500/10 text-green-500 text-[10px] font-bold uppercase tracking-widest border border-green-500/20">
+                            Protected View
+                        </span>
                     </h1>
 
                     <div className="flex items-center gap-2">

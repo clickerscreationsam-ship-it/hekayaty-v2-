@@ -309,9 +309,20 @@ export default function WriterStudio() {
                                                             ))
                                                         ) : (
                                                             <div className="p-4 text-center text-xs text-muted-foreground opacity-50">
-                                                                No chapters yet.<br />Click + to add.
+                                                                {t("studio.noChaptersYet") || "No chapters yet."}<br />{t("studio.clickPlus") || "Click + to add."}
                                                             </div>
                                                         )}
+                                                    </div>
+
+                                                    <div className="p-4 border-t border-white/5">
+                                                        <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
+                                                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2 flex items-center gap-1">
+                                                                <PenTool className="w-3 h-3" /> {t("studio.guide.title")}
+                                                            </h4>
+                                                            <p className="text-[9px] leading-relaxed text-muted-foreground">
+                                                                {t("studio.guide.chapters")}
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -322,35 +333,79 @@ export default function WriterStudio() {
                                                     exit={{ opacity: 0, y: -10 }}
                                                     className="flex-grow p-12 min-h-full flex flex-col"
                                                 >
-                                                    {chapters && chapters.length > 0 && activeChapterId ? (
-                                                        <div className="mb-6">
-                                                            <input
-                                                                className="bg-transparent border-none text-2xl font-serif font-bold w-full focus:outline-none placeholder:text-muted-foreground/30"
-                                                                value={chapters.find(c => c.id === activeChapterId)?.title || ""}
-                                                                onChange={(e) => updateChapter.mutate({ id: activeChapterId, title: e.target.value })}
-                                                                placeholder="Chapter Title"
-                                                            />
-                                                        </div>
-                                                    ) : null}
+                                                    {(!chapters || chapters.length === 0) ? (
+                                                        <div className="flex-grow flex items-center justify-center">
+                                                            <div className="max-w-xl space-y-8 text-center bg-white/5 p-12 rounded-3xl border border-white/10 backdrop-blur-md">
+                                                                <div className="w-20 h-20 bg-primary/20 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                                                                    <PenTool className="w-10 h-10" />
+                                                                </div>
+                                                                <h2 className="text-3xl font-serif font-bold text-gradient">{t("studio.guide.title")}</h2>
 
-                                                    <Textarea
-                                                        value={content}
-                                                        onChange={(e) => setContent(e.target.value)}
-                                                        placeholder={t("studio.placeholder")}
-                                                        className={cn(
-                                                            "flex-grow min-h-[70vh] text-xl leading-relaxed resize-none bg-transparent border-none focus-visible:ring-0 p-0 selection:bg-primary/20",
-                                                            appSettings.fontFamily === 'serif' ? 'font-serif' : 'font-sans'
-                                                        )}
-                                                        style={{
-                                                            fontSize: `${appSettings.fontSize}px`,
-                                                            lineHeight: appSettings.lineHeight
-                                                        }}
-                                                        dir="auto"
-                                                    />
-                                                    <div className="mt-6 py-4 border-t border-white/5 flex justify-between items-center text-xs text-muted-foreground uppercase tracking-widest">
-                                                        <span>{t("studio.words")}: {content?.trim() ? content.split(/\s+/).length : 0}</span>
-                                                        <span>{t("studio.autosave")}</span>
-                                                    </div>
+                                                                <div className="grid gap-6 text-left">
+                                                                    <div className="flex gap-4">
+                                                                        <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold">1</div>
+                                                                        <div>
+                                                                            <h3 className="font-bold text-lg mb-1">{t("studio.chapters")}</h3>
+                                                                            <p className="text-muted-foreground text-sm">{t("studio.guide.chapters")}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex gap-4">
+                                                                        <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold">2</div>
+                                                                        <div>
+                                                                            <h3 className="font-bold text-lg mb-1">{t("dashboard.products.uploadChapters")}</h3>
+                                                                            <p className="text-muted-foreground text-sm">{t("studio.guide.copyPaste")}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex gap-4">
+                                                                        <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold">3</div>
+                                                                        <div>
+                                                                            <h3 className="font-bold text-lg mb-1">{t("studio.save")}</h3>
+                                                                            <p className="text-muted-foreground text-sm">{t("studio.guide.save")}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <Button
+                                                                    onClick={handleAddChapter}
+                                                                    className="w-full py-6 text-lg font-bold bg-primary hover:bg-primary/90 shadow-xl shadow-primary/20"
+                                                                >
+                                                                    <Plus className="w-5 h-5 mr-2" /> {t("studio.createNew")}
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            {activeChapterId && (
+                                                                <div className="mb-6">
+                                                                    <input
+                                                                        className="bg-transparent border-none text-2xl font-serif font-bold w-full focus:outline-none placeholder:text-muted-foreground/30"
+                                                                        value={chapters.find(c => c.id === activeChapterId)?.title || ""}
+                                                                        onChange={(e) => updateChapter.mutate({ id: activeChapterId, title: e.target.value })}
+                                                                        placeholder="Chapter Title"
+                                                                    />
+                                                                </div>
+                                                            )}
+
+                                                            <Textarea
+                                                                value={content}
+                                                                onChange={(e) => setContent(e.target.value)}
+                                                                placeholder={t("studio.placeholder")}
+                                                                className={cn(
+                                                                    "flex-grow min-h-[70vh] text-xl leading-relaxed resize-none bg-transparent border-none focus-visible:ring-0 p-0 selection:bg-primary/20",
+                                                                    appSettings.fontFamily === 'serif' ? 'font-serif' : 'font-sans'
+                                                                )}
+                                                                style={{
+                                                                    fontSize: `${appSettings.fontSize}px`,
+                                                                    lineHeight: appSettings.lineHeight
+                                                                }}
+                                                                dir="auto"
+                                                            />
+                                                            <div className="mt-6 py-4 border-t border-white/5 flex justify-between items-center text-xs text-muted-foreground uppercase tracking-widest">
+                                                                <span>{t("studio.words")}: {content?.trim() ? content.split(/\s+/).length : 0}</span>
+                                                                <span>{t("studio.autosave")}</span>
+                                                            </div>
+                                                        </>
+                                                    )}
                                                 </motion.div>
                                             </div>
                                         )}

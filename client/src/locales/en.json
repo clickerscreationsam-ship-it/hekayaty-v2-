@@ -151,7 +151,8 @@
             "publishItem": "Publish Item",
             "deleteConfirm": "Are you sure you want to delete this product?",
             "sold": "Sold",
-            "revenue": "Rev"
+            "revenue": "Rev",
+            "ebookGuide": "Manage your e-book content directly in the Writer Studio for maximum security and anti-theft protection."
         },
         "shipping": {
             "title": "Shipping Settings",
@@ -277,6 +278,12 @@
             },
             "publish": "Publish to Market",
             "offline": "Take Offline"
+        },
+        "guide": {
+            "title": "Writer's Journey Guide",
+            "copyPaste": "Copy and paste your chapters from your original file into the studio. This ensures your content remains within our protected reader, making it impossible for others to download as a PDF or steal your work.",
+            "chapters": "Use the '+' button in the sidebar to add new chapters. Organizing your story by chapters provides a premium reading experience for your audience.",
+            "save": "Don't forget to save your journey! Your work is encrypted and protected by our advanced security system."
         }
     },
     "chat": {

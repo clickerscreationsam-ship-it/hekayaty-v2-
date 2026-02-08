@@ -136,6 +136,12 @@ export default function ProductDetails() {
               )}
 
               <div className="flex flex-col sm:flex-row gap-4 items-center">
+                {product.type === "ebook" && (
+                  <div className="w-full flex items-center gap-2 text-[10px] text-green-500 font-bold uppercase tracking-widest mb-2 px-2">
+                    <ShieldCheck className="w-3 h-3" />
+                    {t("studio.guide.save") ? "Protected Digital Content • Anti-Theft Protection" : "Protected Digital Content • Anti-Theft Protection"}
+                  </div>
+                )}
                 {product.type === "promotional" ? (
                   <div className="w-full bg-primary/10 border border-primary/20 p-6 rounded-2xl text-center">
                     <p className="font-bold text-primary mb-1 uppercase tracking-widest text-sm">
