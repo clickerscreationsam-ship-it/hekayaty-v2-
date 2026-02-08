@@ -1,4 +1,4 @@
-import { useProduct, useUpdateProduct } from "@/hooks/use-products";
+import { useProduct, useUpdateProduct, useProductContent } from "@/hooks/use-products";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2, ArrowLeft, Settings, Type, Moon, Sun, Bookmark, Edit, Save, X } from "lucide-react";
 import { Link, useRoute } from "wouter";
