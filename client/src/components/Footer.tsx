@@ -59,7 +59,7 @@ export function Footer() {
                 <Instagram className="w-5 h-5" />
               </a>
               <a
-                href="https://www.tiktok.com/@hekayaty11?_r=1&_t=ZS-93aXVbJJ4eG"
+                href="https://www.tiktok.com/@hekayaty0?_r=1&_t=ZS-93mDnETkKUK"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-secondary/10 hover:bg-secondary/20 text-secondary-foreground transition-colors"
