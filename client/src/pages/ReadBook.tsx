@@ -4,8 +4,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { Loader2, ArrowLeft, Settings, Type, Moon, Sun, Bookmark, Edit, Save, X } from "lucide-react";
 import { Link, useRoute } from "wouter";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 export default function ReadBook() {
     const [, params] = useRoute("/read/:id");
@@ -14,7 +16,8 @@ export default function ReadBook() {
     const { data: fetchedContent, isLoading: contentLoading } = useProductContent(id);
     const { data: chapters, isLoading: chaptersLoading } = useChapters(id);
     const updateProduct = useUpdateProduct();
-    const { user } = useAuth(); // Get current user
+    const { user } = useAuth();
+    const { t, i18n } = useTranslation();
 
     const [fontSize, setFontSize] = useState(18);
     const [theme, setTheme] = useState<"light" | "dark" | "sepia">("light");
@@ -120,38 +123,38 @@ export default function ReadBook() {
                 <nav className={`fixed top-0 w-full h-16 flex items-center justify-between px-4 sm:px-8 border-b z-50 transition-all duration-500 backdrop-blur-md bg-opacity-80 ${gTheme.base}`}>
                     <Link href="/dashboard">
                         <Button variant="ghost" size="sm" className="gap-2">
-                            <ArrowLeft className="w-4 h-4" /> Exit
+                            <ArrowLeft className={cn("w-4 h-4", i18n.language === 'ar' ? 'rotate-180' : '')} /> {t("common.back")}
                         </Button>
                     </Link>
 
-                    <h1 className={`${gTheme.font} font-bold truncate max-w-[200px] sm:max-w-md hidden sm:block`}>
+                    <h1 className={`${gTheme.font} font-bold truncate max-w-[200px] sm:max-w-md hidden sm:block`} dir="auto">
                         {product.title}
                         {chapters && chapters.length > 0 && (
-                            <span className="opacity-50 font-normal ml-2 text-sm">
+                            <span className="opacity-50 font-normal mx-2 text-sm">
                                 — {chapters[activeChapterIndex]?.title}
                             </span>
                         )}
-                        <span className="ml-4 px-2 py-0.5 rounded-full bg-green-500/10 text-green-500 text-[10px] font-bold uppercase tracking-widest border border-green-500/20">
-                            Protected View
+                        <span className="mx-4 px-2 py-0.5 rounded-full bg-green-500/10 text-green-500 text-[10px] font-bold uppercase tracking-widest border border-green-500/20">
+                            {t("reader.protected", "Protected View")}
                         </span>
                     </h1>
 
                     <div className="flex items-center gap-2">
                         {/* Edit Mode Toggle (Only for Author) */}
                         {user && product && user.id === product.writerId && (
-                            <div className="mr-2 border-r pr-2">
+                            <div className={cn("mx-2 border-r pr-2 flex items-center gap-2", i18n.language === 'ar' ? 'border-r-0 border-l pl-2' : '')}>
                                 {isEditing ? (
-                                    <div className="flex gap-2">
+                                    <>
                                         <Button size="sm" onClick={handleSave} disabled={updateProduct.isPending}>
-                                            <Save className="w-4 h-4 mr-1" /> Save
+                                            <Save className="w-4 h-4 mr-1" /> {t("common.save")}
                                         </Button>
                                         <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)}>
                                             <X className="w-4 h-4" />
                                         </Button>
-                                    </div>
+                                    </>
                                 ) : (
                                     <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
-                                        <Edit className="w-4 h-4 mr-2" /> Edit Book
+                                        <Edit className="w-4 h-4 mr-2" /> {t("dashboard.products.editProduct")}
                                     </Button>
                                 )}
                             </div>
@@ -197,13 +200,22 @@ export default function ReadBook() {
                         />
                     ) : (
                         <div className={`prose prose-lg max-w-none dark:prose-invert ${gTheme.font} leading-loose whitespace-pre-wrap`}>
-                            {product.content ? (
-                                <div>{product.content}</div>
-                            ) : (
+                            {textContent ? (
                                 <div>
-                                    <h2 className={gTheme.accent}>Chapter 1: The Beginning</h2>
+                                    {chapters && chapters.length > 0 && (
+                                        <h2 className={cn("text-3xl font-serif font-bold mb-8", gTheme.accent)}>
+                                            {chapters[activeChapterIndex]?.title}
+                                        </h2>
+                                    )}
+                                    <div className="text-lg opacity-90 leading-relaxed" dir="auto">
+                                        {textContent}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center py-20 opacity-50">
+                                    <h2 className={gTheme.accent}>No content available</h2>
                                     <p className="leading-relaxed mb-6">
-                                        {product.description || "No content available for this book."}
+                                        {product.description || "The author hasn't added any chapters yet."}
                                     </p>
                                 </div>
                             )}
@@ -219,10 +231,10 @@ export default function ReadBook() {
                                 setActiveChapterIndex(prev => Math.max(0, prev - 1));
                             }}
                         >
-                            Previous Chapter
+                            {t("common.previous")}
                         </Button>
                         <span className="text-sm">
-                            {chapters && chapters.length > 0 ? `Chapter ${activeChapterIndex + 1} of ${chapters.length}` : 'End'}
+                            {chapters && chapters.length > 0 ? `${t("studio.market.serialized", "Chapter")} ${activeChapterIndex + 1} / ${chapters.length}` : t("common.end", "End")}
                         </span>
                         <Button
                             variant="outline"
@@ -232,7 +244,7 @@ export default function ReadBook() {
                                 setActiveChapterIndex(prev => prev + 1);
                             }}
                         >
-                            Next Chapter
+                            {t("common.next")}
                         </Button>
                     </div>
                 </main>

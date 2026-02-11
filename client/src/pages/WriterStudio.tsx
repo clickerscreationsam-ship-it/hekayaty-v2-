@@ -24,7 +24,8 @@ import {
     Loader2,
     Trash2,
     CheckCircle2,
-    AlertCircle
+    AlertCircle,
+    Sparkles
 } from "lucide-react";
 import { Link, useRoute, useLocation, Redirect } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
@@ -51,6 +52,7 @@ export default function WriterStudio() {
     const [title, setTitle] = useState("");
     const [genre, setGenre] = useState("");
     const [price, setPrice] = useState(0);
+    const [isFree, setIsFree] = useState(false);
     const [isSerialized, setIsSerialized] = useState(false);
     const [seriesStatus, setSeriesStatus] = useState("ongoing");
     const [appSettings, setAppSettings] = useState<any>({
@@ -74,6 +76,7 @@ export default function WriterStudio() {
             setTitle(currentProduct.title || "");
             setGenre(currentProduct.genre || "");
             setPrice(currentProduct.price || 0);
+            setIsFree(currentProduct.price === 0);
             setIsSerialized(currentProduct.isSerialized || false);
             setSeriesStatus(currentProduct.seriesStatus || "ongoing");
             if (currentProduct.appearanceSettings) {
@@ -284,11 +287,24 @@ export default function WriterStudio() {
 
                                     <div className="h-8 w-px bg-white/10" />
 
-                                    <Link href={`/read/${selectedId}`} className="hidden sm:block">
-                                        <Button variant="outline" size="sm" className="gap-2 rounded-full border-white/10 hover:bg-white/5">
-                                            <Eye className="w-4 h-4" /> {t("studio.preview")}
-                                        </Button>
-                                    </Link>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="gap-2 rounded-full border-white/10 hover:bg-white/5 hidden sm:flex"
+                                        onClick={() => {
+                                            if (activeChapterId) {
+                                                updateChapter.mutate({ id: activeChapterId, content }, {
+                                                    onSuccess: () => setLocation(`/read/${selectedId}`)
+                                                });
+                                            } else {
+                                                setLocation(`/read/${selectedId}`);
+                                            }
+                                        }}
+                                        disabled={updateChapter.isPending}
+                                    >
+                                        {updateChapter.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
+                                        {t("studio.preview")}
+                                    </Button>
 
                                     <SaveButton
                                         product={currentProduct}
@@ -553,14 +569,38 @@ export default function WriterStudio() {
                                                                 />
                                                             </div>
                                                             {currentProduct.type !== 'promotional' && (
-                                                                <div className="space-y-2">
-                                                                    <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.price")}</label>
-                                                                    <Input
-                                                                        type="number"
-                                                                        value={price}
-                                                                        onChange={(e) => setPrice(Number(e.target.value))}
-                                                                        className="bg-white/5 border-white/10"
-                                                                    />
+                                                                <div className="space-y-4 pt-2">
+                                                                    <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+                                                                        <div className="flex flex-col gap-1">
+                                                                            <label className="text-sm font-bold flex items-center gap-2">
+                                                                                <Sparkles className="w-4 h-4 text-primary" />
+                                                                                {t("studio.market.free_story", "Free Story")}
+                                                                            </label>
+                                                                            <p className="text-[10px] text-muted-foreground">
+                                                                                {t("studio.market.free_desc", "Readers can read this story for free.")}
+                                                                            </p>
+                                                                        </div>
+                                                                        <UISwitch
+                                                                            checked={isFree}
+                                                                            onCheckedChange={(checked) => {
+                                                                                setIsFree(checked);
+                                                                                if (checked) setPrice(0);
+                                                                            }}
+                                                                        />
+                                                                    </div>
+
+                                                                    {!isFree && (
+                                                                        <div className="space-y-2">
+                                                                            <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.price")} (EGP)</label>
+                                                                            <Input
+                                                                                type="number"
+                                                                                value={price === 0 ? "" : price}
+                                                                                onChange={(e) => setPrice(Number(e.target.value))}
+                                                                                className="bg-white/5 border-white/10 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                                                placeholder="0"
+                                                                            />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             )}
 
