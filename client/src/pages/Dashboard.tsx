@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
 
 import { useAuth } from "@/hooks/use-auth";
-import { Redirect, Link } from "wouter";
+import { Redirect, Link, useLocation } from "wouter";
 import { ShippingSettings } from "@/components/dashboard/ShippingSettings";
 import { SellerOrders } from "@/components/dashboard/SellerOrders";
 import { DashboardChat } from "@/components/dashboard/DashboardChat";
@@ -42,6 +42,15 @@ export default function Dashboard() {
   const { t } = useTranslation();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isPayoutOpen, setIsPayoutOpen] = useState(false);
+  const [location] = useLocation();
+  const searchParams = new URLSearchParams(window.location.search);
+  const initialTab = searchParams.get('tab') || 'overview';
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) setActiveTab(tab);
+  }, [window.location.search]);
 
   const { data: adminMessages } = useAdminPrivateMessages();
   const unreadCount = adminMessages?.filter(m => !m.isRead && m.receiverId === user?.id).length || 0;
@@ -103,32 +112,64 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <Tabs defaultValue={user.role === 'reader' ? "library" : "overview"} className="w-full">
-          <div className="w-full overflow-x-auto pb-2 -mb-2">
-            <TabsList className="mb-8 p-1 bg-muted/50 rounded-xl justify-start h-auto w-full md:w-auto inline-flex min-w-full md:min-w-0">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full relative z-10"
+        >
+          <div className="w-full overflow-x-auto pb-2 -mb-2 custom-scrollbar">
+            <TabsList className="mb-8 p-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl justify-start h-auto w-full md:w-auto inline-flex min-w-full md:min-w-0 gap-1">
               {user.role === 'reader' && (
-                <TabsTrigger value="library" className="rounded-lg px-6 py-2 flex-shrink-0">My Library</TabsTrigger>
+                <TabsTrigger value="library" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
+                  <BookOpen className="w-4 h-4" /> My Library
+                </TabsTrigger>
               )}
-              {user.role !== 'reader' && <TabsTrigger value="overview" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.overview")}</TabsTrigger>}
-              {user.role !== 'reader' && <TabsTrigger value="products" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.products")}</TabsTrigger>}
-              {user.role !== 'reader' && <TabsTrigger value="orders" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.orders")}</TabsTrigger>}
-              {user.role !== 'reader' && <TabsTrigger value="wallet" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.wallet")}</TabsTrigger>}
-              {user.role !== 'reader' && <TabsTrigger value="shipping" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.shipping")}</TabsTrigger>}
-              {user.role !== 'reader' && <TabsTrigger value="chat" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.chat", "Store Chat")}</TabsTrigger>}
-              {user.role !== 'reader' && <TabsTrigger value="admin_messages" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2 relative">
-                <MessageSquare className="w-4 h-4" />
-                {t("dashboard.tabs.admin_messages")}
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground font-bold border-2 border-background">
-                    {unreadCount}
-                  </span>
-                )}
-              </TabsTrigger>}
-              <TabsTrigger value="branding" className="rounded-lg px-6 py-2 flex-shrink-0">
-                {user.role === 'reader' ? 'Profile Settings' : t("dashboard.tabs.branding")}
+              {user.role !== 'reader' && (
+                <TabsTrigger value="overview" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
+                  <Layout className="w-4 h-4" /> {t("dashboard.tabs.overview")}
+                </TabsTrigger>
+              )}
+              {user.role !== 'reader' && (
+                <TabsTrigger value="products" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
+                  <Package className="w-4 h-4" /> {t("dashboard.tabs.products")}
+                </TabsTrigger>
+              )}
+              {user.role !== 'reader' && (
+                <TabsTrigger value="orders" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
+                  <ShoppingBag className="w-4 h-4" /> {t("dashboard.tabs.orders")}
+                </TabsTrigger>
+              )}
+              {user.role !== 'reader' && (
+                <TabsTrigger value="wallet" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
+                  <Wallet className="w-4 h-4" /> {t("dashboard.tabs.wallet")}
+                </TabsTrigger>
+              )}
+              {user.role !== 'reader' && (
+                <TabsTrigger value="shipping" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
+                  <Truck className="w-4 h-4" /> {t("dashboard.tabs.shipping")}
+                </TabsTrigger>
+              )}
+              {user.role !== 'reader' && (
+                <TabsTrigger value="chat" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
+                  <MessageSquare className="w-4 h-4" /> {t("dashboard.tabs.chat")}
+                </TabsTrigger>
+              )}
+              {user.role !== 'reader' && (
+                <TabsTrigger value="admin_messages" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2 relative">
+                  <Megaphone className="w-4 h-4" /> {t("dashboard.tabs.admin_messages")}
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground font-bold border-2 border-background animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                </TabsTrigger>
+              )}
+              <TabsTrigger value="branding" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2 font-bold">
+                <Settings className="w-4 h-4" /> {user.role === 'reader' ? 'Profile Settings' : t("dashboard.tabs.branding")}
               </TabsTrigger>
             </TabsList>
           </div>
+
 
           <TabsContent value="overview">
             {/* Stats Grid */}

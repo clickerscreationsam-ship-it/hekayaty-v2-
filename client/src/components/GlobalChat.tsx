@@ -19,6 +19,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/hooks/use-auth';
 import { useChat, ChatMessage } from '@/hooks/use-chat';
+import { useAdminPrivateMessages } from '@/hooks/use-admin-system';
 import { formatDistanceToNow } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
@@ -49,6 +50,9 @@ export function GlobalChat() {
         reportMessage,
         isLoading
     } = useChat('global');
+
+    const { data: adminMessages } = useAdminPrivateMessages();
+    const adminUnreadCount = adminMessages?.filter(m => !m.isRead && m.receiverId === user?.id).length || 0;
 
     const [inputValue, setInputValue] = useState('');
     const [isReportOpen, setIsReportOpen] = useState(false);
@@ -100,9 +104,12 @@ export function GlobalChat() {
                 >
                     {isOpen ? <X className="w-8 h-8" /> : <MessageSquare className="w-8 h-8" />}
 
-                    {!isOpen && messages.length > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-background">
-                            {messages.length > 99 ? '99+' : messages.length}
+                    {!isOpen && (adminUnreadCount > 0 || messages.length > 0) && (
+                        <span className={cn(
+                            "absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold text-white border-2 border-background",
+                            adminUnreadCount > 0 ? "bg-primary animate-bounce shadow-lg" : "bg-red-500"
+                        )}>
+                            {adminUnreadCount > 0 ? adminUnreadCount : (messages.length > 99 ? '99+' : messages.length)}
                         </span>
                     )}
                 </Button>

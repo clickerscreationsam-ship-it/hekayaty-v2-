@@ -445,6 +445,14 @@ export default function AdminDashboard() {
     const { data: adminMessages } = useAdminPrivateMessages();
     const unreadCount = adminMessages?.filter(m => !m.isRead && m.receiverId === user?.id).length || 0;
 
+    const searchParams = new URLSearchParams(window.location.search);
+    const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'orders');
+
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        if (tab) setActiveTab(tab);
+    }, [window.location.search]);
+
 
     if (authLoading || ordersLoading) {
         return (
@@ -469,7 +477,7 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                <Tabs defaultValue="orders" className="w-full">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className="mb-4">
                         <TabsTrigger value="orders" className="gap-2">
                             <AlertTriangle className="w-4 h-4" /> Pending Orders

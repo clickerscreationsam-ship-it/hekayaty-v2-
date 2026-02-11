@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Feather, BookOpen, ShoppingBag, LayoutDashboard, User, Palette, Store, Users, ShieldCheck, Menu, X, PenTool, HelpCircle } from "lucide-react";
+import { Feather, BookOpen, ShoppingBag, LayoutDashboard, User, Palette, Store, Users, ShieldCheck, Menu, X, PenTool, HelpCircle, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
 import { useAuth } from "@/hooks/use-auth";
@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { OrderNotificationDrawer } from "./OrderNotificationDrawer";
 import { useState } from "react";
+import { useAdminPrivateMessages } from "@/hooks/use-admin-system";
 
 export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
   if (hideNav) return null;
@@ -16,6 +17,9 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
   const { t } = useTranslation();
   const cartCount = cartItems?.length || 0;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const { data: adminMessages } = useAdminPrivateMessages();
+  const unreadMessagesCount = adminMessages?.filter(m => !m.isRead && m.receiverId === user?.id).length || 0;
 
   const navItems = [
     { label: t("nav.marketplace"), href: "/marketplace", icon: ShoppingBag },
@@ -62,6 +66,11 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
                 >
                   <Icon className="w-4 h-4" />
                   <span className="hidden lg:inline">{item.label}</span>
+                  {(item.href === '/studio' || item.href === '/admin') && unreadMessagesCount > 0 && (
+                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground font-bold shadow-lg shadow-primary/20 animate-pulse">
+                      {unreadMessagesCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -72,6 +81,19 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
             <LanguageSwitcher />
 
             {user && <OrderNotificationDrawer />}
+
+            {user && (user.role === 'writer' || user.role === 'artist' || user.role === 'admin') && (
+              <Link href={user.role === 'admin' ? "/admin" : "/dashboard?tab=admin_messages"}>
+                <Button variant="ghost" size="icon" className="relative text-foreground hover:text-primary transition-colors touch-target">
+                  <MessageSquare className="w-5 h-5" />
+                  {unreadMessagesCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-bounce">
+                      {unreadMessagesCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            )}
 
             <Link href="/cart">
               <Button variant="ghost" size="icon" className="relative text-foreground hover:text-primary transition-colors touch-target">
@@ -154,7 +176,12 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
                     `}
                   >
                     <Icon className="w-5 h-5" />
-                    {item.label}
+                    <span className="flex-1">{item.label}</span>
+                    {(item.href === '/studio' || item.href === '/admin') && unreadMessagesCount > 0 && (
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground font-bold">
+                        {unreadMessagesCount}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
