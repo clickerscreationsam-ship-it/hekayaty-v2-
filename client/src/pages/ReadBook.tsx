@@ -97,15 +97,15 @@ export default function ReadBook() {
         }
         if (genre.includes("horror") || genre.includes("mystery")) {
             return {
-                base: theme === "light" ? "bg-[#f3f4f6] text-[#111827]" : "bg-[#09090b] text-[#a1a1aa]",
-                accent: "text-[#ef4444]",
+                base: theme === "light" ? "bg-[#f3f4f6] text-[#111827]" : "bg-[#09090b] text-white",
+                accent: "text-red-500",
                 font: "font-serif",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"
             };
         }
         return {
             base: bgColors[theme],
-            accent: "text-primary",
+            accent: theme === 'dark' ? "text-amber-400" : "text-primary",
             font: fontFamily === 'serif' ? 'font-serif' : 'font-sans',
             overlay: ""
         };
@@ -199,7 +199,11 @@ export default function ReadBook() {
                             dir="auto"
                         />
                     ) : (
-                        <div className={`prose prose-lg max-w-none dark:prose-invert ${gTheme.font} leading-loose whitespace-pre-wrap`}>
+                        <div className={cn(
+                            "prose prose-lg max-w-none leading-loose whitespace-pre-wrap transition-colors duration-500",
+                            theme === 'dark' ? "prose-invert text-white" : theme === 'sepia' ? "text-[#5b4636]" : "text-gray-900",
+                            gTheme.font
+                        )}>
                             {textContent ? (
                                 <div>
                                     {chapters && chapters.length > 0 && (
