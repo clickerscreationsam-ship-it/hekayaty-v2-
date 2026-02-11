@@ -293,7 +293,7 @@ function PortfolioCommissionButton({ artistId, artistName }: { artistId: string,
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 font-bold px-6 py-6 rounded-xl animate-pulse-slow transition-transform hover:scale-105"
+        className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 font-bold px-8 py-7 rounded-xl transition-colors active:scale-95"
       >
         <Sparkles className="w-5 h-5" /> Request a Design
       </Button>

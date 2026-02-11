@@ -46,7 +46,7 @@ export function DesignRequestDialog({ artistId, artistName, isOpen, onOpenChange
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[600px] glass-card border-white/10 p-0 overflow-hidden">
+            <DialogContent className="sm:max-w-[600px] glass border-white/10 p-0 overflow-hidden shadow-2xl">
                 <div className="bg-gradient-to-r from-primary/20 to-accent/20 p-6 border-b border-white/10">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-serif flex items-center gap-2">
