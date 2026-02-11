@@ -21,6 +21,7 @@ import { motion } from "framer-motion";
 
 export default function ProductDetails() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [, params] = useRoute("/book/:id");
   const id = parseInt(params?.id || "0");
@@ -258,7 +259,7 @@ export default function ProductDetails() {
                     <h4 className="font-bold text-foreground text-sm leading-none mb-1">{review.user?.displayName || "Reader"}</h4>
                     <div className="flex text-yellow-500 gap-0.5">
                       {Array(5).fill(0).map((_, i) => (
-                        <Star key={i} className={`w-3 h-3 ${i < Math.round(review.rating / 10) ? 'fill-current' : 'opacity-20'}`} />
+                        <Star key={i} className={`w-3 h-3 ${i < (review.rating > 5 ? Math.round(review.rating / 10) : review.rating) ? 'fill-current' : 'opacity-20'}`} />
                       ))}
                     </div>
                   </div>
@@ -339,7 +340,7 @@ function ReviewForm({ productId }: { productId: number }) {
   type FormData = z.infer<typeof formSchema>;
   const { register, handleSubmit, reset, watch, setValue } = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: { userId: user?.id, productId, rating: 50, comment: "" }
+    defaultValues: { userId: user?.id, productId, rating: 5, comment: "" }
   });
 
   if (!user) return (
@@ -376,8 +377,8 @@ function ReviewForm({ productId }: { productId: number }) {
           <div className="flex items-center gap-6">
             <span className="text-sm font-black uppercase tracking-tighter text-primary/60">{t("productDetails.yourRating") || "Your Rating"}</span>
             <div className="flex gap-2">
-              {[10, 20, 30, 40, 50].map((starValue) => {
-                const currentRating = watch("rating") || 50;
+              {[1, 2, 3, 4, 5].map((starValue) => {
+                const currentRating = watch("rating") || 5;
                 const isSelected = currentRating >= starValue;
                 return (
                   <button
