@@ -56,6 +56,7 @@ export default function WriterStudio() {
     const [isFree, setIsFree] = useState(false);
     const [isSerialized, setIsSerialized] = useState(false);
     const [seriesStatus, setSeriesStatus] = useState("ongoing");
+    const [coverUrl, setCoverUrl] = useState("");
     const [appSettings, setAppSettings] = useState<any>({
         theme: 'light',
         fontFamily: 'serif',
@@ -81,6 +82,7 @@ export default function WriterStudio() {
             setIsSerialized(currentProduct.isSerialized || false);
             setSeriesStatus(currentProduct.seriesStatus || "ongoing");
             setDescription(currentProduct.description || "");
+            setCoverUrl(currentProduct.coverUrl || "");
             if (currentProduct.appearanceSettings) {
                 setAppSettings(currentProduct.appearanceSettings);
             }
@@ -317,6 +319,7 @@ export default function WriterStudio() {
                                         price={price}
                                         isSerialized={isSerialized}
                                         seriesStatus={seriesStatus}
+                                        coverUrl={coverUrl}
                                         appearanceSettings={appSettings}
                                         activeChapterId={activeChapterId}
                                         chapters={chapters}
@@ -654,9 +657,9 @@ export default function WriterStudio() {
                                                         <h3 className="text-sm font-bold uppercase tracking-widest text-primary">{t("studio.market.cover")}</h3>
                                                         <CloudinaryUpload
                                                             label={t("studio.market.coverLabel")}
-                                                            defaultImage={currentProduct.coverUrl}
+                                                            defaultImage={coverUrl || currentProduct.coverUrl}
                                                             folder="hekayaty_covers"
-                                                            onUpload={(url) => console.log(url)}
+                                                            onUpload={(url) => setCoverUrl(url)}
                                                         />
                                                     </div>
                                                 </section>
@@ -695,7 +698,7 @@ export default function WriterStudio() {
     );
 }
 
-function SaveButton({ product, content, title, description, genre, price, isSerialized, seriesStatus, appearanceSettings, activeChapterId, chapters }: any) {
+function SaveButton({ product, content, title, description, genre, price, isSerialized, seriesStatus, coverUrl, appearanceSettings, activeChapterId, chapters }: any) {
     const { t } = useTranslation();
     const updateProduct = useUpdateProduct();
     const updateChapter = useUpdateChapter();
@@ -713,6 +716,7 @@ function SaveButton({ product, content, title, description, genre, price, isSeri
             isSerialized,
             seriesStatus,
             description,
+            coverUrl,
             appearanceSettings
         });
 
