@@ -10,12 +10,13 @@ import { ProductCard } from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { SEO } from "@/components/SEO";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const { data: writers } = useWriters();
   const { data: bestSellers } = useBestSellerProducts();
   const { data: serializedStories } = useSerializedProducts(4);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
 
   return (
@@ -145,7 +146,7 @@ export default function Home() {
             </div>
             <Link href="/marketplace?isSerialized=true">
               <button className="text-primary font-medium hover:underline flex items-center gap-2">
-                {t("home.bestSellers.viewAll")} <ArrowRight className="w-4 h-4" />
+                {t("home.bestSellers.viewAll")} <ArrowRight className={cn("w-4 h-4", i18n.language === 'ar' ? 'rotate-180' : '')} />
               </button>
             </Link>
           </div>
