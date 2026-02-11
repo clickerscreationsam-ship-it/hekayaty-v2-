@@ -17,7 +17,7 @@ export function useCart() {
 
             const { data: cartItems, error: cartError } = await supabase
                 .from('cart_items')
-                .select('*, product:products(*)')
+                .select('*, product:products(*), collection:collections(*)')
                 .eq('user_id', user.id);
 
             if (cartError) throw cartError;
@@ -35,7 +35,7 @@ export function useCart() {
                     variantId: item.variant_id,
                     quantity: item.quantity,
                     addedAt: item.added_at,
-                    product: {
+                    product: p ? {
                         id: p.id,
                         writerId: p.writer_id,
                         title: p.title,
@@ -55,7 +55,15 @@ export function useCart() {
                         requiresShipping: p.requires_shipping,
                         createdAt: p.created_at,
                         updatedAt: p.updated_at
-                    }
+                    } : null,
+                    collection: item.collection ? {
+                        id: item.collection.id,
+                        title: item.collection.title,
+                        description: item.collection.description,
+                        coverUrl: item.collection.cover_image_url,
+                        price: item.collection.price,
+                        isCollection: true
+                    } : null
                 };
             }).filter(Boolean) as any[];
         }
@@ -158,12 +166,15 @@ export function useAddToCart() {
             if (!user) throw new Error("Must be logged in");
 
             // Check if item already exists
-            const { data: existing } = await supabase
+            const query = supabase
                 .from('cart_items')
                 .select('*')
-                .eq('user_id', user.id)
-                .eq('product_id', item.productId)
-                .maybeSingle();
+                .eq('user_id', user.id);
+
+            if (item.productId) query.eq('product_id', item.productId);
+            else if (item.collectionId) query.eq('collection_id', item.collectionId);
+
+            const { data: existing } = await query.maybeSingle();
 
             if (existing) {
                 const { data, error } = await supabase
@@ -179,8 +190,9 @@ export function useAddToCart() {
                     .from('cart_items')
                     .insert({
                         user_id: user.id,
-                        product_id: item.productId,
-                        variant_id: item.variantId,
+                        product_id: item.productId || null,
+                        collection_id: item.collectionId || null,
+                        variant_id: item.variantId || null,
                         quantity: item.quantity || 1
                     })
                     .select()

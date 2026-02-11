@@ -2,9 +2,10 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, BookOpen, PenTool, Info, Layers } from "lucide-react";
+import { ArrowRight, Sparkles, BookOpen, PenTool, Info, Layers, LayoutGrid } from "lucide-react";
 import { useWriters } from "@/hooks/use-users";
 import { useBestSellerProducts, useSerializedProducts } from "@/hooks/use-products";
+import { useCollections } from "@/hooks/use-collections";
 import { FeaturedWriter } from "@/components/FeaturedWriter";
 import { ProductCard } from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,7 @@ export default function Home() {
   const { data: writers } = useWriters();
   const { data: bestSellers } = useBestSellerProducts();
   const { data: serializedStories } = useSerializedProducts(4);
+  const { data: collections } = useCollections({ isPublished: true });
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
 
@@ -162,6 +164,42 @@ export default function Home() {
             {serializedStories && serializedStories.length === 0 && (
               <p className="col-span-4 text-center text-muted-foreground py-10">
                 {t("home.serialized.empty", "No ongoing series found.")}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+      {/* Collections Section */}
+      <section className="py-24 relative overflow-hidden bg-secondary/5 border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex justify-between items-end mb-12">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-secondary/20 text-secondary border border-secondary/20 shadow-xl shadow-secondary/10">
+                <LayoutGrid className="w-8 h-8" />
+              </div>
+              <div>
+                <h2 className="text-4xl font-serif font-bold mb-2">{t("home.collections.title")}</h2>
+                <p className="text-muted-foreground">{t("home.collections.subtitle")}</p>
+              </div>
+            </div>
+            <Link href="/marketplace?type=collection">
+              <button className="text-secondary font-bold hover:underline flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 transition-all hover:bg-secondary/20">
+                {t("home.bestSellers.viewAll")} <ArrowRight className={cn("w-4 h-4", i18n.language === 'ar' ? 'rotate-180' : '')} />
+              </button>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {collections?.slice(0, 4).map((c) => (
+              <ProductCard key={c.id} collection={c} />
+            )) || (
+                Array(4).fill(0).map((_, i) => (
+                  <div key={i} className="h-96 rounded-2xl bg-card/50 animate-pulse" />
+                ))
+              )}
+            {collections && collections.length === 0 && (
+              <p className="col-span-4 text-center text-muted-foreground py-10">
+                {t("home.collections.empty", "No collections found.")}
               </p>
             )}
           </div>

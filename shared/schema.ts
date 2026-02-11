@@ -1,4 +1,4 @@
-import { pgTable, text, boolean, timestamp, jsonb, integer, serial } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, timestamp, jsonb, integer, serial, uuid, numeric } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -126,6 +126,43 @@ export const bundleItems = pgTable("bundle_items", {
   productId: integer("product_id").notNull(), // ref to products.id (int)
 });
 
+// === 3. STORY COLLECTIONS (BUNDLES V2) ===
+
+export const collections = pgTable("collections", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  writerId: text("writer_id").notNull(), // UUID ref to users
+  title: text("title").notNull(),
+  description: text("description"),
+  coverImageUrl: text("cover_image_url"),
+  price: numeric("price", { precision: 10, scale: 2 }),
+  discountPercentage: numeric("discount_percentage", { precision: 5, scale: 2 }).default("0"),
+  isFree: boolean("is_free").default(false),
+  isPublished: boolean("is_published").default(false),
+  visibility: text("visibility").default("public"), // public, private
+  totalSales: integer("total_sales").default(0),
+  estimatedTotalParts: integer("estimated_total_parts"),
+  featured: boolean("featured").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  deletedAt: timestamp("deleted_at"),
+});
+
+export const collectionItems = pgTable("collection_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  collectionId: uuid("collection_id").notNull(), // ref to collections.id
+  storyId: integer("story_id").notNull(), // ref to products.id
+  orderIndex: integer("order_index").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const purchases = pgTable("purchases", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull(), // ref to users.id
+  productType: text("product_type").notNull(), // story, collection
+  productId: text("product_id").notNull(), // UUID or Int as string
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // === 3. SOCIAL LAYERS ===
 
 export const follows = pgTable("follows", {
@@ -180,7 +217,8 @@ export const chatMessages = pgTable("chat_messages", {
 export const cartItems = pgTable("cart_items", {
   id: serial("id").primaryKey(),
   userId: text("user_id").notNull(),
-  productId: integer("product_id").notNull(),
+  productId: integer("product_id"),
+  collectionId: text("collection_id"),
   variantId: integer("variant_id"),
   quantity: integer("quantity").default(1),
   addedAt: timestamp("added_at").defaultNow(),
@@ -296,6 +334,9 @@ export const insertBundleSchema = createInsertSchema(bundles).omit({ id: true, c
 export const insertCartItemSchema = createInsertSchema(cartItems).omit({ id: true, addedAt: true });
 export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, createdAt: true });
 export const insertOrderItemSchema = createInsertSchema(orderItems).omit({ id: true });
+export const insertCollectionSchema = createInsertSchema(collections).omit({ id: true, createdAt: true, updatedAt: true, deletedAt: true, totalSales: true });
+export const insertCollectionItemSchema = createInsertSchema(collectionItems).omit({ id: true, createdAt: true });
+export const insertPurchaseSchema = createInsertSchema(purchases).omit({ id: true, createdAt: true });
 export const insertCouponSchema = createInsertSchema(coupons).omit({ id: true, createdAt: true, usageCount: true });
 export const insertEarningSchema = createInsertSchema(earnings).omit({ id: true, createdAt: true });
 export const insertPayoutSchema = createInsertSchema(payouts).omit({ id: true, requestedAt: true, processedAt: true });
@@ -353,6 +394,13 @@ export type InsertAdminPrivateMessage = z.infer<typeof insertAdminPrivateMessage
 
 export type AdminAnnouncement = typeof adminWriterAnnouncements.$inferSelect;
 export type InsertAdminAnnouncement = z.infer<typeof insertAdminAnnouncementSchema>;
+
+export type Collection = typeof collections.$inferSelect;
+export type InsertCollection = z.infer<typeof insertCollectionSchema>;
+export type CollectionItem = typeof collectionItems.$inferSelect;
+export type InsertCollectionItem = z.infer<typeof insertCollectionItemSchema>;
+export type Purchase = typeof purchases.$inferSelect;
+export type InsertPurchase = z.infer<typeof insertPurchaseSchema>;
 
 // Request Types
 export type CreateProductRequest = InsertProduct & { variants?: InsertVariant[] };

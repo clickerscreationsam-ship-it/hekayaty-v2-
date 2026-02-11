@@ -12,6 +12,7 @@ import Dashboard from "@/pages/Dashboard";
 import ProductDetails from "@/pages/ProductDetails";
 import ReadBook from "@/pages/ReadBook";
 import Cart from "@/pages/Cart";
+import CollectionDetails from "@/pages/CollectionDetails";
 import AuthPage from "@/pages/AuthPage";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import MakerOrders from "@/pages/creator/MakerOrders";
@@ -43,6 +44,7 @@ function Router() {
       <Route path="/cart" component={Cart} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/book/:id" component={ProductDetails} />
+      <Route path="/collection/:id" component={CollectionDetails} />
       <Route path="/read/:id" component={ReadBook} />
       <Route path="/legal" component={Legal} />
       <Route path="/guide" component={HekayatyGuide} />

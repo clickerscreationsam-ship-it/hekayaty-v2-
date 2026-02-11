@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useProducts } from "@/hooks/use-products";
+import { useCollections } from "@/hooks/use-collections";
 import { ProductCard } from "@/components/ProductCard";
-import { Search, Book, Palette, Layers } from "lucide-react";
+import { Search, Book, Palette, Layers, LayoutGrid } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import marketplaceBg from "@/assets/d2c8245c-c591-4cc9-84d2-27252be8dffb.png";
@@ -15,7 +16,7 @@ export default function Marketplace() {
 
   const [search, setSearch] = useState("");
   const [genre, setGenre] = useState<string | undefined>();
-  const [type, setType] = useState<"ebook" | "asset">(isAssetMode ? "asset" : "ebook");
+  const [type, setType] = useState<"ebook" | "asset" | "collection">(isAssetMode ? "asset" : "ebook");
   const [isSerialized, setIsSerialized] = useState<boolean | undefined>(
     new URLSearchParams(window.location.search).get('isSerialized') === 'true'
   );
@@ -30,15 +31,25 @@ export default function Marketplace() {
   }, [location, window.location.search]);
 
   // Update URL when type changes via UI
-  const handleTypeChange = (newType: "ebook" | "asset") => {
+  const handleTypeChange = (newType: "ebook" | "asset" | "collection") => {
     setType(newType);
     setGenre(undefined); // Reset genre when switching types
     if (newType === "asset") setLocation("/assets");
-    else setLocation("/marketplace");
+    else if (newType === "ebook") setLocation("/marketplace");
+    else setLocation("/marketplace?type=collection");
   };
 
-  const { data: productData, isLoading } = useProducts({ search, genre, type, isSerialized });
+  const { data: productData, isLoading: productsLoading } = useProducts({ search, genre, type: type === 'collection' ? 'ebook' : type, isSerialized });
+  const { data: collectionData, isLoading: collectionsLoading } = useCollections({ isPublished: true });
+
   const products = productData || [];
+  const collections = collectionData || [];
+
+  const isLoading = productsLoading || (type === 'collection' && collectionsLoading);
+
+  const displayItems = type === 'collection'
+    ? collections.filter(c => !search || c.title.toLowerCase().includes(search.toLowerCase()))
+    : products;
 
   const bookGenres = ["Fantasy", "Sci-Fi", "Romance", "Mystery", "Horror", "Non-Fiction"];
   const assetGenres = ["Cover Art", "Illustrations", "Textures", "UI Kits", "Character Design"];
@@ -89,6 +100,16 @@ export default function Marketplace() {
             >
               <Palette className="w-4 h-4" />
               {t("marketplace.tabs.assets")}
+            </button>
+            <button
+              onClick={() => handleTypeChange("collection")}
+              className={`flex items-center gap-2 pb-4 px-2 text-sm font-medium transition-all ${type === "collection"
+                ? "border-b-2 border-secondary text-secondary"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              <LayoutGrid className="w-4 h-4" />
+              {t("home.collections.badge")}
             </button>
             <button
               onClick={() => {
@@ -148,10 +169,14 @@ export default function Marketplace() {
                 <div key={i} className="aspect-[2/3] rounded-2xl bg-card/50 animate-pulse" />
               ))}
             </div>
-          ) : products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {products.map(product => (
-                <ProductCard key={product.id} product={product} />
+          ) : displayItems.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {displayItems.map((item: any) => (
+                <ProductCard
+                  key={item.id}
+                  product={type === 'collection' ? undefined : item}
+                  collection={type === 'collection' ? item : undefined}
+                />
               ))}
             </div>
           ) : (
