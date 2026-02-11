@@ -428,6 +428,8 @@
             "seriesStatus": "حالة السلسلة",
             "free_story": "قصة مجانية",
             "free_desc": "يمكن للقراء قراءة هذه القصة مجاناً.",
+            "description": "وصف القصة",
+            "descriptionPlaceholder": "أخبر القراء عن ماذا تتحدث قصتك...",
             "cover": "صورة الغلاف",
             "coverLabel": "غلاف الكتاب العام",
             "status": {

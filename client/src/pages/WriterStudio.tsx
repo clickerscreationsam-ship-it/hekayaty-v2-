@@ -52,6 +52,7 @@ export default function WriterStudio() {
     const [title, setTitle] = useState("");
     const [genre, setGenre] = useState("");
     const [price, setPrice] = useState(0);
+    const [description, setDescription] = useState("");
     const [isFree, setIsFree] = useState(false);
     const [isSerialized, setIsSerialized] = useState(false);
     const [seriesStatus, setSeriesStatus] = useState("ongoing");
@@ -79,6 +80,7 @@ export default function WriterStudio() {
             setIsFree(currentProduct.price === 0);
             setIsSerialized(currentProduct.isSerialized || false);
             setSeriesStatus(currentProduct.seriesStatus || "ongoing");
+            setDescription(currentProduct.description || "");
             if (currentProduct.appearanceSettings) {
                 setAppSettings(currentProduct.appearanceSettings);
             }
@@ -310,6 +312,7 @@ export default function WriterStudio() {
                                         product={currentProduct}
                                         content={content}
                                         title={title}
+                                        description={description}
                                         genre={genre}
                                         price={price}
                                         isSerialized={isSerialized}
@@ -567,6 +570,16 @@ export default function WriterStudio() {
                                                                     className="bg-white/5 border-white/10"
                                                                 />
                                                             </div>
+                                                            <div className="space-y-2">
+                                                                <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.description", "Description")}</label>
+                                                                <Textarea
+                                                                    value={description}
+                                                                    onChange={(e) => setDescription(e.target.value)}
+                                                                    className="bg-white/5 border-white/10 min-h-[100px]"
+                                                                    placeholder={t("studio.market.descriptionPlaceholder", "Tell readers what your story is about...")}
+                                                                    dir="auto"
+                                                                />
+                                                            </div>
                                                             {currentProduct.type !== 'promotional' && (
                                                                 <div className="space-y-4 pt-2">
                                                                     <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
@@ -682,7 +695,7 @@ export default function WriterStudio() {
     );
 }
 
-function SaveButton({ product, content, title, genre, price, isSerialized, seriesStatus, appearanceSettings, activeChapterId, chapters }: any) {
+function SaveButton({ product, content, title, description, genre, price, isSerialized, seriesStatus, appearanceSettings, activeChapterId, chapters }: any) {
     const { t } = useTranslation();
     const updateProduct = useUpdateProduct();
     const updateChapter = useUpdateChapter();
@@ -699,6 +712,7 @@ function SaveButton({ product, content, title, genre, price, isSerialized, serie
             price,
             isSerialized,
             seriesStatus,
+            description,
             appearanceSettings
         });
 
