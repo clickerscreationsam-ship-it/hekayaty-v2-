@@ -45,7 +45,8 @@
             "wallet": "Wallet",
             "shipping": "Shipping",
             "branding": "Store Settings",
-            "chat": "Store Chat"
+            "chat": "Store Chat",
+            "admin_messages": "Admin Messages"
         },
         "welcome_reader": "👋 Welcome to Your Profile!",
         "welcome_reader_desc": "Manage your account settings and personalize your reading experience.",

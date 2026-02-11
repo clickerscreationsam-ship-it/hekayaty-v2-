@@ -262,6 +262,26 @@ export const couponUsage = pgTable("coupon_usage", {
   usedAt: timestamp("used_at").defaultNow(),
 });
 
+// === 6. ADMIN SYSTEM ===
+
+export const adminPrivateMessages = pgTable("admin_private_messages", {
+  id: serial("id").primaryKey(),
+  senderId: text("sender_id").notNull(),
+  receiverId: text("receiver_id").notNull(),
+  content: text("content").notNull(),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const adminWriterAnnouncements = pgTable("admin_writer_announcements", {
+  id: serial("id").primaryKey(),
+  adminId: text("admin_id").notNull(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  isPinned: boolean("is_pinned").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // === SCHEMAS & TYPES ===
 
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
@@ -278,6 +298,8 @@ export const insertPayoutSchema = createInsertSchema(payouts).omit({ id: true, r
 export const insertShippingRateSchema = createInsertSchema(shippingRates).omit({ id: true, createdAt: true });
 export const insertShippingAddressSchema = createInsertSchema(shippingAddresses).omit({ id: true, createdAt: true });
 export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, createdAt: true });
+export const insertAdminPrivateMessageSchema = createInsertSchema(adminPrivateMessages).omit({ id: true, createdAt: true });
+export const insertAdminAnnouncementSchema = createInsertSchema(adminWriterAnnouncements).omit({ id: true, createdAt: true });
 
 
 export type User = typeof users.$inferSelect;
@@ -321,6 +343,12 @@ export type InsertShippingAddress = z.infer<typeof insertShippingAddressSchema>;
 
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+
+export type AdminPrivateMessage = typeof adminPrivateMessages.$inferSelect;
+export type InsertAdminPrivateMessage = z.infer<typeof insertAdminPrivateMessageSchema>;
+
+export type AdminAnnouncement = typeof adminWriterAnnouncements.$inferSelect;
+export type InsertAdminAnnouncement = z.infer<typeof insertAdminAnnouncementSchema>;
 
 // Request Types
 export type CreateProductRequest = InsertProduct & { variants?: InsertVariant[] };

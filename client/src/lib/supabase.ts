@@ -190,7 +190,51 @@ export type Database = {
                     is_pinned?: boolean;
                 };
             };
-            // Add more table types as needed
+            admin_private_messages: {
+                Row: {
+                    id: number;
+                    sender_id: string;
+                    receiver_id: string;
+                    content: string;
+                    is_read: boolean;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: number;
+                    sender_id: string;
+                    receiver_id: string;
+                    content: string;
+                    is_read?: boolean;
+                    created_at?: string;
+                };
+                Update: {
+                    is_read?: boolean;
+                };
+            };
+            admin_writer_announcements: {
+                Row: {
+                    id: number;
+                    admin_id: string;
+                    title: string;
+                    content: string;
+                    is_pinned: boolean;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: number;
+                    admin_id: string;
+                    title: string;
+                    content: string;
+                    is_pinned?: boolean;
+                    created_at?: string;
+                };
+                Update: {
+                    title?: string;
+                    content?: string;
+                    is_pinned?: boolean;
+                };
+            };
+
         };
     };
 };

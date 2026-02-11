@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Edit2, Package, DollarSign, Eye, BarChart, Settings, Palette, Image as ImageIcon, BookOpen, Wallet, TrendingUp, History, ArrowUpRight, ShoppingBag, Download, Loader2, Truck, PenTool, ChevronLeft, UserCog, CheckCircle2, Layout } from "lucide-react";
+import { Plus, Trash2, Edit2, Package, DollarSign, Eye, BarChart, Settings, Palette, Image as ImageIcon, BookOpen, Wallet, TrendingUp, History, ArrowUpRight, ShoppingBag, Download, Loader2, Truck, PenTool, ChevronLeft, UserCog, CheckCircle2, Layout, MessageSquare, Megaphone, Send, Pin } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { z } from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,6 +28,9 @@ import { useEarnings, usePayouts, useRequestPayout } from "@/hooks/use-earnings"
 import { formatDate, cn } from "@/lib/utils";
 import { useUserOrders } from "@/hooks/use-orders";
 import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
+import { useAdminPrivateMessages, useSendAdminPrivateMessage, useMarkMessageRead, useAdminAnnouncements } from "@/hooks/use-admin-system";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
 import dashboardBg from "@/assets/9814ae82-9631-4241-a961-7aec31f9aa4d_09-11-19.png";
 
 export default function Dashboard() {
@@ -39,6 +42,10 @@ export default function Dashboard() {
   const { t } = useTranslation();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isPayoutOpen, setIsPayoutOpen] = useState(false);
+
+  const { data: adminMessages } = useAdminPrivateMessages();
+  const unreadCount = adminMessages?.filter(m => !m.isRead && m.receiverId === user?.id).length || 0;
+
 
   // Auto-refresh earnings when user is loaded
   useEffect(() => {
@@ -108,6 +115,15 @@ export default function Dashboard() {
               {user.role !== 'reader' && <TabsTrigger value="wallet" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.wallet")}</TabsTrigger>}
               {user.role !== 'reader' && <TabsTrigger value="shipping" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.shipping")}</TabsTrigger>}
               {user.role !== 'reader' && <TabsTrigger value="chat" className="rounded-lg px-6 py-2 flex-shrink-0">{t("dashboard.tabs.chat", "Store Chat")}</TabsTrigger>}
+              {user.role !== 'reader' && <TabsTrigger value="admin_messages" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2 relative">
+                <MessageSquare className="w-4 h-4" />
+                {t("dashboard.tabs.admin_messages")}
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground font-bold border-2 border-background">
+                    {unreadCount}
+                  </span>
+                )}
+              </TabsTrigger>}
               <TabsTrigger value="branding" className="rounded-lg px-6 py-2 flex-shrink-0">
                 {user.role === 'reader' ? 'Profile Settings' : t("dashboard.tabs.branding")}
               </TabsTrigger>
@@ -386,6 +402,8 @@ export default function Dashboard() {
           <TabsContent value="chat">
             <DashboardChat />
           </TabsContent>
+
+          <AdminMessagingTab />
 
           <TabsContent value="branding">
             {user && (
@@ -1037,6 +1055,138 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function AdminMessagingTab() {
+  const { user } = useAuth();
+  const { t } = useTranslation();
+  const { data: messages, isLoading: loadingMsgs } = useAdminPrivateMessages();
+  const { data: announcements, isLoading: loadingAnns } = useAdminAnnouncements();
+  const markRead = useMarkMessageRead();
+  const sendMessage = useSendAdminPrivateMessage();
+
+  const [reply, setReply] = useState("");
+
+  const handleReply = () => {
+    if (!reply || !user) return;
+    // Find the admin ID (sender of the first message or any admin)
+    // For now, we assume there's at least one admin who messaged
+    const adminMsg = messages?.find(m => m.senderId !== user.id);
+    const receiverId = adminMsg?.senderId;
+
+    if (!receiverId) return;
+
+    sendMessage.mutate({
+      senderId: user.id,
+      receiverId: receiverId,
+      content: reply
+    }, {
+      onSuccess: () => setReply("")
+    });
+  };
+
+  // Mark all unread messages as read when opening tab
+  useEffect(() => {
+    const unread = messages?.filter(m => !m.isRead && m.receiverId === user?.id);
+    unread?.forEach(m => markRead.mutate(m.id));
+  }, [messages?.length]);
+
+  return (
+    <TabsContent value="admin_messages">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Private Messages From Admin */}
+        <Card className="glass-card border-primary/20 bg-black/60 shadow-2xl">
+          <CardHeader className="bg-white/5 border-b border-white/5">
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <MessageSquare className="w-5 h-5" />
+              Direct Message from Admin
+            </CardTitle>
+            <CardDescription>Secure messages between you and the platform administration.</CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="space-y-4 max-h-[400px] overflow-y-auto mb-6 pr-2 custom-scrollbar">
+              {loadingMsgs ? (
+                <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+              ) : messages?.length === 0 ? (
+                <p className="text-center text-muted-foreground py-10 italic">No messages from Admin yet.</p>
+              ) : (
+                messages?.map((msg: any) => (
+                  <div key={msg.id} className={cn(
+                    "p-4 rounded-2xl text-sm transition-all",
+                    msg.senderId === user?.id
+                      ? "bg-primary/10 border border-primary/20 ml-12"
+                      : "bg-white/5 border border-white/10 mr-12"
+                  )}>
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="font-bold text-xs opacity-70">
+                        {msg.senderId === user?.id ? "You" : "The Admin"}
+                      </span>
+                      <span className="text-[10px] opacity-40">{formatDate(msg.createdAt)}</span>
+                    </div>
+                    <p className="text-white/90 leading-relaxed">{msg.content}</p>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="pt-4 border-t border-white/5 space-y-3">
+              <Textarea
+                placeholder="Reply to the admin..."
+                className="bg-white/5 border-white/10 text-white min-h-[80px]"
+                value={reply}
+                onChange={(e) => setReply(e.target.value)}
+              />
+              <Button
+                className="w-full gap-2 font-bold"
+                disabled={!reply || sendMessage.isPending}
+                onClick={handleReply}
+              >
+                <Send className="w-4 h-4" />
+                {sendMessage.isPending ? "Sending..." : "Send Reply"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Global Writer Announcements */}
+        <Card className="glass-card border-accent/20 bg-black/60 shadow-2xl">
+          <CardHeader className="bg-white/5 border-b border-white/5">
+            <CardTitle className="flex items-center gap-2 text-accent">
+              <Megaphone className="w-5 h-5" />
+              Platform Announcements
+            </CardTitle>
+            <CardDescription>Important updates and news for creators.</CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+              {loadingAnns ? (
+                <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+              ) : announcements?.length === 0 ? (
+                <p className="text-center text-muted-foreground py-10 italic">No announcements yet.</p>
+              ) : (
+                announcements?.map((ann: any) => (
+                  <div key={ann.id} className={cn(
+                    "p-5 rounded-2xl border transition-all",
+                    ann.is_pinned ? "bg-primary/5 border-primary/30" : "bg-white/5 border-white/10"
+                  )}>
+                    <div className="flex items-center gap-2 mb-3">
+                      {ann.is_pinned && <Pin className="w-4 h-4 text-primary fill-primary/20" />}
+                      <h3 className="font-bold text-lg text-gradient">{ann.title}</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{ann.content}</p>
+                    <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center text-[10px] opacity-40 uppercase tracking-widest font-bold">
+                      <span>By Creator Relations Team</span>
+                      <span>{formatDate(ann.createdAt)}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </TabsContent>
   );
 }
 

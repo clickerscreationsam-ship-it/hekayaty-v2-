@@ -11,6 +11,11 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PhysicalOrdersAdmin } from "./PhysicalOrdersAdmin";
 import { formatDate, cn } from "@/lib/utils";
+import { useAdminPrivateMessages, useSendAdminPrivateMessage, useAdminAnnouncements, useCreateAdminAnnouncement, useDeleteAdminAnnouncement, useMarkMessageRead } from "@/hooks/use-admin-system";
+import { MessageSquare, Send, Megaphone, Trash2, Pin } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 
 function PayoutsAdmin() {
@@ -225,6 +230,205 @@ function AdminHistory() {
     );
 }
 
+function MessagingAdmin({ sellers }: { sellers: any[] }) {
+    const { data: messages } = useAdminPrivateMessages();
+    const { data: announcements } = useAdminAnnouncements();
+    const sendMessage = useSendAdminPrivateMessage();
+    const createAnnouncement = useCreateAdminAnnouncement();
+    const deleteAnnouncement = useDeleteAdminAnnouncement();
+    const markRead = useMarkMessageRead();
+    const { user } = useAuth();
+
+    // Mark all unread messages as read when opening tab
+    useEffect(() => {
+        const unread = messages?.filter(m => !m.isRead && m.receiverId === user?.id);
+        unread?.forEach(m => markRead.mutate(m.id));
+    }, [messages?.length]);
+
+
+    const [selectedSeller, setSelectedSeller] = useState<string>("");
+    const [privateMsg, setPrivateMsg] = useState("");
+    const [annTitle, setAnnTitle] = useState("");
+    const [annContent, setAnnContent] = useState("");
+    const [isPinned, setIsPinned] = useState(false);
+
+    const handleSendPrivate = () => {
+        if (!selectedSeller || !privateMsg || !user) return;
+        sendMessage.mutate({
+            senderId: user.id,
+            receiverId: selectedSeller,
+            content: privateMsg
+        }, {
+            onSuccess: () => {
+                setPrivateMsg("");
+            }
+        });
+    };
+
+    const handleCreateAnn = () => {
+        if (!annTitle || !annContent || !user) return;
+        createAnnouncement.mutate({
+            adminId: user.id,
+            title: annTitle,
+            content: annContent,
+            isPinned
+        }, {
+            onSuccess: () => {
+                setAnnTitle("");
+                setAnnContent("");
+                setIsPinned(false);
+            }
+        });
+    };
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+            {/* Private Messages Section */}
+            <Card className="glass-card border-primary/20 bg-black/60 shadow-2xl">
+                <CardHeader className="bg-white/5 border-b border-white/5">
+                    <CardTitle className="flex items-center gap-2">
+                        <MessageSquare className="w-5 h-5 text-primary" />
+                        Direct Admin Messages
+                    </CardTitle>
+                    <CardDescription>Send private messages to specific writers.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6 space-y-6">
+                    <div className="space-y-4">
+                        <select
+                            className="w-full bg-white/5 border border-white/10 rounded-md p-2 text-sm text-white outline-none focus:border-primary/50"
+                            value={selectedSeller}
+                            onChange={(e) => setSelectedSeller(e.target.value)}
+                        >
+                            <option value="" className="bg-slate-900">Select a Writer...</option>
+                            {sellers?.map((s: any) => (
+                                <option key={s.id} value={s.id} className="bg-slate-900">{s.display_name} ({s.role})</option>
+                            ))}
+                        </select>
+                        <Textarea
+                            placeholder="Type your private message..."
+                            className="bg-white/5 border-white/10 text-white min-h-[100px]"
+                            value={privateMsg}
+                            onChange={(e) => setPrivateMsg(e.target.value)}
+                        />
+                        <Button
+                            className="w-full gap-2"
+                            disabled={!selectedSeller || !privateMsg || sendMessage.isPending}
+                            onClick={handleSendPrivate}
+                        >
+                            <Send className="w-4 h-4" />
+                            {sendMessage.isPending ? "Sending..." : "Send Message"}
+                        </Button>
+                    </div>
+
+                    <div className="mt-8 border-t border-white/5 pt-6">
+                        <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-4">Message History</h4>
+                        <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            {messages?.map((msg: any) => (
+                                <div key={msg.id} className={cn(
+                                    "p-3 rounded-lg border text-sm",
+                                    msg.senderId === user?.id
+                                        ? "bg-primary/5 border-primary/20 ml-8"
+                                        : "bg-white/5 border-white/10 mr-8"
+                                )}>
+                                    <div className="flex justify-between items-start mb-1">
+                                        <span className="font-bold text-xs text-primary/80">
+                                            {msg.senderId === user?.id ? "Admin (You)" : msg.sender?.display_name} → {msg.receiver?.display_name}
+                                        </span>
+                                        <span className="text-[10px] opacity-40">{formatDate(msg.createdAt)}</span>
+                                    </div>
+                                    <p className="text-white/90">{msg.content}</p>
+                                    {msg.isRead && msg.senderId === user?.id && (
+                                        <div className="text-[9px] text-green-500 mt-1 flex justify-end">Seen</div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Global Announcements Section */}
+            <Card className="glass-card border-accent/20 bg-black/60 shadow-2xl">
+                <CardHeader className="bg-white/5 border-b border-white/5">
+                    <CardTitle className="flex items-center gap-2">
+                        <Megaphone className="w-5 h-5 text-accent" />
+                        Writers Announcements
+                    </CardTitle>
+                    <CardDescription>Broadcast messages to ALL writers and artists.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6 space-y-6">
+                    <div className="space-y-4">
+                        <Input
+                            placeholder="Announcement Title"
+                            className="bg-white/5 border-white/10 text-white"
+                            value={annTitle}
+                            onChange={(e) => setAnnTitle(e.target.value)}
+                        />
+                        <Textarea
+                            placeholder="Announcement content..."
+                            className="bg-white/5 border-white/10 text-white min-h-[100px]"
+                            value={annContent}
+                            onChange={(e) => setAnnContent(e.target.value)}
+                        />
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="pin"
+                                checked={isPinned}
+                                onChange={(e) => setIsPinned(e.target.checked)}
+                                className="accent-primary"
+                            />
+                            <label htmlFor="pin" className="text-sm text-muted-foreground flex items-center gap-1 cursor-pointer">
+                                <Pin className="w-3 h-3" /> Pin this announcement
+                            </label>
+                        </div>
+                        <Button
+                            variant="secondary"
+                            className="w-full gap-2 border border-accent/20"
+                            disabled={!annTitle || !annContent || createAnnouncement.isPending}
+                            onClick={handleCreateAnn}
+                        >
+                            <Megaphone className="w-4 h-4" />
+                            {createAnnouncement.isPending ? "Publishing..." : "Broadcast to Writers"}
+                        </Button>
+                    </div>
+
+                    <div className="mt-8 border-t border-white/5 pt-6">
+                        <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-4">Past Announcements</h4>
+                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            {announcements?.map((ann: any) => (
+                                <div key={ann.id} className="p-4 rounded-xl bg-white/5 border border-white/10 relative group">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="flex items-center gap-2">
+                                            {ann.is_pinned && <Pin className="w-3 h-3 text-primary" />}
+                                            <h5 className="font-bold text-sm text-foreground">{ann.title}</h5>
+                                        </div>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={() => {
+                                                if (confirm("Delete this announcement?")) deleteAnnouncement.mutate(ann.id);
+                                            }}
+                                        >
+                                            <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground line-clamp-2">{ann.content}</p>
+                                    <div className="mt-3 flex justify-between items-center text-[10px] opacity-40">
+                                        <span>By {ann.admin?.display_name || "Admin"}</span>
+                                        <span>{formatDate(ann.createdAt)}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
 export default function AdminDashboard() {
 
     const { user, isLoading: authLoading } = useAuth();
@@ -237,6 +441,10 @@ export default function AdminDashboard() {
     // Sellers Hooks
     const { data: sellers, isLoading: sellersLoading } = useAdminSellers();
     const freezeSeller = useFreezeSeller();
+
+    const { data: adminMessages } = useAdminPrivateMessages();
+    const unreadCount = adminMessages?.filter(m => !m.isRead && m.receiverId === user?.id).length || 0;
+
 
     if (authLoading || ordersLoading) {
         return (
@@ -275,10 +483,23 @@ export default function AdminDashboard() {
                         <TabsTrigger value="physical" className="gap-2">
                             <Truck className="w-4 h-4" /> Physical Shipments
                         </TabsTrigger>
+                        <TabsTrigger value="messaging" className="gap-2 relative">
+                            <MessageSquare className="w-4 h-4" />
+                            Messaging
+                            {unreadCount > 0 && (
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground font-bold border-2 border-background">
+                                    {unreadCount}
+                                </span>
+                            )}
+                        </TabsTrigger>
                         <TabsTrigger value="history" className="gap-2">
                             <History className="w-4 h-4" /> Global History
                         </TabsTrigger>
                     </TabsList>
+
+                    <TabsContent value="messaging">
+                        <MessagingAdmin sellers={sellers || []} />
+                    </TabsContent>
 
                     <TabsContent value="payouts">
                         <PayoutsAdmin />
