@@ -56,7 +56,7 @@ export default function WriterStudio() {
     const [isSerialized, setIsSerialized] = useState(false);
     const [seriesStatus, setSeriesStatus] = useState("ongoing");
     const [appSettings, setAppSettings] = useState<any>({
-        theme: 'sepia',
+        theme: 'light',
         fontFamily: 'serif',
         fontSize: 18,
         lineHeight: 1.8
@@ -464,8 +464,8 @@ export default function WriterStudio() {
                                             >
                                                 <section>
                                                     <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-6">{t("studio.appearance.themes")}</h3>
-                                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                                        {['light', 'dark', 'sepia', 'fantasy'].map((t) => (
+                                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                                        {['light', 'dark', 'fantasy'].map((t) => (
                                                             <button
                                                                 key={t}
                                                                 onClick={() => setAppSettings({ ...appSettings, theme: t })}
@@ -530,9 +530,8 @@ export default function WriterStudio() {
                                                     </h4>
                                                     <div className={cn(
                                                         "p-6 rounded-xl border border-white/5 h-48 overflow-hidden",
-                                                        appSettings.theme === 'sepia' ? 'bg-[#f4ecd8] text-[#5b4636]' :
-                                                            appSettings.theme === 'dark' ? 'bg-gray-950 text-white' :
-                                                                'bg-white text-gray-950',
+                                                        appSettings.theme === 'dark' ? 'bg-gray-950 text-white' :
+                                                            'bg-white text-gray-950',
                                                         appSettings.fontFamily === 'serif' ? 'font-serif' : 'font-sans'
                                                     )} style={{ fontSize: `${appSettings.fontSize}px`, lineHeight: appSettings.lineHeight }}>
                                                         {t("studio.appearance.previewText")}

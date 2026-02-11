@@ -20,7 +20,7 @@ export default function ReadBook() {
     const { t, i18n } = useTranslation();
 
     const [fontSize, setFontSize] = useState(18);
-    const [theme, setTheme] = useState<"light" | "dark" | "sepia">("light");
+    const [theme, setTheme] = useState<"light" | "dark">("light");
     const [fontFamily, setFontFamily] = useState<"serif" | "sans">("serif");
 
     const [isEditing, setIsEditing] = useState(false);
@@ -46,7 +46,7 @@ export default function ReadBook() {
 
         if (product?.appearanceSettings) {
             const settings = product.appearanceSettings;
-            if (settings.theme) setTheme(settings.theme as any);
+            if (settings.theme) setTheme(settings.theme === "sepia" ? "light" : settings.theme as any);
             if (settings.fontSize) setFontSize(settings.fontSize);
             if (settings.fontFamily) setFontFamily(settings.fontFamily as any);
         }
@@ -75,8 +75,7 @@ export default function ReadBook() {
         if (genre.includes("fantasy")) {
             return {
                 base: theme === "light" ? "bg-[#fdfcf0] text-[#432d1d]" :
-                    theme === "sepia" ? "bg-[#f1e7d0] text-[#432d1d]" :
-                        "bg-[#1a1b26] text-white",
+                    "bg-[#1a1b26] text-white",
                 accent: theme === 'dark' ? "text-amber-400" : "text-[#d97706]",
                 font: "font-serif",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/old-map.png')] opacity-10"
@@ -85,8 +84,7 @@ export default function ReadBook() {
         if (genre.includes("romance")) {
             return {
                 base: theme === "light" ? "bg-[#fffafa] text-[#702459]" :
-                    theme === "sepia" ? "bg-[#f8f0f0] text-[#702459]" :
-                        "bg-[#2d1b2d] text-white",
+                    "bg-[#2d1b2d] text-white",
                 accent: theme === 'dark' ? "text-pink-300" : "text-[#db2777]",
                 font: "font-serif",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/pinstripe-light.png')] opacity-5"
@@ -95,8 +93,7 @@ export default function ReadBook() {
         if (genre.includes("sci-fi") || genre.includes("scifi")) {
             return {
                 base: theme === "light" ? "bg-[#f0f9ff] text-[#0c4a6e]" :
-                    theme === "sepia" ? "bg-[#e8f4f8] text-[#0c4a6e]" :
-                        "bg-[#020617] text-white",
+                    "bg-[#020617] text-white",
                 accent: theme === 'dark' ? "text-cyan-400" : "text-[#0ea5e9]",
                 font: "font-sans",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5"
@@ -105,8 +102,7 @@ export default function ReadBook() {
         if (genre.includes("horror") || genre.includes("mystery")) {
             return {
                 base: theme === "light" ? "bg-[#f3f4f6] text-[#111827]" :
-                    theme === "sepia" ? "bg-[#e5e7eb] text-[#111827]" :
-                        "bg-[#09090b] text-white",
+                    "bg-[#09090b] text-white",
                 accent: "text-red-500",
                 font: "font-serif",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"
@@ -114,9 +110,7 @@ export default function ReadBook() {
         }
 
         return {
-            base: theme === 'light' ? bgColors.light :
-                theme === 'sepia' ? bgColors.sepia :
-                    bgColors.dark,
+            base: theme === 'light' ? bgColors.light : bgColors.dark,
             accent: theme === 'dark' ? "text-amber-400" : "text-primary",
             font: fontFamily === 'serif' ? 'font-serif' : 'font-sans',
             overlay: ""
@@ -181,12 +175,6 @@ export default function ReadBook() {
                                 <Sun className="w-4 h-4" />
                             </button>
                             <button
-                                onClick={() => setTheme("sepia")}
-                                className={`p-1.5 rounded-full hover:bg-black/10 transition-colors ${theme === 'sepia' ? 'bg-[#e3d7bf] shadow-sm text-[#5b4636]' : ''}`}
-                            >
-                                <BookOpenIcon className="w-4 h-4" />
-                            </button>
-                            <button
                                 onClick={() => setTheme("dark")}
                                 className={`p-1.5 rounded-full hover:bg-white/10 transition-colors ${theme === 'dark' ? 'bg-gray-800 shadow-sm text-white' : ''}`}
                             >
@@ -213,7 +201,7 @@ export default function ReadBook() {
                     ) : (
                         <div className={cn(
                             "prose prose-lg max-w-none leading-loose whitespace-pre-wrap transition-colors duration-500",
-                            theme === 'dark' ? "prose-invert text-white" : theme === 'sepia' ? "text-[#5b4636]" : "text-gray-900",
+                            theme === 'dark' ? "prose-invert text-white" : "text-gray-900",
                             gTheme.font
                         )}>
                             {textContent ? (
@@ -266,25 +254,5 @@ export default function ReadBook() {
                 </main>
             </div>
         </div>
-    );
-}
-
-function BookOpenIcon(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-        </svg>
     )
 }
