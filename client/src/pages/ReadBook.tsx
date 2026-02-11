@@ -71,40 +71,52 @@ export default function ReadBook() {
     // Genre-based Thematic Overrides
     const getGenreTheme = () => {
         const genre = product.genre?.toLowerCase() || "";
+
         if (genre.includes("fantasy")) {
             return {
-                base: theme === "light" ? "bg-[#fdfcf0] text-[#432d1d]" : "bg-[#1a1b26] text-[#c0caf5]",
-                accent: "text-[#d97706]",
+                base: theme === "light" ? "bg-[#fdfcf0] text-[#432d1d]" :
+                    theme === "sepia" ? "bg-[#f1e7d0] text-[#432d1d]" :
+                        "bg-[#1a1b26] text-white",
+                accent: theme === 'dark' ? "text-amber-400" : "text-[#d97706]",
                 font: "font-serif",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/old-map.png')] opacity-10"
             };
         }
         if (genre.includes("romance")) {
             return {
-                base: theme === "light" ? "bg-[#fffafa] text-[#702459]" : "bg-[#2d1b2d] text-[#fbcfe8]",
-                accent: "text-[#db2777]",
+                base: theme === "light" ? "bg-[#fffafa] text-[#702459]" :
+                    theme === "sepia" ? "bg-[#f8f0f0] text-[#702459]" :
+                        "bg-[#2d1b2d] text-white",
+                accent: theme === 'dark' ? "text-pink-300" : "text-[#db2777]",
                 font: "font-serif",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/pinstripe-light.png')] opacity-5"
             };
         }
         if (genre.includes("sci-fi") || genre.includes("scifi")) {
             return {
-                base: theme === "light" ? "bg-[#f0f9ff] text-[#0c4a6e]" : "bg-[#020617] text-[#38bdf8]",
-                accent: "text-[#0ea5e9]",
+                base: theme === "light" ? "bg-[#f0f9ff] text-[#0c4a6e]" :
+                    theme === "sepia" ? "bg-[#e8f4f8] text-[#0c4a6e]" :
+                        "bg-[#020617] text-white",
+                accent: theme === 'dark' ? "text-cyan-400" : "text-[#0ea5e9]",
                 font: "font-sans",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5"
             };
         }
         if (genre.includes("horror") || genre.includes("mystery")) {
             return {
-                base: theme === "light" ? "bg-[#f3f4f6] text-[#111827]" : "bg-[#09090b] text-white",
+                base: theme === "light" ? "bg-[#f3f4f6] text-[#111827]" :
+                    theme === "sepia" ? "bg-[#e5e7eb] text-[#111827]" :
+                        "bg-[#09090b] text-white",
                 accent: "text-red-500",
                 font: "font-serif",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"
             };
         }
+
         return {
-            base: bgColors[theme],
+            base: theme === 'light' ? bgColors.light :
+                theme === 'sepia' ? bgColors.sepia :
+                    bgColors.dark,
             accent: theme === 'dark' ? "text-amber-400" : "text-primary",
             font: fontFamily === 'serif' ? 'font-serif' : 'font-sans',
             overlay: ""
