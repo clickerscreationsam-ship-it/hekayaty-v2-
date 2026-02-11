@@ -64,6 +64,10 @@ export const products = pgTable("products", {
     textColor?: string;
   }>(),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  isSerialized: boolean("is_serialized").default(false),
+  seriesStatus: text("series_status").default("ongoing"), // ongoing, completed
+  lastChapterUpdatedAt: timestamp("last_chapter_updated_at").defaultNow(),
 });
 
 export const chapters = pgTable("chapters", {

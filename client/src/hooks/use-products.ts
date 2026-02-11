@@ -30,10 +30,13 @@ function mapProduct(p: ProductRow) {
     appearanceSettings: p.appearance_settings,
     createdAt: p.created_at,
     updatedAt: (p as any).updated_at,
+    isSerialized: (p as any).is_serialized ?? false,
+    seriesStatus: (p as any).series_status ?? 'ongoing',
+    lastChapterUpdatedAt: (p as any).last_chapter_updated_at,
   } as any;
 }
 
-export function useProducts(filters?: { writerId?: string; genre?: string; search?: string; type?: string }) {
+export function useProducts(filters?: { writerId?: string; genre?: string; search?: string; type?: string; isSerialized?: boolean }) {
   return useQuery({
     queryKey: ["products", filters],
     queryFn: async () => {
@@ -49,6 +52,7 @@ export function useProducts(filters?: { writerId?: string; genre?: string; searc
         query = query.eq('type', filters.type);
       }
       if (filters?.search) query = query.ilike('title', `%${filters.search}%`);
+      if (filters?.isSerialized !== undefined) query = query.eq('is_serialized', filters.isSerialized);
 
       const { data, error } = await query;
       if (error) throw error;
@@ -66,6 +70,24 @@ export function useBestSellerProducts(limit = 4) {
         .from('products')
         .select('*')
         .order('review_count', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return data.map(mapProduct);
+    },
+  });
+}
+
+export function useSerializedProducts(limit = 4) {
+  return useQuery({
+    queryKey: ["products", "serialized", limit],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_serialized', true)
+        .eq('is_published', true)
+        .order('last_chapter_updated_at', { ascending: false })
         .limit(limit);
 
       if (error) throw error;
@@ -139,6 +161,8 @@ export function useCreateProduct() {
         weight: data.weight,
         requires_shipping: data.requiresShipping,
         appearance_settings: data.appearanceSettings,
+        is_serialized: data.isSerialized,
+        series_status: data.seriesStatus,
       };
 
       const { data: newProduct, error } = await supabase
@@ -190,6 +214,8 @@ export function useUpdateProduct() {
       if (data.weight !== undefined) dbData.weight = data.weight;
       if (data.requiresShipping !== undefined) dbData.requires_shipping = data.requiresShipping;
       if (data.appearanceSettings) dbData.appearance_settings = data.appearanceSettings;
+      if (data.isSerialized !== undefined) dbData.is_serialized = data.isSerialized;
+      if (data.seriesStatus) dbData.series_status = data.seriesStatus;
 
       const { data: updated, error } = await supabase
         .from('products')

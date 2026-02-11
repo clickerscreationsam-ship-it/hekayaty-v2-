@@ -51,6 +51,8 @@ export default function WriterStudio() {
     const [title, setTitle] = useState("");
     const [genre, setGenre] = useState("");
     const [price, setPrice] = useState(0);
+    const [isSerialized, setIsSerialized] = useState(false);
+    const [seriesStatus, setSeriesStatus] = useState("ongoing");
     const [appSettings, setAppSettings] = useState<any>({
         theme: 'sepia',
         fontFamily: 'serif',
@@ -72,6 +74,8 @@ export default function WriterStudio() {
             setTitle(currentProduct.title || "");
             setGenre(currentProduct.genre || "");
             setPrice(currentProduct.price || 0);
+            setIsSerialized(currentProduct.isSerialized || false);
+            setSeriesStatus(currentProduct.seriesStatus || "ongoing");
             if (currentProduct.appearanceSettings) {
                 setAppSettings(currentProduct.appearanceSettings);
             }
@@ -292,6 +296,8 @@ export default function WriterStudio() {
                                         title={title}
                                         genre={genre}
                                         price={price}
+                                        isSerialized={isSerialized}
+                                        seriesStatus={seriesStatus}
                                         appearanceSettings={appSettings}
                                         activeChapterId={activeChapterId}
                                         chapters={chapters}
@@ -557,6 +563,38 @@ export default function WriterStudio() {
                                                                     />
                                                                 </div>
                                                             )}
+
+                                                            <div className="pt-4 space-y-4">
+                                                                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+                                                                    <div className="flex flex-col gap-1">
+                                                                        <label className="text-sm font-bold flex items-center gap-2">
+                                                                            <Layers className="w-4 h-4 text-primary" />
+                                                                            {t("studio.market.serialized", "Serialized Story")}
+                                                                        </label>
+                                                                        <p className="text-[10px] text-muted-foreground">
+                                                                            {t("studio.market.serializedDesc", "Is this an ongoing series? It will appear in the 'Ongoing Stories' section.")}
+                                                                        </p>
+                                                                    </div>
+                                                                    <UISwitch
+                                                                        checked={isSerialized}
+                                                                        onCheckedChange={setIsSerialized}
+                                                                    />
+                                                                </div>
+
+                                                                {isSerialized && (
+                                                                    <div className="space-y-2">
+                                                                        <label className="text-xs font-bold text-muted-foreground uppercase">{t("studio.market.seriesStatus", "Series Status")}</label>
+                                                                        <select
+                                                                            value={seriesStatus}
+                                                                            onChange={(e) => setSeriesStatus(e.target.value)}
+                                                                            className="w-full bg-white/5 border border-white/10 rounded-md p-2 text-sm text-foreground focus:ring-1 focus:ring-primary outline-none"
+                                                                        >
+                                                                            <option value="ongoing">Ongoing</option>
+                                                                            <option value="completed">Completed</option>
+                                                                        </select>
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
 
@@ -605,7 +643,7 @@ export default function WriterStudio() {
     );
 }
 
-function SaveButton({ product, content, title, genre, price, appearanceSettings, activeChapterId, chapters }: any) {
+function SaveButton({ product, content, title, genre, price, isSerialized, seriesStatus, appearanceSettings, activeChapterId, chapters }: any) {
     const { t } = useTranslation();
     const updateProduct = useUpdateProduct();
     const updateChapter = useUpdateChapter();
@@ -620,6 +658,8 @@ function SaveButton({ product, content, title, genre, price, appearanceSettings,
             title,
             genre,
             price,
+            isSerialized,
+            seriesStatus,
             appearanceSettings
         });
 

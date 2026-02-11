@@ -2,9 +2,9 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, BookOpen, PenTool, Info } from "lucide-react";
+import { ArrowRight, Sparkles, BookOpen, PenTool, Info, Layers } from "lucide-react";
 import { useWriters } from "@/hooks/use-users";
-import { useBestSellerProducts } from "@/hooks/use-products";
+import { useBestSellerProducts, useSerializedProducts } from "@/hooks/use-products";
 import { FeaturedWriter } from "@/components/FeaturedWriter";
 import { ProductCard } from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
@@ -14,6 +14,7 @@ import { SEO } from "@/components/SEO";
 export default function Home() {
   const { data: writers } = useWriters();
   const { data: bestSellers } = useBestSellerProducts();
+  const { data: serializedStories } = useSerializedProducts(4);
   const { t } = useTranslation();
   const { user } = useAuth();
 
@@ -123,6 +124,43 @@ export default function Home() {
             {bestSellers && bestSellers.length === 0 && (
               <p className="col-span-4 text-center text-muted-foreground py-10">
                 {t("home.bestSellers.empty")}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Ongoing Series Section */}
+      <section className="py-24 relative overflow-hidden bg-black/40 backdrop-blur-sm border-y border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex justify-between items-end mb-12">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                <Layers className="w-8 h-8" />
+              </div>
+              <div>
+                <h2 className="text-4xl font-serif font-bold mb-2">{t("home.serialized.title", "Ongoing Series")}</h2>
+                <p className="text-muted-foreground">{t("home.serialized.subtitle", "Stories updated chapter by chapter. Follow the journey.")}</p>
+              </div>
+            </div>
+            <Link href="/marketplace?isSerialized=true">
+              <button className="text-primary font-medium hover:underline flex items-center gap-2">
+                {t("home.bestSellers.viewAll")} <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {serializedStories?.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            )) || (
+                Array(4).fill(0).map((_, i) => (
+                  <div key={i} className="h-96 rounded-2xl bg-card/50 animate-pulse" />
+                ))
+              )}
+            {serializedStories && serializedStories.length === 0 && (
+              <p className="col-span-4 text-center text-muted-foreground py-10">
+                {t("home.serialized.empty", "No ongoing series found.")}
               </p>
             )}
           </div>

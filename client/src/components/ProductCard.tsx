@@ -3,6 +3,7 @@ import { Star, ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { Product } from "@shared/schema";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
@@ -49,6 +50,14 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
           <span className="px-2 py-0.5 rounded-full bg-secondary/20 text-secondary-foreground text-xs font-semibold">
             {product.genre}
           </span>
+          {product.isSerialized && (
+            <span className={cn(
+              "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tight",
+              product.seriesStatus === 'ongoing' ? "bg-amber-500/20 text-amber-500 animate-pulse" : "bg-blue-500/20 text-blue-500"
+            )}>
+              {product.seriesStatus === 'ongoing' ? t("studio.market.ongoing", "Ongoing") : t("studio.market.completed", "Completed")}
+            </span>
+          )}
           {(product.rating || 0) > 0 && (
             <div className="flex items-center gap-1 text-xs font-medium text-yellow-500">
               <Star className="w-3 h-3 fill-current" />

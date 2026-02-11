@@ -16,12 +16,18 @@ export default function Marketplace() {
   const [search, setSearch] = useState("");
   const [genre, setGenre] = useState<string | undefined>();
   const [type, setType] = useState<"ebook" | "asset">(isAssetMode ? "asset" : "ebook");
+  const [isSerialized, setIsSerialized] = useState<boolean | undefined>(
+    new URLSearchParams(window.location.search).get('isSerialized') === 'true'
+  );
 
   // Sync state with URL location
   useEffect(() => {
     if (location === "/assets") setType("asset");
     else if (location === "/marketplace") setType("ebook");
-  }, [location]);
+
+    const params = new URLSearchParams(window.location.search);
+    setIsSerialized(params.get('isSerialized') === 'true');
+  }, [location, window.location.search]);
 
   // Update URL when type changes via UI
   const handleTypeChange = (newType: "ebook" | "asset") => {
@@ -31,7 +37,7 @@ export default function Marketplace() {
     else setLocation("/marketplace");
   };
 
-  const { data: productData, isLoading } = useProducts({ search, genre, type });
+  const { data: productData, isLoading } = useProducts({ search, genre, type, isSerialized });
   const products = productData || [];
 
   const bookGenres = ["Fantasy", "Sci-Fi", "Romance", "Mystery", "Horror", "Non-Fiction"];
@@ -83,6 +89,23 @@ export default function Marketplace() {
             >
               <Palette className="w-4 h-4" />
               {t("marketplace.tabs.assets")}
+            </button>
+            <button
+              onClick={() => {
+                const newSerialized = !isSerialized;
+                setIsSerialized(newSerialized);
+                const params = new URLSearchParams(window.location.search);
+                if (newSerialized) params.set('isSerialized', 'true');
+                else params.delete('isSerialized');
+                setLocation(`${location}?${params.toString()}`);
+              }}
+              className={`flex items-center gap-2 pb-4 px-2 text-sm font-medium transition-all ${isSerialized
+                ? "border-b-2 border-amber-500 text-amber-500"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              <Layers className="w-4 h-4" />
+              {t("marketplace.tabs.serialized", "Ongoing Series")}
             </button>
           </div>
 
