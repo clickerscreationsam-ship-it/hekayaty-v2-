@@ -6,7 +6,7 @@ import { useUser, useUserById } from "@/hooks/use-users";
 import { useAddToCart } from "@/hooks/use-cart";
 import { useLikeProduct } from "@/hooks/use-social";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, Star, ShieldCheck, Download, ShoppingCart, Heart, BookOpen, Truck, MapPin, Info } from "lucide-react";
+import { Loader2, Star, ShieldCheck, Download, ShoppingCart, Heart, BookOpen, Truck, MapPin, Info, Sparkles } from "lucide-react";
 import { useShippingRates } from "@/hooks/use-shipping";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -17,6 +17,7 @@ import { z } from "zod";
 import { SEO } from "@/components/SEO";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 export default function ProductDetails() {
   const { t } = useTranslation();
@@ -25,7 +26,6 @@ export default function ProductDetails() {
   const id = parseInt(params?.id || "0");
 
   const { data: product, isLoading } = useProduct(id);
-  const { data: user } = useUser("mockuser");
   const { data: reviews } = useReviews(id);
 
   const addToCart = useAddToCart();
@@ -342,43 +342,74 @@ function ReviewForm({ productId }: { productId: number }) {
     defaultValues: { userId: user?.id, productId, rating: 50, comment: "" }
   });
 
-  if (!user) return <div className="p-4 text-center glass-card rounded-xl">Please login to write a review.</div>;
+  if (!user) return (
+    <div className="p-8 text-center glass-card rounded-2xl border border-white/10 my-10">
+      <p className="text-muted-foreground mb-4">{t("productDetails.noReviews") || "Please login to write a review."}</p>
+      <Link href="/auth">
+        <Button variant="outline" className="rounded-full px-6">{t("common.login") || "Login"}</Button>
+      </Link>
+    </div>
+  );
 
   return (
-    <form onSubmit={handleSubmit((data) => createReview.mutate(data, { onSuccess: () => reset() }))} className="mb-10 p-6 bg-muted/30 rounded-xl">
-      <h3 className="font-bold mb-4">Write a Review</h3>
-      <div className="space-y-4">
-        <textarea
-          {...register("comment")}
-          className="w-full p-4 rounded-xl bg-background border border-border focus:ring-2 focus:ring-primary/20 outline-none"
-          placeholder="What did you think of the story?"
-          rows={3}
-        />
-        <div className="flex justify-between items-center pt-2">
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{t("productDetails.yourRating") || "Rating"}:</span>
-            <div className="flex gap-1">
+    <form
+      onSubmit={handleSubmit((data) => createReview.mutate(data, { onSuccess: () => reset() }))}
+      className="mb-12 p-8 bg-background/60 backdrop-blur-xl rounded-3xl border border-primary/10 shadow-2xl relative overflow-hidden group"
+    >
+      <div className="absolute top-0 left-0 w-1 h-full bg-primary/40 group-focus-within:bg-primary transition-colors" />
+
+      <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+        <Sparkles className="w-5 h-5 text-primary" />
+        {t("productDetails.writeReview") || "Write a Review"}
+      </h3>
+
+      <div className="space-y-6">
+        <div className="relative">
+          <textarea
+            {...register("comment")}
+            className="w-full p-5 rounded-2xl bg-background/50 border-2 border-primary/5 focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all min-h-[120px] text-lg"
+            placeholder={t("productDetails.yourReview") || "What did you think of the story?"}
+          />
+        </div>
+
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-6 bg-primary/5 p-4 rounded-2xl border border-primary/10">
+          <div className="flex items-center gap-6">
+            <span className="text-sm font-black uppercase tracking-tighter text-primary/60">{t("productDetails.yourRating") || "Your Rating"}</span>
+            <div className="flex gap-2">
               {[10, 20, 30, 40, 50].map((starValue) => {
-                const currentRating = watch("rating");
+                const currentRating = watch("rating") || 50;
+                const isSelected = currentRating >= starValue;
                 return (
                   <button
                     key={starValue}
                     type="button"
                     onClick={() => setValue("rating", starValue)}
-                    className="transition-transform hover:scale-125 focus:outline-none"
+                    className="group/star relative transition-all active:scale-90"
                   >
                     <Star
                       className={cn(
-                        "w-6 h-6 transition-colors",
-                        currentRating >= starValue ? "text-yellow-500 fill-current" : "text-muted-foreground/30"
+                        "w-8 h-8 transition-all duration-300",
+                        isSelected
+                          ? "text-yellow-500 fill-current filter drop-shadow-[0_0_8px_rgba(234,179,8,0.4)]"
+                          : "text-muted-foreground/20 hover:text-yellow-500/40"
                       )}
                     />
+                    {isSelected && (
+                      <motion.div
+                        layoutId="activeStar"
+                        className="absolute -inset-1 bg-yellow-500/10 rounded-full -z-10"
+                      />
+                    )}
                   </button>
                 );
               })}
             </div>
           </div>
-          <Button disabled={createReview.isPending} className="rounded-full px-8 font-bold shadow-lg shadow-primary/20">
+
+          <Button
+            disabled={createReview.isPending}
+            className="w-full sm:w-auto rounded-xl h-12 px-10 font-black shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-base uppercase tracking-widest"
+          >
             {createReview.isPending ? t("common.processing") : t("productDetails.submitReview") || "Post Review"}
           </Button>
         </div>
