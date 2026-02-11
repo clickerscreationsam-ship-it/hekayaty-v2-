@@ -11,6 +11,11 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
+  const { createClient } = await import('@supabase/supabase-js');
+  const supabaseUrl = process.env.SUPABASE_URL || '';
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
   // Setup Real Auth
   setupAuth(app);
 
@@ -1127,8 +1132,228 @@ export async function registerRoutes(
 
   await seedDatabase();
 
+  // === CREATIVE HUB (PORTFOLIO & COMMISSIONS) ===
+
+  // Portfolios
+  app.get("/api/portfolios", async (req, res) => {
+    const { artistId, category, page = 1, limit = 12 } = req.query;
+    const from = (Number(page) - 1) * Number(limit);
+    const to = from + Number(limit) - 1;
+
+    let query = supabase.from('portfolios').select('*', { count: 'exact' }).is('deleted_at', null);
+
+    if (artistId) query = query.eq('artist_id', artistId);
+    if (category && category !== 'All') query = query.eq('category', category);
+
+    const { data, error, count } = await query
+      .order('order_index', { ascending: true })
+      .range(from, to);
+
+    if (error) return res.status(500).json({ message: error.message });
+    res.json({ data, total: count, page: Number(page) });
+  });
+
+  app.post("/api/portfolios", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+
+    const { data, error } = await supabase.from('portfolios').insert({
+      ...req.body,
+      artist_id: userId
+    }).select().single();
+
+    if (error) return res.status(500).json({ message: error.message });
+    res.json(data);
+  });
+
+  // Design Requests
+  app.get("/api/design-requests", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+    const { artistId, clientId, status, page = 1, limit = 10 } = req.query;
+    const from = (Number(page) - 1) * Number(limit);
+    const to = from + Number(limit) - 1;
+
+    let query = supabase.from('design_requests').select('*, client:users!client_id(display_name, avatar_url), artist:users!artist_id(display_name, avatar_url)', { count: 'exact' });
+
+    // Security: Only participants or admin can see
+    const isAdmin = (req.user as any).role === 'admin';
+    if (!isAdmin) {
+      query = query.or(`client_id.eq.${userId},artist_id.eq.${userId}`);
+    }
+
+    if (artistId) query = query.eq('artist_id', artistId);
+    if (clientId) query = query.eq('client_id', clientId);
+    if (status) query = query.eq('status', status);
+
+    const { data, error, count } = await query
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (error) return res.status(500).json({ message: error.message });
+    res.json({ data, total: count, page: Number(page) });
+  });
+
+  app.get("/api/design-requests/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+    const isAdmin = (req.user as any).role === 'admin';
+
+    const { data: request, error: reqError } = await supabase
+      .from('design_requests')
+      .select('*, client:users!client_id(*), artist:users!artist_id(*)')
+      .eq('id', req.params.id)
+      .single();
+
+    if (reqError || !request) return res.status(404).json({ message: "Request not found" });
+
+    // Auth check
+    if (!isAdmin && request.client_id !== userId && request.artist_id !== userId) {
+      return res.sendStatus(403);
+    }
+
+    const { data: messages, error: msgError } = await supabase
+      .from('design_messages')
+      .select('*, sender:users!sender_id(display_name, avatar_url)')
+      .eq('request_id', req.params.id)
+      .order('created_at', { ascending: true });
+
+    res.json({ ...request, messages: messages || [] });
+  });
+
+  app.post("/api/design-requests", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const clientId = (req.user as any).id;
+
+    const { data, error } = await supabase.from('design_requests').insert({
+      ...req.body,
+      client_id: clientId,
+      status: 'pending'
+    }).select().single();
+
+    if (error) return res.status(500).json({ message: error.message });
+    res.json(data);
+  });
+
+  app.patch("/api/design-requests/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+    const { status, escrowLocked, finalFileUrl } = req.body;
+
+    const { data: request, error: fetchError } = await supabase
+      .from('design_requests')
+      .select('*')
+      .eq('id', req.params.id)
+      .single();
+
+    if (fetchError || !request) return res.status(404).json({ message: "Request not found" });
+
+    const isArtist = request.artist_id === userId;
+    const isClient = request.client_id === userId;
+    const isAdmin = (req.user as any).role === 'admin';
+
+    if (!isArtist && !isClient && !isAdmin) return res.sendStatus(403);
+
+    // WALLET BALANCE CHECK & ESCROW LOCK
+    if (status === 'accepted' && isArtist && !request.escrow_locked) {
+      const { data: client, error: clientErr } = await supabase
+        .from('users')
+        .select('creator_wallet')
+        .eq('id', request.client_id)
+        .single();
+
+      if (clientErr || !client) return res.status(500).json({ message: "Client not found" });
+      if ((client.creator_wallet || 0) < request.budget) {
+        return res.status(400).json({ message: "Insufficient client balance in Hekayaty Wallet." });
+      }
+
+      // Deduct from client wallet
+      await supabase.from('users').update({
+        creator_wallet: (client.creator_wallet || 0) - request.budget
+      }).eq('id', request.client_id);
+
+      req.body.escrow_locked = true;
+    }
+
+    // Deliver Work
+    if (status === 'delivered' && isArtist) {
+      if (!finalFileUrl) return res.status(400).json({ message: "Delivery requires final file URL" });
+    }
+
+    // Handle Revision
+    if (status === 'in_progress' && isClient && request.status === 'delivered') {
+      // Reverting from delivered to in_progress means revision requested
+      // We can also track revision counts if needed
+    }
+
+    // Payment Release on Completion
+    if (status === 'completed' && isClient) {
+      await supabase.from('earnings').insert({
+        creator_id: request.artist_id,
+        design_request_id: request.id,
+        amount: Math.floor(request.budget * 0.8), // 20% platform fee
+        status: 'paid'
+      });
+      // Optionally update artist creator_wallet in real-time
+      const { data: artist } = await supabase.from('users').select('creator_wallet').eq('id', request.artist_id).single();
+      await supabase.from('users').update({
+        creator_wallet: (artist?.creator_wallet || 0) + Math.floor(request.budget * 0.8)
+      }).eq('id', request.artist_id);
+    }
+
+    const { data, error } = await supabase
+      .from('design_requests')
+      .update({ ...req.body, updated_at: new Date() })
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) return res.status(500).json({ message: error.message });
+    res.json(data);
+  });
+
+  // Artist Analytics
+  app.get("/api/artist/analytics", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+    if ((req.user as any).role !== 'artist' && (req.user as any).role !== 'admin') return res.sendStatus(403);
+
+    const { data: requests, error } = await supabase
+      .from('design_requests')
+      .select('*')
+      .eq('artist_id', userId);
+
+    if (error) return res.status(500).json({ message: error.message });
+
+    const completed = requests.filter(r => r.status === 'completed');
+    const totalRev = completed.reduce((sum, r) => sum + r.budget, 0);
+    const completionRate = requests.length > 0 ? (completed.length / requests.length) * 100 : 0;
+
+    res.json({
+      totalCommissions: requests.length,
+      revenue: totalRev,
+      completionRate: Math.round(completionRate),
+      activeProject: requests.filter(r => ['accepted', 'in_progress', 'delivered'].includes(r.status)).length
+    });
+  });
+
+  // Messages
+  app.post("/api/design-messages", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const senderId = (req.user as any).id;
+
+    const { data, error } = await supabase.from('design_messages').insert({
+      ...req.body,
+      sender_id: senderId
+    }).select().single();
+
+    if (error) return res.status(500).json({ message: error.message });
+    res.json(data);
+  });
+
   return httpServer;
 }
+
 
 async function seedDatabase() {
   const writers = await storage.listWriters();

@@ -41,7 +41,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group touch-target" onClick={() => setMobileMenuOpen(false)}>
+          <Link href="/" className="flex items-center gap-3 group touch-target" onClick={() => setMobileMenuOpen(false)}>
             <div className="bg-gradient-to-tr from-primary to-accent p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
               <Feather className="w-6 h-6 text-white" />
             </div>
@@ -51,7 +51,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6 lg:gap-8">
+          <div className="hidden md:flex items-center gap-8 lg:gap-10">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.href;
@@ -60,7 +60,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
                   key={item.href}
                   href={item.href}
                   className={`
-                    flex items-center gap-2 text-sm font-medium transition-colors duration-200 touch-target
+                    flex items-center gap-3 text-sm font-medium transition-colors duration-200 touch-target
                     ${isActive ? "text-primary font-bold" : "text-muted-foreground hover:text-primary"}
                   `}
                 >
@@ -77,7 +77,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-2 sm:gap-4">
             <LanguageSwitcher />
 
             {user && <OrderNotificationDrawer />}
@@ -110,7 +110,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
               <>
                 {(user.role === "writer" || user.role === "artist") && (
                   <Link href={`/writer/${user.username}`} className="hidden sm:block">
-                    <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary/80 touch-target">
+                    <Button variant="ghost" size="sm" className="gap-3 text-primary hover:text-primary/80 touch-target">
                       <Store className="w-4 h-4" />
                       <span className="hidden lg:inline">{t("nav.myStore")}</span>
                     </Button>

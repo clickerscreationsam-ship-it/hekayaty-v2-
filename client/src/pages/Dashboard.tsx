@@ -30,6 +30,8 @@ import { useUserOrders } from "@/hooks/use-orders";
 import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
 import { useAdminPrivateMessages, useSendAdminPrivateMessage, useMarkMessageRead, useAdminAnnouncements } from "@/hooks/use-admin-system";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PortfolioManager } from "@/components/creative-hub/PortfolioManager";
+import { CommissionsManager } from "@/components/creative-hub/CommissionsManager";
 
 import dashboardBg from "@/assets/9814ae82-9631-4241-a961-7aec31f9aa4d_09-11-19.png";
 
@@ -154,6 +156,16 @@ export default function Dashboard() {
                   <MessageSquare className="w-4 h-4" /> {t("dashboard.tabs.chat")}
                 </TabsTrigger>
               )}
+              {user.role === 'artist' && (
+                <TabsTrigger value="portfolio" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
+                  <ImageIcon className="w-4 h-4" /> {t("dashboard.tabs.portfolio") || "Portfolio"}
+                </TabsTrigger>
+              )}
+              {(user.role === 'artist' || user.role === 'reader') && (
+                <TabsTrigger value="commissions" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2 relative">
+                  <PenTool className="w-4 h-4" /> {t("dashboard.tabs.commissions") || "Commissions"}
+                </TabsTrigger>
+              )}
               {user.role !== 'reader' && (
                 <TabsTrigger value="admin_messages" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2 relative">
                   <Megaphone className="w-4 h-4" /> {t("dashboard.tabs.admin_messages")}
@@ -242,6 +254,18 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="portfolio">
+            <div className="glass-card rounded-2xl p-8 border border-border">
+              <PortfolioManager artistId={user.id} />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="commissions">
+            <div className="glass-card rounded-2xl p-8 border border-border">
+              <CommissionsManager user={user} />
+            </div>
           </TabsContent>
 
           <TabsContent value="orders">
@@ -474,7 +498,7 @@ export default function Dashboard() {
 
         <CreatePayoutDialog open={isPayoutOpen} onOpenChange={setIsPayoutOpen} balance={earnings.currentBalance} />
       </div>
-    </div>
+    </div >
   );
 }
 

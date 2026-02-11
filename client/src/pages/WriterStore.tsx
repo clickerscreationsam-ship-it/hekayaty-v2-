@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useRoute, Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -9,6 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Globe, Twitter, Instagram, Settings, Plus, Palette } from "lucide-react";
 import { StoreChat } from "@/components/StoreChat";
 import { SEO } from "@/components/SEO";
+import { usePortfolios } from "@/hooks/use-commissions";
+import { DesignRequestDialog } from "@/components/creative-hub/DesignRequestDialog";
+import { Sparkles, Image as ImageIcon } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslation } from "react-i18next";
+import { Product } from "@shared/schema";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 export default function WriterStore() {
   const [, params] = useRoute("/writer/:username");
@@ -132,6 +141,12 @@ export default function WriterStore() {
               </a>
             ))}
           </div>
+
+          {user.role === 'artist' && (
+            <div className="pb-4">
+              <PortfolioCommissionButton artistId={user.id} artistName={user.displayName} />
+            </div>
+          )}
         </div>
 
         {(headerLayout !== 'minimal') && (
@@ -141,27 +156,154 @@ export default function WriterStore() {
         )}
 
         <div className="mb-12">
-          <h2 className={`text-3xl font-bold mb-8 flex items-center gap-3 ${fontClass}`}>
-            <span className="w-8 h-1 bg-primary rounded-full" style={{ backgroundColor: themeColor }}></span>
-            {user.role === 'artist' ? 'Design Portfolio & Assets' : 'Published Works'}
-          </h2>
+          {user.role === 'artist' ? (
+            <ArtistContent user={user} products={products} themeColor={themeColor} fontClass={fontClass} />
+          ) : (
+            <>
+              <h2 className={`text-3xl font-bold mb-8 flex items-center gap-3 ${fontClass}`}>
+                <span className="w-8 h-1 bg-primary rounded-full" style={{ backgroundColor: themeColor }}></span>
+                Published Works
+              </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {products?.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-            {(!products || products.length === 0) && (
-              <p className="text-muted-foreground col-span-full py-10 text-center">
-                This {user.role === 'artist' ? 'artist' : 'writer'} hasn't published any items yet.
-              </p>
-            )}
-          </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {products?.map((product: Product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+                {(!products || products.length === 0) && (
+                  <p className="text-muted-foreground col-span-full py-10 text-center">
+                    This scribe hasn't published any items yet.
+                  </p>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
       <StoreChat storeId={user.id} storeName={user.displayName} />
-
       <Footer />
     </div>
   );
 }
+
+function ArtistContent({ user, products, themeColor, fontClass }: { user: any, products: any, themeColor: string, fontClass: string }) {
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedImage, setSelectedImage] = useState<any>(null);
+  const { data: portfoliosResponse } = usePortfolios(user.id, selectedCategory);
+  const { t } = useTranslation();
+
+  const categories = ["All", "Cover", "Character", "Map", "UI", "Branding", "Other"];
+
+  return (
+    <Tabs defaultValue="portfolio" className="w-full">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <TabsList className="bg-white/5 border border-white/10 p-1 rounded-xl">
+          <TabsTrigger value="portfolio" className="gap-2 px-6">
+            <ImageIcon className="w-4 h-4" /> Portfolio
+          </TabsTrigger>
+          <TabsTrigger value="assets" className="gap-2 px-6">
+            <Palette className="w-4 h-4" /> Design Assets
+          </TabsTrigger>
+        </TabsList>
+
+        <div className="flex flex-wrap gap-2">
+          {categories.map(cat => (
+            <Button
+              key={cat}
+              variant={selectedCategory === cat ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCategory(cat)}
+              className="rounded-full text-xs h-8"
+              style={selectedCategory === cat ? { backgroundColor: themeColor } : {}}
+            >
+              {cat}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <TabsContent value="portfolio">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {portfoliosResponse?.data?.map((item: any) => (
+            <div
+              key={item.id}
+              onClick={() => setSelectedImage(item)}
+              className="group relative aspect-square rounded-xl overflow-hidden border border-white/5 bg-card hover:border-primary/50 transition-all duration-300 shadow-xl cursor-pointer"
+            >
+              <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
+                <h4 className="font-bold text-white text-sm">{item.title}</h4>
+                <div className="flex justify-between items-center">
+                  <p className="text-[10px] text-white/70 uppercase tracking-widest">{item.category}</p>
+                  {item.yearCreated && <span className="text-[10px] text-white/50">{item.yearCreated}</span>}
+                </div>
+              </div>
+            </div>
+          ))}
+          {(!portfoliosResponse?.data || portfoliosResponse.data.length === 0) && (
+            <div className="col-span-full py-20 text-center glass-card rounded-2xl border-dashed border-white/10 border-2">
+              <p className="text-muted-foreground">This artist hasn't organized their portfolio yet.</p>
+            </div>
+          )}
+        </div>
+      </TabsContent>
+
+      <TabsContent value="assets">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {products?.map((product: Product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+          {(!products || products.length === 0) && (
+            <p className="text-muted-foreground col-span-full py-10 text-center">
+              No design assets available for purchase.
+            </p>
+          )}
+        </div>
+      </TabsContent>
+
+      {/* Hero Lightbox */}
+      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+        <DialogContent className="max-w-5xl bg-black/90 p-0 border-none">
+          {selectedImage && (
+            <div className="relative group">
+              <img src={selectedImage.imageUrl} alt={selectedImage.title} className="w-full max-h-[85vh] object-contain" />
+              <div className="p-6 bg-gradient-to-t from-black to-transparent">
+                <h2 className="text-2xl font-bold font-serif">{selectedImage.title}</h2>
+                <p className="text-muted-foreground mt-2">{selectedImage.description}</p>
+                <div className="flex gap-2 mt-4">
+                  {selectedImage.tags?.split(',').map((tag: string) => (
+                    <Badge key={tag} variant="secondary" className="bg-white/10">{tag.trim()}</Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </Tabs>
+  );
+}
+
+function PortfolioCommissionButton({ artistId, artistName }: { artistId: string, artistName: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
+  if (!user) return null;
+
+  return (
+    <>
+      <Button
+        onClick={() => setIsOpen(true)}
+        className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 font-bold px-6 py-6 rounded-xl animate-pulse-slow transition-transform hover:scale-105"
+      >
+        <Sparkles className="w-5 h-5" /> Request a Design
+      </Button>
+      <DesignRequestDialog
+        artistId={artistId}
+        artistName={artistName}
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+      />
+    </>
+  );
+}
+

@@ -28,6 +28,7 @@ export const users = pgTable("users", {
   commissionRate: integer("commission_rate").default(20), // Percentage (e.g., 20)
   isActive: boolean("is_active").default(true),
   shippingPolicy: text("shipping_policy"),
+  skills: text("skills"), // Comma-separated or short description
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -265,7 +266,8 @@ export const orderItems = pgTable("order_items", {
 export const earnings = pgTable("earnings", {
   id: serial("id").primaryKey(),
   creatorId: text("creator_id").notNull(),
-  orderId: integer("order_id").notNull(),
+  orderId: integer("order_id"), // Optional: order link
+  designRequestId: uuid("design_request_id"), // Optional: commission link
   amount: integer("amount").notNull(),
   status: text("status").default("pending"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -324,6 +326,48 @@ export const adminWriterAnnouncements = pgTable("admin_writer_announcements", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// === 7. CREATIVE HUB (PORTFOLIO & COMMISSIONS) ===
+export const portfolios = pgTable("portfolios", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  artistId: uuid("artist_id").notNull(), // UUID ref to users
+  title: text("title").notNull(),
+  description: text("description"),
+  category: text("category").notNull(), // Cover, Character, Map, UI, Branding, Other
+  imageUrl: text("image_url").notNull(),
+  thumbnailUrl: text("thumbnail_url"),
+  tags: text("tags"), // Comma separated tags
+  orderIndex: integer("order_index").default(0),
+  yearCreated: text("year_created"), // Added for portfolio
+  createdAt: timestamp("created_at").defaultNow(),
+  deletedAt: timestamp("deleted_at"),
+});
+
+export const designRequests = pgTable("design_requests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientId: uuid("client_id").notNull(), // UUID ref to users
+  artistId: uuid("artist_id").notNull(), // UUID ref to users
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  budget: integer("budget").notNull(), // In EGP
+  deadline: timestamp("deadline"),
+  licenseType: text("license_type").default("personal"), // personal, commercial
+  status: text("status").notNull().default("pending"), // pending, accepted, rejected, in_progress, delivered, completed, cancelled
+  escrowLocked: boolean("escrow_locked").default(false),
+  referenceImages: jsonb("reference_images"), // Array of strings
+  finalFileUrl: text("final_file_url"), // The actual delivery
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const designMessages = pgTable("design_messages", {
+  id: serial("id").primaryKey(),
+  requestId: uuid("request_id").notNull(), // ref to designRequests.id
+  senderId: uuid("sender_id").notNull(), // ref to users.id
+  message: text("message").notNull(),
+  attachmentUrl: text("attachment_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // === SCHEMAS & TYPES ===
 
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
@@ -345,6 +389,11 @@ export const insertShippingAddressSchema = createInsertSchema(shippingAddresses)
 export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, createdAt: true });
 export const insertAdminPrivateMessageSchema = createInsertSchema(adminPrivateMessages).omit({ id: true, createdAt: true });
 export const insertAdminAnnouncementSchema = createInsertSchema(adminWriterAnnouncements).omit({ id: true, createdAt: true });
+export const insertPortfolioSchema = createInsertSchema(portfolios).omit({ id: true, createdAt: true, deletedAt: true });
+export const insertDesignRequestSchema = createInsertSchema(designRequests, {
+  deadline: z.string().optional(),
+}).omit({ id: true, createdAt: true, updatedAt: true, clientId: true });
+export const insertDesignMessageSchema = createInsertSchema(designMessages).omit({ id: true, createdAt: true });
 
 
 export type User = typeof users.$inferSelect;
@@ -394,6 +443,15 @@ export type InsertAdminPrivateMessage = z.infer<typeof insertAdminPrivateMessage
 
 export type AdminAnnouncement = typeof adminWriterAnnouncements.$inferSelect;
 export type InsertAdminAnnouncement = z.infer<typeof insertAdminAnnouncementSchema>;
+
+export type Portfolio = typeof portfolios.$inferSelect;
+export type InsertPortfolio = z.infer<typeof insertPortfolioSchema>;
+
+export type DesignRequest = typeof designRequests.$inferSelect;
+export type InsertDesignRequest = z.infer<typeof insertDesignRequestSchema>;
+
+export type DesignMessage = typeof designMessages.$inferSelect;
+export type InsertDesignMessage = z.infer<typeof insertDesignMessageSchema>;
 
 export type Collection = typeof collections.$inferSelect;
 export type InsertCollection = z.infer<typeof insertCollectionSchema>;
