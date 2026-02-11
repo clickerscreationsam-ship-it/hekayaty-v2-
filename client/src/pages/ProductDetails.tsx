@@ -16,6 +16,7 @@ import { insertReviewSchema } from "@shared/schema";
 import { z } from "zod";
 import { SEO } from "@/components/SEO";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 export default function ProductDetails() {
   const { t } = useTranslation();
@@ -90,10 +91,20 @@ export default function ProductDetails() {
                 {product.genre}
               </span>
               {product.rating ? (
-                <div className="flex items-center gap-1 text-yellow-500 font-medium">
-                  <Star className="w-4 h-4 fill-current" /> {product.rating / 10}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 text-yellow-500 font-bold bg-yellow-500/10 px-2 py-0.5 rounded-md border border-yellow-500/20">
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                    <span>{(product.rating / 10).toFixed(1)}</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground font-medium">
+                    ({product.reviewCount || 0} {t("productDetails.reviewCount")})
+                  </span>
                 </div>
-              ) : null}
+              ) : (
+                <div className="flex items-center gap-1 text-muted-foreground/40 text-xs font-medium italic">
+                  <Star className="w-3.5 h-3.5" /> {t("productDetails.noReviews") || "No reviews yet"}
+                </div>
+              )}
             </div>
 
             <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 leading-tight">{product.title}</h1>
@@ -233,16 +244,30 @@ export default function ProductDetails() {
 
         <div className="space-y-6 mt-10">
           {reviews?.map((review) => (
-            <div key={review.id} className="p-6 glass-card rounded-xl">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="flex text-yellow-500">
-                  {Array(5).fill(0).map((_, i) => (
-                    <Star key={i} className={`w-4 h-4 ${i < (review.rating / 10) ? 'fill-current' : 'opacity-30'}`} />
-                  ))}
+            <div key={review.id} className="p-6 glass-card rounded-xl border border-white/5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full border border-primary/20 bg-primary/5 overflow-hidden ring-2 ring-background">
+                    <img
+                      src={review.user?.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${review.user?.displayName}`}
+                      className="w-full h-full object-cover"
+                      alt=""
+                    />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-foreground text-sm leading-none mb-1">{review.user?.displayName || "Reader"}</h4>
+                    <div className="flex text-yellow-500 gap-0.5">
+                      {Array(5).fill(0).map((_, i) => (
+                        <Star key={i} className={`w-3 h-3 ${i < Math.round(review.rating / 10) ? 'fill-current' : 'opacity-20'}`} />
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <span className="text-sm font-medium text-muted-foreground">Verified Reader</span>
+                <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest bg-white/5 px-2 py-1 rounded">
+                  {new Date(review.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                </div>
               </div>
-              <p className="text-foreground">{review.comment}</p>
+              <p className="text-muted-foreground leading-relaxed text-sm italic">"{review.comment}"</p>
             </div>
           ))}
         </div>
@@ -301,6 +326,7 @@ function ShippingAvailability({ creatorId }: { creatorId: string }) {
 }
 
 function ReviewForm({ productId }: { productId: number }) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const createReview = useCreateReview();
   const formSchema = insertReviewSchema.extend({
@@ -311,7 +337,7 @@ function ReviewForm({ productId }: { productId: number }) {
   });
 
   type FormData = z.infer<typeof formSchema>;
-  const { register, handleSubmit, reset } = useForm<FormData>({
+  const { register, handleSubmit, reset, watch, setValue } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: { userId: user?.id, productId, rating: 50, comment: "" }
   });
@@ -328,19 +354,32 @@ function ReviewForm({ productId }: { productId: number }) {
           placeholder="What did you think of the story?"
           rows={3}
         />
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Rating:</span>
-            <select {...register("rating")} className="bg-transparent font-bold text-primary outline-none cursor-pointer">
-              <option value="50">5 Stars</option>
-              <option value="40">4 Stars</option>
-              <option value="30">3 Stars</option>
-              <option value="20">2 Stars</option>
-              <option value="10">1 Star</option>
-            </select>
+        <div className="flex justify-between items-center pt-2">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{t("productDetails.yourRating") || "Rating"}:</span>
+            <div className="flex gap-1">
+              {[10, 20, 30, 40, 50].map((starValue) => {
+                const currentRating = watch("rating");
+                return (
+                  <button
+                    key={starValue}
+                    type="button"
+                    onClick={() => setValue("rating", starValue)}
+                    className="transition-transform hover:scale-125 focus:outline-none"
+                  >
+                    <Star
+                      className={cn(
+                        "w-6 h-6 transition-colors",
+                        currentRating >= starValue ? "text-yellow-500 fill-current" : "text-muted-foreground/30"
+                      )}
+                    />
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <Button disabled={createReview.isPending} size="sm">
-            {createReview.isPending ? "Posting..." : "Post Review"}
+          <Button disabled={createReview.isPending} className="rounded-full px-8 font-bold shadow-lg shadow-primary/20">
+            {createReview.isPending ? t("common.processing") : t("productDetails.submitReview") || "Post Review"}
           </Button>
         </div>
       </div>

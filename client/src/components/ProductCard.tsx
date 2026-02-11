@@ -105,6 +105,12 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
               {(item as any).storiesCount} {t("home.collections.storiesCount")}
             </span>
           )}
+          {product?.rating ? (
+            <div className="flex items-center gap-1 text-yellow-500 font-bold bg-yellow-500/10 px-2 py-0.5 rounded-full border border-yellow-500/20 text-[10px]">
+              <Star className="w-2.5 h-2.5 fill-current" />
+              <span>{(product.rating / 10).toFixed(1)}</span>
+            </div>
+          ) : null}
         </div>
 
         <Link href={href} className="block">
@@ -148,6 +154,6 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
           )}
         </div>
       </div>
-    </motion.div>
+    </motion.div >
   );
 }
