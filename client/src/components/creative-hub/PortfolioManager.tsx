@@ -19,8 +19,9 @@ export function PortfolioManager({ artistId }: { artistId: string }) {
     const [newWork, setNewWork] = useState({
         title: "",
         description: "",
-        category: "Cover",
+        categoryId: "Cover",
         imageUrl: "",
+        additionalImages: [] as string[],
         tags: "",
         yearCreated: new Date().getFullYear().toString()
     });
@@ -31,11 +32,12 @@ export function PortfolioManager({ artistId }: { artistId: string }) {
         if (!newWork.imageUrl || !newWork.title) return;
         await createPortfolio.mutateAsync({
             ...newWork,
+            category: newWork.categoryId, // API expects 'category', schema might use different name but kept consistent with existing code
             artistId,
             orderIndex: (portfoliosResponse?.total || 0) + 1
         });
         setIsOpen(false);
-        setNewWork({ title: "", description: "", category: "Cover", imageUrl: "", tags: "", yearCreated: new Date().getFullYear().toString() });
+        setNewWork({ title: "", description: "", categoryId: "Cover", imageUrl: "", additionalImages: [], tags: "", yearCreated: new Date().getFullYear().toString() });
     };
 
     if (isLoading) return <Loader2 className="w-8 h-8 animate-spin" />;
@@ -64,7 +66,7 @@ export function PortfolioManager({ artistId }: { artistId: string }) {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Category</label>
-                                <Select value={newWork.category} onValueChange={v => setNewWork(p => ({ ...p, category: v }))}>
+                                <Select value={newWork.categoryId} onValueChange={v => setNewWork(p => ({ ...p, categoryId: v }))}>
                                     <SelectTrigger>
                                         <SelectValue />
                                     </SelectTrigger>
@@ -80,6 +82,37 @@ export function PortfolioManager({ artistId }: { artistId: string }) {
                                     label="Upload High-Res Image"
                                 />
                             </div>
+
+                            {/* Additional Images Section */}
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Additional Images (Optional)</label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {newWork.additionalImages.map((img, idx) => (
+                                        <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
+                                            <img src={img} className="w-full h-full object-cover" alt={`Gallery ${idx + 1}`} />
+                                            <button
+                                                onClick={() => setNewWork(p => ({ ...p, additionalImages: p.additionalImages.filter((_, i) => i !== idx) }))}
+                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {newWork.additionalImages.length < 5 && (
+                                        <div className="aspect-square">
+                                            <CloudinaryUpload
+                                                key={`add-img-${newWork.additionalImages.length}`}
+                                                onUpload={(url) => {
+                                                    if (url) setNewWork(p => ({ ...p, additionalImages: [...p.additionalImages, url] }));
+                                                }}
+                                                label=""
+                                                className="h-full"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Year Created</label>

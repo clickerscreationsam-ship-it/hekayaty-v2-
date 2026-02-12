@@ -1167,7 +1167,7 @@ export async function registerRoutes(
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const userId = (req.user as any).id;
 
-    const { title, description, category, imageUrl, thumbnailUrl, tags, orderIndex, yearCreated } = req.body;
+    const { title, description, category, imageUrl, additionalImages, thumbnailUrl, tags, orderIndex, yearCreated } = req.body;
 
     const { createClient } = await import('@supabase/supabase-js');
     const supabaseUrl = process.env.SUPABASE_URL!;
@@ -1180,6 +1180,7 @@ export async function registerRoutes(
       description,
       category,
       image_url: imageUrl,
+      additional_images: additionalImages,
       thumbnail_url: thumbnailUrl,
       tags,
       order_index: orderIndex || 0,

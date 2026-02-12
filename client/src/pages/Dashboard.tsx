@@ -32,6 +32,7 @@ import { useAdminPrivateMessages, useSendAdminPrivateMessage, useMarkMessageRead
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PortfolioManager } from "@/components/creative-hub/PortfolioManager";
 import { CommissionsManager } from "@/components/creative-hub/CommissionsManager";
+import { PrivateChatManager } from "@/components/creative-hub/PrivateChatManager";
 
 import dashboardBg from "@/assets/9814ae82-9631-4241-a961-7aec31f9aa4d_09-11-19.png";
 
@@ -156,6 +157,12 @@ export default function Dashboard() {
                   <MessageSquare className="w-4 h-4" /> {t("dashboard.tabs.chat")}
                 </TabsTrigger>
               )}
+              {user.role !== 'reader' && (
+                <TabsTrigger value="private_messages" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
+                  <MessageCircle className="w-4 h-4" /> Private Messages
+                </TabsTrigger>
+              )}
+
               {user.role === 'artist' && (
                 <TabsTrigger value="portfolio" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
                   <ImageIcon className="w-4 h-4" /> {t("dashboard.tabs.portfolio") || "Portfolio"}
@@ -466,6 +473,10 @@ export default function Dashboard() {
 
           <TabsContent value="chat">
             <DashboardChat />
+          </TabsContent>
+
+          <TabsContent value="private_messages">
+            <PrivateChatManager />
           </TabsContent>
 
           <AdminMessagingTab />
