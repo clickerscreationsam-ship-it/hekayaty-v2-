@@ -1234,18 +1234,18 @@ export async function registerRoutes(
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const clientId = (req.user as any).id;
 
-    const { artistId, title, description, budget, deadline, licenseType, referenceImages } = req.body;
+    const { artistId, title, description, budget, deadline, licenseType, referenceImages, status } = req.body;
 
     const { data, error } = await supabase.from('design_requests').insert({
       client_id: clientId,
       artist_id: artistId,
-      title,
-      description,
-      budget,
+      title: title || "New Design Inquiry",
+      description: description || "Initial chat phase",
+      budget: budget || 0,
       deadline: deadline || null,
-      license_type: licenseType,
-      reference_images: referenceImages,
-      status: 'pending'
+      license_type: licenseType || 'personal',
+      reference_images: referenceImages || [],
+      status: status || 'inquiry'
     }).select().single();
 
     if (error) return res.status(500).json({ message: error.message });
@@ -1271,25 +1271,24 @@ export async function registerRoutes(
 
     if (!isArtist && !isClient && !isAdmin) return res.sendStatus(403);
 
-    // WALLET BALANCE CHECK & ESCROW LOCK
-    if (status === 'accepted' && isArtist && !request.escrow_locked) {
-      const { data: client, error: clientErr } = await supabase
-        .from('users')
-        .select('creator_wallet')
-        .eq('id', request.client_id)
-        .single();
+    // --- Manual Payment Logic ---
+    if (status === 'payment_under_review' && !isClient) {
+      return res.status(403).json({ message: "Only clients can submit payment proof." });
+    }
 
-      if (clientErr || !client) return res.status(500).json({ message: "Client not found" });
-      if ((client.creator_wallet || 0) < request.budget) {
-        return res.status(400).json({ message: "Insufficient client balance in Hekayaty Wallet." });
-      }
+    if (status === 'payment_confirmed' && !isAdmin) {
+      return res.status(403).json({ message: "Only admins can verify payments." });
+    }
 
-      // Deduct from client wallet
-      await supabase.from('users').update({
-        creator_wallet: (client.creator_wallet || 0) - request.budget
-      }).eq('id', request.client_id);
+    if (status === 'payment_confirmed' && isAdmin) {
+      req.body.payment_verified_by = userId;
+      req.body.payment_verified_at = new Date();
+      req.body.escrow_locked = true; // Mark as secured
+    }
 
-      req.body.escrow_locked = true;
+    // Artist can only start project if payment is confirmed
+    if (status === 'in_progress' && isArtist && request.status !== 'payment_confirmed') {
+      return res.status(400).json({ message: "Wait for payment verification before starting." });
     }
 
     // Deliver Work
@@ -1319,14 +1318,32 @@ export async function registerRoutes(
     }
 
     // Use the variables destructured at the start of the function
+    const { title, description, budget, deadline, licenseType, paymentProofUrl, paymentReference, paymentVerifiedBy, paymentVerifiedAt } = req.body;
     const updateData: any = { updated_at: new Date() };
+
     if (req.body.status !== undefined) updateData.status = req.body.status;
     if (req.body.escrow_locked !== undefined) updateData.escrow_locked = req.body.escrow_locked;
     if (req.body.final_file_url !== undefined) updateData.final_file_url = req.body.final_file_url;
-    // Also handle camelCase if they come through
+
+    // Manual Payment Fields
+    if (paymentProofUrl) updateData.payment_proof_url = paymentProofUrl;
+    if (paymentReference) updateData.payment_reference = paymentReference;
+    if (paymentVerifiedBy && isAdmin) updateData.payment_verified_by = paymentVerifiedBy;
+    if (paymentVerifiedAt && isAdmin) updateData.payment_verified_at = paymentVerifiedAt;
+
+    // Allow updating core details during negotiation
+    if (title) updateData.title = title;
+    if (description) updateData.description = description;
+    if (budget !== undefined) updateData.budget = budget;
+    if (deadline !== undefined) updateData.deadline = deadline;
+    if (licenseType) updateData.license_type = licenseType;
+
+    // Also handle camelCase
     if (status !== undefined && updateData.status === undefined) updateData.status = status;
     if (escrowLocked !== undefined && updateData.escrow_locked === undefined) updateData.escrow_locked = escrowLocked;
     if (finalFileUrl !== undefined && updateData.final_file_url === undefined) updateData.final_file_url = finalFileUrl;
+    if (req.body.paymentProofUrl && !updateData.payment_proof_url) updateData.payment_proof_url = req.body.paymentProofUrl;
+    if (req.body.paymentReference && !updateData.payment_reference) updateData.payment_reference = req.body.paymentReference;
 
     const { data, error } = await supabase
       .from('design_requests')

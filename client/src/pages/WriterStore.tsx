@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRoute, Link } from "wouter";
+import { useRoute, Link, useLocation } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useUser } from "@/hooks/use-users";
@@ -10,8 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Globe, Twitter, Instagram, Settings, Plus, Palette } from "lucide-react";
 import { StoreChat } from "@/components/StoreChat";
 import { SEO } from "@/components/SEO";
-import { usePortfolios } from "@/hooks/use-commissions";
-import { DesignRequestDialog } from "@/components/creative-hub/DesignRequestDialog";
+import { usePortfolios, useCreateDesignRequest } from "@/hooks/use-commissions";
 import { Sparkles, Image as ImageIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "react-i18next";
@@ -285,25 +284,36 @@ function ArtistContent({ user, products, themeColor, fontClass }: { user: any, p
 }
 
 function PortfolioCommissionButton({ artistId, artistName }: { artistId: string, artistName: string }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [, setLocation] = useLocation();
   const { user } = useAuth();
-  if (!user) return null;
+  const createInquiry = useCreateDesignRequest();
+
+  const handleStartInquiry = () => {
+    if (!user) return;
+    createInquiry.mutate({
+      artistId,
+      title: `Project with ${artistName}`,
+      description: "Initial consultation",
+      budget: 0,
+      status: 'inquiry'
+    } as any, {
+      onSuccess: () => {
+        setLocation("/dashboard?tab=commissions");
+      }
+    });
+  };
+
+  if (!user || user.id === artistId) return null;
 
   return (
-    <>
-      <Button
-        onClick={() => setIsOpen(true)}
-        className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 font-bold px-8 py-7 rounded-xl transition-colors active:scale-95"
-      >
-        <Sparkles className="w-5 h-5" /> Request a Design
-      </Button>
-      <DesignRequestDialog
-        artistId={artistId}
-        artistName={artistName}
-        isOpen={isOpen}
-        onOpenChange={setIsOpen}
-      />
-    </>
+    <Button
+      onClick={handleStartInquiry}
+      disabled={createInquiry.isPending}
+      className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 font-bold px-8 py-7 rounded-xl transition-colors active:scale-95"
+    >
+      {createInquiry.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+      {createInquiry.isPending ? "Starting Chat..." : "Request a Design"}
+    </Button>
   );
 }
 

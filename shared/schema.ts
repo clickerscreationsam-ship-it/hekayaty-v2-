@@ -351,7 +351,11 @@ export const designRequests = pgTable("design_requests", {
   budget: integer("budget").notNull(), // In EGP
   deadline: timestamp("deadline"),
   licenseType: text("license_type").default("personal"), // personal, commercial
-  status: text("status").notNull().default("pending"), // pending, accepted, rejected, in_progress, delivered, completed, cancelled
+  status: text("status").notNull().default("inquiry"), // inquiry, pending, awaiting_payment, payment_under_review, payment_confirmed, in_progress, delivered, completed, rejected
+  paymentProofUrl: text("payment_proof_url"),
+  paymentReference: text("payment_reference"),
+  paymentVerifiedBy: text("payment_verified_by"), // ref to admin user.id
+  paymentVerifiedAt: timestamp("payment_verified_at"),
   escrowLocked: boolean("escrow_locked").default(false),
   referenceImages: jsonb("reference_images"), // Array of strings
   finalFileUrl: text("final_file_url"), // The actual delivery

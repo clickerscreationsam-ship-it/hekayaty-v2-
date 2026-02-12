@@ -98,6 +98,25 @@ export function useUpdateRequestStatus() {
     });
 }
 
+export function useUpdateRequestDetails() {
+    const queryClient = useQueryClient();
+    const { toast } = useToast();
+
+    return useMutation({
+        mutationFn: async ({ requestId, ...data }: { requestId: string; title?: string; description?: string; budget?: number; status?: string; paymentProofUrl?: string; paymentReference?: string }) => {
+            const res = await apiRequest("PATCH", `/api/design-requests/${requestId}`, data);
+            return res.json();
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["/api/design-requests"] });
+            toast({ title: "Details Updated", description: "The project terms have been updated." });
+        },
+        onError: (err: any) => {
+            toast({ title: "Update Failed", description: err.message, variant: "destructive" });
+        }
+    });
+}
+
 export function useArtistAnalytics() {
     return useQuery<{ totalCommissions: number, revenue: number, completionRate: number, activeProject: number }>({
         queryKey: ["/api/artist/analytics"],

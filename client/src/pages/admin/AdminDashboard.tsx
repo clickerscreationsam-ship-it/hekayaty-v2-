@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, ExternalLink, AlertTriangle, Users, Lock, Unlock, Loader2, Wallet, Truck, History } from "lucide-react";
+import { CheckCircle, XCircle, ExternalLink, AlertTriangle, Users, Lock, Unlock, Loader2, Wallet, Truck, History, PenTool } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
@@ -13,6 +13,9 @@ import { PhysicalOrdersAdmin } from "./PhysicalOrdersAdmin";
 import { formatDate, cn } from "@/lib/utils";
 import { useAdminPrivateMessages, useSendAdminPrivateMessage, useAdminAnnouncements, useCreateAdminAnnouncement, useDeleteAdminAnnouncement, useMarkMessageRead } from "@/hooks/use-admin-system";
 import { MessageSquare, Send, Megaphone, Trash2, Pin } from "lucide-react";
+import { useDesignRequests } from "@/hooks/use-commissions";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { CommissionThread } from "@/components/creative-hub/CommissionsManager";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -429,6 +432,80 @@ function MessagingAdmin({ sellers }: { sellers: any[] }) {
     );
 }
 
+function CommissionsAdmin({ requestsResponse, isLoading }: { requestsResponse: any, isLoading: boolean }) {
+    const [page, setPage] = useState(1);
+    const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+    const { user } = useAuth();
+
+    return (
+        <Card className="glass-card border-primary/20 bg-black/60 shadow-2xl overflow-hidden mt-6">
+            <CardHeader className="bg-white/5 border-b border-white/5">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <div className="flex items-center gap-3">
+                            <CardTitle className="text-2xl text-gradient">Design Commissions</CardTitle>
+                            {(requestsResponse?.data?.filter((r: any) => r.status === 'payment_under_review')?.length || 0) > 0 && (
+                                <Badge className="bg-amber-600 text-white animate-pulse">
+                                    {requestsResponse.data.filter((r: any) => r.status === 'payment_under_review').length} Pending Reviews
+                                </Badge>
+                            )}
+                        </div>
+                        <CardDescription>Monitor all active design requests and collaborations.</CardDescription>
+                    </div>
+                    <PenTool className="w-8 h-8 text-primary/40" />
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isLoading ? <div className="p-8 text-center"><Loader2 className="animate-spin inline-block mr-2" /> Loading...</div> : (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Project</TableHead>
+                                <TableHead>Client</TableHead>
+                                <TableHead>Artist</TableHead>
+                                <TableHead>Budget</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {requestsResponse?.data?.map((req: any) => (
+                                <TableRow key={req.id} className={req.status === 'payment_under_review' ? 'bg-primary/5' : ''}>
+                                    <TableCell className="font-bold">
+                                        <div className="flex items-center gap-2">
+                                            {req.title}
+                                            {req.status === 'payment_under_review' && <AlertTriangle className="w-3 h-3 text-amber-500" />}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>{req.client?.display_name}</TableCell>
+                                    <TableCell>{req.artist?.display_name}</TableCell>
+                                    <TableCell className="font-bold text-primary">{req.budget} EGP</TableCell>
+                                    <TableCell>
+                                        <Badge variant={req.status === 'payment_under_review' ? 'default' : 'outline'} className="capitalize">
+                                            {req.status.replace('_', ' ')}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <Button size="sm" variant={req.status === 'payment_under_review' ? 'default' : 'ghost'} className="gap-2" onClick={() => setSelectedRequestId(req.id)}>
+                                            <MessageSquare className="w-4 h-4" /> {req.status === 'payment_under_review' ? 'Review Payment' : 'View Chat'}
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                )}
+            </CardContent>
+
+            <Dialog open={!!selectedRequestId} onOpenChange={() => setSelectedRequestId(null)}>
+                <DialogContent className="sm:max-w-[700px] h-[80vh] flex flex-col p-0 overflow-hidden bg-background">
+                    {selectedRequestId && user && <CommissionThread requestId={selectedRequestId} user={user} />}
+                </DialogContent>
+            </Dialog>
+        </Card>
+    );
+}
+
 export default function AdminDashboard() {
 
     const { user, isLoading: authLoading } = useAuth();
@@ -444,6 +521,9 @@ export default function AdminDashboard() {
 
     const { data: adminMessages } = useAdminPrivateMessages();
     const unreadCount = adminMessages?.filter(m => !m.isRead && m.receiverId === user?.id).length || 0;
+
+    const [commissionPage, setCommissionPage] = useState(1);
+    const { data: requestsResponse, isLoading: commissionsLoading } = useDesignRequests({ page: commissionPage });
 
     const searchParams = new URLSearchParams(window.location.search);
     const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'orders');
@@ -500,10 +580,20 @@ export default function AdminDashboard() {
                                 </span>
                             )}
                         </TabsTrigger>
+                        <TabsTrigger value="commissions" className="gap-2 relative">
+                            <PenTool className="w-4 h-4" /> Design Commissions
+                            {requestsResponse?.data?.some((r: any) => r.status === 'payment_under_review') && (
+                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-600 rounded-full animate-pulse" />
+                            )}
+                        </TabsTrigger>
                         <TabsTrigger value="history" className="gap-2">
                             <History className="w-4 h-4" /> Global History
                         </TabsTrigger>
                     </TabsList>
+
+                    <TabsContent value="commissions">
+                        <CommissionsAdmin requestsResponse={requestsResponse} isLoading={commissionsLoading} />
+                    </TabsContent>
 
                     <TabsContent value="messaging">
                         <MessagingAdmin sellers={sellers || []} />

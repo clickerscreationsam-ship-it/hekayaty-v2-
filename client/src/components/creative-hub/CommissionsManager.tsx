@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDesignRequests, useUpdateRequestStatus, useSendDesignMessage, useDesignRequest, useArtistAnalytics } from "@/hooks/use-commissions";
+import { useDesignRequests, useUpdateRequestStatus, useSendDesignMessage, useDesignRequest, useArtistAnalytics, useUpdateRequestDetails } from "@/hooks/use-commissions";
 import { User, DesignRequest, DesignMessage } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -124,7 +124,7 @@ function ArtistAnalytics() {
     );
 }
 
-function CommissionThread({ requestId, user }: { requestId: string, user: User }) {
+export function CommissionThread({ requestId, user }: { requestId: string, user: any }) {
     const { data: request, isLoading } = useDesignRequest(requestId);
     const updateStatus = useUpdateRequestStatus();
     const sendMessage = useSendDesignMessage();
@@ -182,8 +182,57 @@ function CommissionThread({ requestId, user }: { requestId: string, user: User }
             </div>
 
             <div className="p-4 border-t border-white/10 shrink-0 space-y-4">
+                {/* Status Instructions */}
+                {request.status === 'awaiting_payment' && isClient && (
+                    <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                        <p className="text-sm font-bold text-amber-500 flex items-center gap-2">
+                            <DollarSign className="w-4 h-4" /> Action Required: Payment
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            To proceed, please transfer <span className="text-foreground font-bold">{request.budget} EGP</span> to the official Hekayaty account and upload the proof below.
+                        </p>
+                    </div>
+                )}
+
+                {request.status === 'payment_under_review' && (
+                    <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                        <p className="text-sm font-bold text-blue-500 flex items-center gap-2">
+                            <Clock className="w-4 h-4" /> Payment Under Review
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Hekayaty admins are verifying your transfer. This usually takes 1-4 hours.
+                        </p>
+                    </div>
+                )}
+
+                {request.status === 'payment_confirmed' && (
+                    <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
+                        <p className="text-sm font-bold text-green-500 flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4" /> Payment Verified
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Funds are secured. {isArtist ? "You can now safely start working on the project." : "Artist has been notified to begin."}
+                        </p>
+                    </div>
+                )}
+
                 {/* Action Buttons */}
                 <div className="flex flex-col gap-4">
+                    {/* Proposal Form (For Artist) */}
+                    {(request.status === 'inquiry' || request.status === 'pending') && isArtist && (
+                        <ProposalForm request={request} />
+                    )}
+
+                    {/* Payment Proof Form (For Client) */}
+                    {(request.status === 'awaiting_payment') && isClient && (
+                        <PaymentProofForm request={request} />
+                    )}
+
+                    {/* Admin Review Panel */}
+                    {(request.status === 'payment_under_review') && user.role === 'admin' && (
+                        <AdminPaymentReview request={request} />
+                    )}
+
                     {showDeliveryForm && (
                         <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-4">
                             <h4 className="text-sm font-bold">Upload Final Delivery</h4>
@@ -200,13 +249,7 @@ function CommissionThread({ requestId, user }: { requestId: string, user: User }
                     )}
 
                     <div className="flex flex-wrap gap-2">
-                        {request.status === 'pending' && isArtist && (
-                            <>
-                                <Button size="sm" onClick={() => updateStatus.mutate({ requestId, status: 'accepted' })} disabled={updateStatus.isPending}>Accept & Secure Escrow</Button>
-                                <Button size="sm" variant="destructive" onClick={() => updateStatus.mutate({ requestId, status: 'rejected' })} disabled={updateStatus.isPending}>Reject</Button>
-                            </>
-                        )}
-                        {request.status === 'accepted' && isArtist && (
+                        {request.status === 'payment_confirmed' && isArtist && (
                             <Button size="sm" onClick={() => updateStatus.mutate({ requestId, status: 'in_progress' })}>Start Working</Button>
                         )}
                         {request.status === 'in_progress' && isArtist && (
@@ -246,10 +289,144 @@ function CommissionThread({ requestId, user }: { requestId: string, user: User }
     );
 }
 
+function ProposalForm({ request }: { request: any }) {
+    const updateDetails = useUpdateRequestDetails();
+    const [isEditing, setIsEditing] = useState(false);
+    const [title, setTitle] = useState(request.title);
+    const [budget, setBudget] = useState(request.budget);
+    const [desc, setDesc] = useState(request.description);
+
+    if (!isEditing) {
+        return (
+            <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl flex justify-between items-center">
+                <div>
+                    <h4 className="text-sm font-bold">Project Details Set:</h4>
+                    <p className="text-xs text-muted-foreground">{request.title} - {request.budget} EGP</p>
+                </div>
+                <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>Update Terms</Button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-3">
+            <h4 className="text-sm font-bold uppercase tracking-widest text-primary/70">Define Project Terms</h4>
+            <div className="grid gap-2">
+                <Input placeholder="Project Title" value={title} onChange={e => setTitle(e.target.value)} className="h-8 text-sm" />
+                <Input type="number" placeholder="Budget (EGP)" value={budget} onChange={e => setBudget(Number(e.target.value))} className="h-8 text-sm" />
+                <Textarea placeholder="Brief summary of work..." value={desc} onChange={e => setDesc(e.target.value)} className="text-xs min-h-[60px]" />
+            </div>
+            <div className="flex gap-2">
+                <Button size="sm" onClick={() => updateDetails.mutate({
+                    requestId: request.id,
+                    title,
+                    budget,
+                    description: desc,
+                    status: (request.status === 'inquiry' || request.status === 'pending') ? 'awaiting_payment' : request.status
+                }, { onSuccess: () => setIsEditing(false) })} disabled={updateDetails.isPending}>Save & Send to Client</Button>
+                <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)}>Cancel</Button>
+            </div>
+        </div>
+    );
+}
+
+function AdminPaymentReview({ request }: { request: any }) {
+    const updateStatus = useUpdateRequestStatus();
+
+    return (
+        <div className="p-4 bg-primary/10 border border-primary/20 rounded-xl space-y-4">
+            <h4 className="text-sm font-bold uppercase tracking-widest text-primary">Payment Verification Panel</h4>
+
+            {request.paymentProofUrl && (
+                <div className="space-y-2">
+                    <p className="text-xs font-bold text-muted-foreground uppercase">Payment Proof:</p>
+                    <a href={request.paymentProofUrl} target="_blank" rel="noreferrer" className="block border border-white/10 rounded-lg overflow-hidden hover:border-primary transition-colors">
+                        <img src={request.paymentProofUrl} alt="Payment Proof" className="w-full h-32 object-cover" />
+                    </a>
+                </div>
+            )}
+
+            {request.paymentReference && (
+                <div>
+                    <p className="text-xs font-bold text-muted-foreground uppercase">Reference ID:</p>
+                    <p className="text-sm font-mono bg-black/40 p-2 rounded border border-white/5">{request.paymentReference}</p>
+                </div>
+            )}
+
+            <div className="flex gap-2">
+                <Button
+                    className="flex-1 bg-green-600 hover:bg-green-700 font-bold"
+                    onClick={() => updateStatus.mutate({ requestId: request.id, status: 'payment_confirmed' })}
+                    disabled={updateStatus.isPending}
+                >
+                    Approve Payment
+                </Button>
+                <Button
+                    variant="destructive"
+                    className="flex-1 font-bold"
+                    onClick={() => updateStatus.mutate({ requestId: request.id, status: 'awaiting_payment' })}
+                    disabled={updateStatus.isPending}
+                >
+                    Reject
+                </Button>
+            </div>
+        </div>
+    );
+}
+
+function PaymentProofForm({ request }: { request: any }) {
+    const updateDetails = useUpdateRequestDetails();
+    const [proofUrl, setProofUrl] = useState("");
+    const [ref, setRef] = useState("");
+
+    const handleSubmit = () => {
+        if (!proofUrl) return;
+        updateDetails.mutate({
+            requestId: request.id,
+            status: 'payment_under_review',
+            paymentProofUrl: proofUrl,
+            paymentReference: ref
+        });
+    };
+
+    return (
+        <div className="p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl space-y-4">
+            <h4 className="text-sm font-bold flex items-center gap-2">
+                <Paperclip className="w-4 h-4 text-amber-500" /> Upload Payment Proof
+            </h4>
+            <div className="space-y-3">
+                <Input
+                    placeholder="Proof Image URL (Screenshot)"
+                    value={proofUrl}
+                    onChange={e => setProofUrl(e.target.value)}
+                    className="h-8 text-sm"
+                />
+                <Input
+                    placeholder="Transfer Reference/Number (Optional)"
+                    value={ref}
+                    onChange={e => setRef(e.target.value)}
+                    className="h-8 text-sm"
+                />
+                <Button
+                    size="sm"
+                    className="w-full bg-amber-600 hover:bg-amber-700"
+                    onClick={handleSubmit}
+                    disabled={updateDetails.isPending || !proofUrl}
+                >
+                    {updateDetails.isPending ? "Uploading..." : "Submit for Verification"}
+                </Button>
+            </div>
+        </div>
+    );
+}
+
 function getStatusColor(status: string) {
     switch (status) {
+        case 'inquiry': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
         case 'pending': return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
-        case 'accepted': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+        case 'awaiting_payment': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+        case 'payment_under_review': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+        case 'payment_confirmed': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
         case 'in_progress': return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
         case 'delivered': return 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20';
         case 'completed': return 'bg-green-500/10 text-green-500 border-green-500/20';
