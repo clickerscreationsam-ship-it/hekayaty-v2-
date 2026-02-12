@@ -162,7 +162,8 @@ export class MemStorage implements IStorage {
       subscriptionTier: insertUser.subscriptionTier || 'free',
       commissionRate: insertUser.commissionRate || 20,
       isActive: insertUser.isActive ?? true,
-      shippingPolicy: insertUser.shippingPolicy ?? null
+      shippingPolicy: insertUser.shippingPolicy ?? null,
+      skills: insertUser.skills ?? null
     };
     this.users.set(id, user);
     return user;
@@ -208,6 +209,7 @@ export class MemStorage implements IStorage {
       rating: 0,
       reviewCount: 0,
       createdAt: new Date(),
+      updatedAt: new Date(),
       type: insertProduct.type || "ebook",
       licenseType: insertProduct.licenseType || "personal",
       fileUrl: insertProduct.fileUrl || null,
@@ -220,7 +222,10 @@ export class MemStorage implements IStorage {
       weight: insertProduct.weight || null,
       requiresShipping: insertProduct.requiresShipping || false,
       salesCount: insertProduct.salesCount || 0,
-      appearanceSettings: (insertProduct.appearanceSettings as any) || null
+      appearanceSettings: (insertProduct.appearanceSettings as any) || null,
+      isSerialized: insertProduct.isSerialized ?? false,
+      seriesStatus: insertProduct.seriesStatus ?? "ongoing",
+      lastChapterUpdatedAt: new Date()
     };
     this.products.set(id, product);
     return product;
@@ -312,14 +317,22 @@ export class MemStorage implements IStorage {
     const items = Array.from(this.cart.values()).filter(i => i.userId === userId);
     return items.map(item => ({
       ...item,
-      product: this.products.get(item.productId),
+      product: item.productId ? this.products.get(item.productId) : undefined,
       variant: item.variantId ? this.variants.get(item.variantId) : undefined
     }));
   }
 
   async addToCart(item: InsertCartItem): Promise<CartItem> {
     const id = this.currentCartId++;
-    const newItem: CartItem = { ...item, id, addedAt: new Date(), quantity: item.quantity || 1, variantId: item.variantId || null };
+    const newItem: CartItem = {
+      ...item,
+      id,
+      addedAt: new Date(),
+      quantity: item.quantity || 1,
+      variantId: item.variantId || null,
+      productId: item.productId ?? null,
+      collectionId: item.collectionId ?? null
+    };
     this.cart.set(id, newItem);
     return newItem;
   }
@@ -426,7 +439,9 @@ export class MemStorage implements IStorage {
       ...earning,
       id,
       createdAt: new Date(),
-      status: earning.status || "pending"
+      status: earning.status || "pending",
+      orderId: earning.orderId ?? null,
+      designRequestId: earning.designRequestId ?? null
     };
     this.earnings.set(id, newEarning);
     return newEarning;

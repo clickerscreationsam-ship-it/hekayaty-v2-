@@ -326,6 +326,7 @@ export const adminWriterAnnouncements = pgTable("admin_writer_announcements", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// === 7. CREATIVE HUB (PORTFOLIO & COMMISSIONS) ===
 export const designRequests = pgTable("design_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
   clientId: text("client_id").notNull(), // Adjusted to text to support MemStorage IDs
