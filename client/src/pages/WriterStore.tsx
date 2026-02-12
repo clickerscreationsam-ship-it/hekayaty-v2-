@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { Product } from "@shared/schema";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { PrivateStoreChat } from "@/components/PrivateStoreChat";
+
 
 export default function WriterStore() {
   const [, params] = useRoute("/writer/:username");
@@ -180,12 +180,7 @@ export default function WriterStore() {
 
       <StoreChat storeId={user.id} storeName={user.displayName} />
 
-      {/* Private Chat for 1-on-1 */}
-      {
-        currentUser && !isOwnStore && (
-          <PrivateStoreChat artistId={user.id} artistName={user.displayName} />
-        )
-      }
+
 
       <Footer />
     </div >
