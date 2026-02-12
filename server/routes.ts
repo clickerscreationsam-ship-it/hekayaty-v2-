@@ -1157,9 +1157,18 @@ export async function registerRoutes(
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const userId = (req.user as any).id;
 
+    const { title, description, category, imageUrl, thumbnailUrl, tags, orderIndex, yearCreated } = req.body;
+
     const { data, error } = await supabase.from('portfolios').insert({
-      ...req.body,
-      artist_id: userId
+      artist_id: userId,
+      title,
+      description,
+      category,
+      image_url: imageUrl,
+      thumbnail_url: thumbnailUrl,
+      tags,
+      order_index: orderIndex || 0,
+      year_created: yearCreated
     }).select().single();
 
     if (error) return res.status(500).json({ message: error.message });
@@ -1225,9 +1234,17 @@ export async function registerRoutes(
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const clientId = (req.user as any).id;
 
+    const { artistId, title, description, budget, deadline, licenseType, referenceImages } = req.body;
+
     const { data, error } = await supabase.from('design_requests').insert({
-      ...req.body,
       client_id: clientId,
+      artist_id: artistId,
+      title,
+      description,
+      budget,
+      deadline: deadline || null,
+      license_type: licenseType,
+      reference_images: referenceImages,
       status: 'pending'
     }).select().single();
 
@@ -1301,9 +1318,19 @@ export async function registerRoutes(
       }).eq('id', request.artist_id);
     }
 
+    // Use the variables destructured at the start of the function
+    const updateData: any = { updated_at: new Date() };
+    if (req.body.status !== undefined) updateData.status = req.body.status;
+    if (req.body.escrow_locked !== undefined) updateData.escrow_locked = req.body.escrow_locked;
+    if (req.body.final_file_url !== undefined) updateData.final_file_url = req.body.final_file_url;
+    // Also handle camelCase if they come through
+    if (status !== undefined && updateData.status === undefined) updateData.status = status;
+    if (escrowLocked !== undefined && updateData.escrow_locked === undefined) updateData.escrow_locked = escrowLocked;
+    if (finalFileUrl !== undefined && updateData.final_file_url === undefined) updateData.final_file_url = finalFileUrl;
+
     const { data, error } = await supabase
       .from('design_requests')
-      .update({ ...req.body, updated_at: new Date() })
+      .update(updateData)
       .eq('id', req.params.id)
       .select()
       .single();
@@ -1342,9 +1369,13 @@ export async function registerRoutes(
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const senderId = (req.user as any).id;
 
+    const { requestId, message, attachmentUrl } = req.body;
+
     const { data, error } = await supabase.from('design_messages').insert({
-      ...req.body,
-      sender_id: senderId
+      request_id: requestId,
+      sender_id: senderId,
+      message,
+      attachment_url: attachmentUrl
     }).select().single();
 
     if (error) return res.status(500).json({ message: error.message });
