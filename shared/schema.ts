@@ -329,7 +329,7 @@ export const adminWriterAnnouncements = pgTable("admin_writer_announcements", {
 // === 7. CREATIVE HUB (PORTFOLIO & COMMISSIONS) ===
 export const portfolios = pgTable("portfolios", {
   id: uuid("id").primaryKey().defaultRandom(),
-  artistId: uuid("artist_id").notNull(), // UUID ref to users
+  artistId: text("artist_id").notNull(), // ref to users.id
   title: text("title").notNull(),
   description: text("description"),
   category: text("category").notNull(), // Cover, Character, Map, UI, Branding, Other
@@ -344,8 +344,8 @@ export const portfolios = pgTable("portfolios", {
 
 export const designRequests = pgTable("design_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
-  clientId: uuid("client_id").notNull(), // UUID ref to users
-  artistId: uuid("artist_id").notNull(), // UUID ref to users
+  clientId: text("client_id").notNull(), // ref to users.id
+  artistId: text("artist_id").notNull(), // ref to users.id
   title: text("title").notNull(),
   description: text("description").notNull(),
   budget: integer("budget").notNull(), // In EGP
@@ -362,7 +362,7 @@ export const designRequests = pgTable("design_requests", {
 export const designMessages = pgTable("design_messages", {
   id: serial("id").primaryKey(),
   requestId: uuid("request_id").notNull(), // ref to designRequests.id
-  senderId: uuid("sender_id").notNull(), // ref to users.id
+  senderId: text("sender_id").notNull(), // ref to users.id
   message: text("message").notNull(),
   attachmentUrl: text("attachment_url"),
   createdAt: timestamp("created_at").defaultNow(),
