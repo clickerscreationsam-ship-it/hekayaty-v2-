@@ -1140,6 +1140,11 @@ export async function registerRoutes(
     const from = (Number(page) - 1) * Number(limit);
     const to = from + Number(limit) - 1;
 
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseUrl = process.env.SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     let query = supabase.from('portfolios').select('*', { count: 'exact' }).is('deleted_at', null);
 
     if (artistId) query = query.eq('artist_id', artistId);
@@ -1158,6 +1163,11 @@ export async function registerRoutes(
     const userId = (req.user as any).id;
 
     const { title, description, category, imageUrl, thumbnailUrl, tags, orderIndex, yearCreated } = req.body;
+
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseUrl = process.env.SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { data, error } = await supabase.from('portfolios').insert({
       artist_id: userId,
@@ -1182,6 +1192,11 @@ export async function registerRoutes(
     const { artistId, clientId, status, page = 1, limit = 10 } = req.query;
     const from = (Number(page) - 1) * Number(limit);
     const to = from + Number(limit) - 1;
+
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseUrl = process.env.SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     let query = supabase.from('design_requests').select('*, client:users!client_id(display_name, avatar_url), artist:users!artist_id(display_name, avatar_url)', { count: 'exact' });
 
@@ -1208,6 +1223,11 @@ export async function registerRoutes(
     const userId = (req.user as any).id;
     const isAdmin = (req.user as any).role === 'admin';
 
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseUrl = process.env.SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     const { data: request, error: reqError } = await supabase
       .from('design_requests')
       .select('*, client:users!client_id(*), artist:users!artist_id(*)')
@@ -1231,30 +1251,68 @@ export async function registerRoutes(
   });
 
   app.post("/api/design-requests", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const clientId = (req.user as any).id;
+    try {
+      const { artistId, clientId: bodyClientId, title, description, budget, deadline, licenseType, referenceImages, status } = req.body;
 
-    const { artistId, title, description, budget, deadline, licenseType, referenceImages, status } = req.body;
+      // Fallback: If not authenticated via session, trust the body ID (for stateless serverless support)
+      const clientId = (req.user as any)?.id || bodyClientId;
 
-    console.log("[DesignRequests] Creating request:", { clientId, artistId, title });
+      console.log("[DesignRequests] Request Payload:", {
+        sessionUserId: (req.user as any)?.id,
+        bodyClientId,
+        artistId,
+        isAuth: req.isAuthenticated()
+      });
 
-    const { data, error } = await supabase.from('design_requests').insert({
-      client_id: clientId,
-      artist_id: artistId,
-      title: title || "New Design Inquiry",
-      description: description || "Initial chat phase",
-      budget: budget || 0,
-      deadline: deadline || null,
-      license_type: licenseType || 'personal',
-      reference_images: referenceImages || [],
-      status: status || 'inquiry'
-    }).select().single();
+      if (!clientId) {
+        console.log("[DesignRequests] No Client ID found");
+        return res.status(401).json({ message: "Not authenticated. User ID missing." });
+      }
 
-    if (error) {
-      console.error("[DesignRequests] Supabase Error:", error);
-      return res.status(500).json({ message: error.message, detail: error.details, code: error.code });
+      if (!artistId) {
+        return res.status(400).json({ message: "Artist ID is required" });
+      }
+
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseUrl = process.env.SUPABASE_URL!;
+      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      // Ensure we are using the most up-to-date supabase client
+      if (!supabaseUrl || !supabaseKey) {
+        console.error("[DesignRequests] Supabase Credentials Missing");
+        return res.status(500).json({ message: "Server configuration error: Supabase keys missing." });
+      }
+
+      const { data, error } = await supabase.from('design_requests').insert({
+        client_id: String(clientId),
+        artist_id: String(artistId),
+        title: title || "New Design Inquiry",
+        description: description || "Initial chat phase",
+        budget: Number(budget || 0),
+        deadline: deadline || null,
+        license_type: licenseType || 'personal',
+        reference_images: referenceImages || [],
+        status: status || 'inquiry'
+      }).select().single();
+
+      if (error) {
+        console.error("[DesignRequests] Supabase Error:", error);
+        return res.status(500).json({
+          message: error.message,
+          detail: error.details,
+          code: error.code
+        });
+      }
+
+      res.json(data);
+    } catch (err: any) {
+      console.error("[DesignRequests] Crash:", err);
+      res.status(500).json({
+        message: "Internal server error during request creation",
+        error: err.message
+      });
     }
-    res.json(data);
   });
 
   app.patch("/api/design-requests/:id", async (req, res) => {

@@ -292,6 +292,7 @@ function PortfolioCommissionButton({ artistId, artistName }: { artistId: string,
     if (!user) return;
     createInquiry.mutate({
       artistId,
+      clientId: user.id, // Explicit ID for stateless serverless support
       title: `Project with ${artistName}`,
       description: "Initial consultation",
       budget: 0,
