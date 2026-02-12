@@ -141,11 +141,7 @@ export default function WriterStore() {
             ))}
           </div>
 
-          {user.role === 'artist' && (
-            <div className="pb-4">
-              <PortfolioCommissionButton artistId={user.id} artistName={user.displayName} />
-            </div>
-          )}
+
         </div>
 
         {(headerLayout !== 'minimal') && (
@@ -283,38 +279,5 @@ function ArtistContent({ user, products, themeColor, fontClass }: { user: any, p
   );
 }
 
-function PortfolioCommissionButton({ artistId, artistName }: { artistId: string, artistName: string }) {
-  const [, setLocation] = useLocation();
-  const { user } = useAuth();
-  const createInquiry = useCreateDesignRequest();
 
-  const handleStartInquiry = () => {
-    if (!user) return;
-    createInquiry.mutate({
-      artistId,
-      clientId: user.id, // Explicit ID for stateless serverless support
-      title: `Project with ${artistName}`,
-      description: "Initial consultation",
-      budget: 0,
-      status: 'inquiry'
-    } as any, {
-      onSuccess: () => {
-        setLocation("/dashboard?tab=commissions");
-      }
-    });
-  };
-
-  if (!user || user.id === artistId) return null;
-
-  return (
-    <Button
-      onClick={handleStartInquiry}
-      disabled={createInquiry.isPending}
-      className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 font-bold px-8 py-7 rounded-xl transition-colors active:scale-95"
-    >
-      {createInquiry.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
-      {createInquiry.isPending ? "Starting Chat..." : "Request a Design"}
-    </Button>
-  );
-}
 
