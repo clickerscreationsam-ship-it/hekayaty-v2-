@@ -346,6 +346,24 @@ export const designRequests = pgTable("design_requests", {
   finalFileUrl: text("final_file_url"), // The actual delivery
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+
+});
+
+export const privateChats = pgTable("private_chats", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull(), // The client initiating the chat
+  artistId: text("artist_id").notNull(), // The designer/artist receiving the chat
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const privateChatMessages = pgTable("private_chat_messages", {
+  id: serial("id").primaryKey(),
+  chatId: uuid("chat_id").notNull(), // References privateChats.id
+  senderId: text("sender_id").notNull(), // User who sent the message
+  content: text("content").notNull(),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const portfolios = pgTable("portfolios", {
@@ -355,6 +373,8 @@ export const portfolios = pgTable("portfolios", {
   description: text("description"),
   category: text("category").notNull(), // 'Cover', 'Character', 'Map', 'UI', 'Branding', 'Other'
   imageUrl: text("image_url").notNull(),
+
+  additionalImages: jsonb("additional_images"), // Array of strings (URLs)
   thumbnailUrl: text("thumbnail_url"),
   tags: text("tags"),
   orderIndex: integer("order_index").default(0),
