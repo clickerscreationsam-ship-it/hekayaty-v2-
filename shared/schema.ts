@@ -327,25 +327,11 @@ export const adminWriterAnnouncements = pgTable("admin_writer_announcements", {
 });
 
 // === 7. CREATIVE HUB (PORTFOLIO & COMMISSIONS) ===
-export const portfolios = pgTable("portfolios", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  artistId: text("artist_id").notNull(), // ref to users.id
-  title: text("title").notNull(),
-  description: text("description"),
-  category: text("category").notNull(), // Cover, Character, Map, UI, Branding, Other
-  imageUrl: text("image_url").notNull(),
-  thumbnailUrl: text("thumbnail_url"),
-  tags: text("tags"), // Comma separated tags
-  orderIndex: integer("order_index").default(0),
-  yearCreated: text("year_created"), // Added for portfolio
-  createdAt: timestamp("created_at").defaultNow(),
-  deletedAt: timestamp("deleted_at"),
-});
 
 export const designRequests = pgTable("design_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
-  clientId: text("client_id").notNull(), // ref to users.id
-  artistId: text("artist_id").notNull(), // ref to users.id
+  clientId: uuid("client_id").notNull(), // ref to users.id
+  artistId: uuid("artist_id").notNull(), // ref to users.id
   title: text("title").notNull(),
   description: text("description").notNull(),
   budget: integer("budget").notNull(), // In EGP
@@ -354,7 +340,7 @@ export const designRequests = pgTable("design_requests", {
   status: text("status").notNull().default("inquiry"), // inquiry, pending, awaiting_payment, payment_under_review, payment_confirmed, in_progress, delivered, completed, rejected
   paymentProofUrl: text("payment_proof_url"),
   paymentReference: text("payment_reference"),
-  paymentVerifiedBy: text("payment_verified_by"), // ref to admin user.id
+  paymentVerifiedBy: uuid("payment_verified_by"), // ref to admin user.id
   paymentVerifiedAt: timestamp("payment_verified_at"),
   escrowLocked: boolean("escrow_locked").default(false),
   referenceImages: jsonb("reference_images"), // Array of strings
@@ -363,10 +349,26 @@ export const designRequests = pgTable("design_requests", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const portfolios = pgTable("portfolios", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  artistId: uuid("artist_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  category: text("category").notNull(), // 'Cover', 'Character', 'Map', 'UI', 'Branding', 'Other'
+  imageUrl: text("image_url").notNull(),
+  thumbnailUrl: text("thumbnail_url"),
+  tags: text("tags"),
+  orderIndex: integer("order_index").default(0),
+  yearCreated: text("year_created"),
+  createdAt: timestamp("created_at").defaultNow(),
+  deletedAt: timestamp("deleted_at"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const designMessages = pgTable("design_messages", {
   id: serial("id").primaryKey(),
-  requestId: uuid("request_id").notNull(), // ref to designRequests.id
-  senderId: text("sender_id").notNull(), // ref to users.id
+  requestId: uuid("request_id").notNull(),
+  senderId: uuid("sender_id").notNull(),
   message: text("message").notNull(),
   attachmentUrl: text("attachment_url"),
   createdAt: timestamp("created_at").defaultNow(),
