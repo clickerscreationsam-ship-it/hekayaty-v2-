@@ -75,6 +75,14 @@ export function useCreateDesignRequest() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["/api/design-requests"] });
             toast({ title: "Request Sent", description: "The artist has been notified of your request." });
+        },
+        onError: (err: any) => {
+            console.error("Commission Error:", err);
+            toast({
+                title: "Failed to start request",
+                description: err.message || "An unexpected error occurred",
+                variant: "destructive"
+            });
         }
     });
 }

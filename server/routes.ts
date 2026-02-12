@@ -13,7 +13,12 @@ export async function registerRoutes(
 
   const { createClient } = await import('@supabase/supabase-js');
   const supabaseUrl = process.env.SUPABASE_URL || '';
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || ''; // Fallback to anon if service role missing
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn("⚠️ Supabase credentials missing from environment variables.");
+  }
+
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   // Setup Real Auth
@@ -1254,7 +1259,6 @@ export async function registerRoutes(
     try {
       const { artistId, clientId: bodyClientId, title, description, budget, deadline, licenseType, referenceImages, status } = req.body;
 
-      // Fallback: If not authenticated via session, trust the body ID (for stateless serverless support)
       const clientId = (req.user as any)?.id || bodyClientId;
 
       console.log("[DesignRequests] Request Payload:", {
@@ -1265,23 +1269,11 @@ export async function registerRoutes(
       });
 
       if (!clientId) {
-        console.log("[DesignRequests] No Client ID found");
         return res.status(401).json({ message: "Not authenticated. User ID missing." });
       }
 
       if (!artistId) {
         return res.status(400).json({ message: "Artist ID is required" });
-      }
-
-      const { createClient } = await import('@supabase/supabase-js');
-      const supabaseUrl = process.env.SUPABASE_URL!;
-      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
-      // Ensure we are using the most up-to-date supabase client
-      if (!supabaseUrl || !supabaseKey) {
-        console.error("[DesignRequests] Supabase Credentials Missing");
-        return res.status(500).json({ message: "Server configuration error: Supabase keys missing." });
       }
 
       const { data, error } = await supabase.from('design_requests').insert({
@@ -1298,20 +1290,13 @@ export async function registerRoutes(
 
       if (error) {
         console.error("[DesignRequests] Supabase Error:", error);
-        return res.status(500).json({
-          message: error.message,
-          detail: error.details,
-          code: error.code
-        });
+        return res.status(500).json({ message: error.message, detail: error.details, code: error.code });
       }
 
       res.json(data);
     } catch (err: any) {
       console.error("[DesignRequests] Crash:", err);
-      res.status(500).json({
-        message: "Internal server error during request creation",
-        error: err.message
-      });
+      res.status(500).json({ message: "Internal server error during request creation", error: err.message });
     }
   });
 
