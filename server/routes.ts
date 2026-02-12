@@ -1236,6 +1236,8 @@ export async function registerRoutes(
 
     const { artistId, title, description, budget, deadline, licenseType, referenceImages, status } = req.body;
 
+    console.log("[DesignRequests] Creating request:", { clientId, artistId, title });
+
     const { data, error } = await supabase.from('design_requests').insert({
       client_id: clientId,
       artist_id: artistId,
@@ -1248,7 +1250,10 @@ export async function registerRoutes(
       status: status || 'inquiry'
     }).select().single();
 
-    if (error) return res.status(500).json({ message: error.message });
+    if (error) {
+      console.error("[DesignRequests] Supabase Error:", error);
+      return res.status(500).json({ message: error.message, detail: error.details, code: error.code });
+    }
     res.json(data);
   });
 

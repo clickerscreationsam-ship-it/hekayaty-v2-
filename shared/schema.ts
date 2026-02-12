@@ -326,12 +326,10 @@ export const adminWriterAnnouncements = pgTable("admin_writer_announcements", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// === 7. CREATIVE HUB (PORTFOLIO & COMMISSIONS) ===
-
 export const designRequests = pgTable("design_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
-  clientId: uuid("client_id").notNull(), // ref to users.id
-  artistId: uuid("artist_id").notNull(), // ref to users.id
+  clientId: text("client_id").notNull(), // Adjusted to text to support MemStorage IDs
+  artistId: text("artist_id").notNull(), // Adjusted to text to support MemStorage IDs
   title: text("title").notNull(),
   description: text("description").notNull(),
   budget: integer("budget").notNull(), // In EGP
@@ -340,7 +338,7 @@ export const designRequests = pgTable("design_requests", {
   status: text("status").notNull().default("inquiry"), // inquiry, pending, awaiting_payment, payment_under_review, payment_confirmed, in_progress, delivered, completed, rejected
   paymentProofUrl: text("payment_proof_url"),
   paymentReference: text("payment_reference"),
-  paymentVerifiedBy: uuid("payment_verified_by"), // ref to admin user.id
+  paymentVerifiedBy: text("payment_verified_by"),
   paymentVerifiedAt: timestamp("payment_verified_at"),
   escrowLocked: boolean("escrow_locked").default(false),
   referenceImages: jsonb("reference_images"), // Array of strings
@@ -351,7 +349,7 @@ export const designRequests = pgTable("design_requests", {
 
 export const portfolios = pgTable("portfolios", {
   id: uuid("id").primaryKey().defaultRandom(),
-  artistId: uuid("artist_id").notNull(),
+  artistId: text("artist_id").notNull(),
   title: text("title").notNull(),
   description: text("description"),
   category: text("category").notNull(), // 'Cover', 'Character', 'Map', 'UI', 'Branding', 'Other'
@@ -368,7 +366,7 @@ export const portfolios = pgTable("portfolios", {
 export const designMessages = pgTable("design_messages", {
   id: serial("id").primaryKey(),
   requestId: uuid("request_id").notNull(),
-  senderId: uuid("sender_id").notNull(),
+  senderId: text("sender_id").notNull(),
   message: text("message").notNull(),
   attachmentUrl: text("attachment_url"),
   createdAt: timestamp("created_at").defaultNow(),
