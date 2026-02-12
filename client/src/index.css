@@ -203,6 +203,19 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Premium Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-primary/20 rounded-full hover:bg-primary/40 transition-colors;
+  }
 }
 
 /* Arabic Font Overrides - Luxury Edition */

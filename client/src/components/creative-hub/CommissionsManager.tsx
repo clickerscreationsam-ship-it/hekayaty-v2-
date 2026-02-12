@@ -166,7 +166,7 @@ function CommissionThread({ requestId, user }: { requestId: string, user: User }
                 </div>
             </DialogHeader>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-muted/20">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-muted/20 custom-scrollbar">
                 {request.messages?.map((m: any) => (
                     <div key={m.id} className={cn("flex gap-3 max-w-[80%]", m.senderId === user.id ? "ml-auto flex-row-reverse" : "")}>
                         <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-white/10">

@@ -46,8 +46,8 @@ export function DesignRequestDialog({ artistId, artistName, isOpen, onOpenChange
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[600px] glass border-white/10 p-0 overflow-hidden shadow-2xl">
-                <div className="bg-gradient-to-r from-primary/20 to-accent/20 p-6 border-b border-white/10">
+            <DialogContent className="sm:max-w-[600px] glass border-white/10 p-0 overflow-hidden shadow-2xl flex flex-col max-h-[95vh]">
+                <div className="bg-gradient-to-r from-primary/20 to-accent/20 p-6 border-b border-white/10 shrink-0">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-serif flex items-center gap-2">
                             <Sparkles className="w-6 h-6 text-primary" />
@@ -59,7 +59,7 @@ export function DesignRequestDialog({ artistId, artistName, isOpen, onOpenChange
                     </DialogHeader>
                 </div>
 
-                <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-6 flex-1 overflow-y-auto custom-scrollbar">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-bold flex items-center gap-2 uppercase tracking-tighter opacity-70">
