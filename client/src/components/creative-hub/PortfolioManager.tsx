@@ -6,15 +6,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Plus, Trash2, Image as ImageIcon, ExternalLink } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Plus, Trash2, Image as ImageIcon, ExternalLink, Library } from "lucide-react";
 import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
 import { useTranslation } from "react-i18next";
+import { useDeletePortfolio } from "@/hooks/use-commissions";
 
 export function PortfolioManager({ artistId }: { artistId: string }) {
     const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const { data: portfoliosResponse, isLoading } = usePortfolios(artistId, "All", page);
     const createPortfolio = useCreatePortfolio();
+    const deletePortfolio = useDeletePortfolio();
     const [isOpen, setIsOpen] = useState(false);
     const [newWork, setNewWork] = useState({
         title: "",
@@ -136,43 +139,59 @@ export function PortfolioManager({ artistId }: { artistId: string }) {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {portfoliosResponse?.data?.map((item) => (
-                    <Card key={item.id} className="overflow-hidden glass-card border-white/10 group">
-                        <div className="aspect-[4/3] relative overflow-hidden">
-                            <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                <Button variant="secondary" size="icon" className="rounded-full">
-                                    <ExternalLink className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                    variant="destructive"
-                                    size="icon"
-                                    className="rounded-full"
-                                    onClick={async () => {
-                                        // In a real app we'd call a useDeletePortfolio hook
-                                        // For now, let's assume it's implemented similarly
-                                    }}
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </Button>
-                            </div>
-                            <div className="absolute top-2 left-2 flex gap-2">
-                                <span className="px-2 py-1 bg-black/60 backdrop-blur-md rounded text-[10px] font-bold text-white uppercase tracking-wider border border-white/10">
-                                    {item.category}
-                                </span>
-                                {item.yearCreated && (
-                                    <span className="px-2 py-1 bg-primary/60 backdrop-blur-md rounded text-[10px] font-bold text-white uppercase tracking-wider border border-white/10">
-                                        {item.yearCreated}
-                                    </span>
+                {portfoliosResponse?.data?.map((item) => {
+                    const additionalImages = (item.additionalImages as string[]) || [];
+                    return (
+                        <Card key={item.id} className="overflow-hidden glass-card border-white/10 group">
+                            <div className="aspect-[4/3] relative overflow-hidden">
+                                <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+
+                                {/* Multi-image Badge */}
+                                {additionalImages.length > 0 && (
+                                    <div className="absolute top-2 right-2 z-10">
+                                        <Badge variant="secondary" className="bg-black/60 backdrop-blur-md border-white/10 gap-1.5 py-1">
+                                            <Library className="w-3 h-3" />
+                                            <span className="text-[10px] font-bold">{additionalImages.length + 1}</span>
+                                        </Badge>
+                                    </div>
                                 )}
+
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                    <Button variant="secondary" size="icon" className="rounded-full">
+                                        <ExternalLink className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                        variant="destructive"
+                                        size="icon"
+                                        className="rounded-full bg-red-500/80 hover:bg-red-500"
+                                        onClick={() => {
+                                            if (confirm("Are you sure you want to delete this work?")) {
+                                                deletePortfolio.mutate(item.id);
+                                            }
+                                        }}
+                                        disabled={deletePortfolio.isPending}
+                                    >
+                                        {deletePortfolio.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                    </Button>
+                                </div>
+                                <div className="absolute top-2 left-2 flex gap-2">
+                                    <span className="px-2 py-1 bg-black/60 backdrop-blur-md rounded text-[10px] font-bold text-white uppercase tracking-wider border border-white/10">
+                                        {item.category}
+                                    </span>
+                                    {item.yearCreated && (
+                                        <span className="px-2 py-1 bg-primary/60 backdrop-blur-md rounded text-[10px] font-bold text-white uppercase tracking-wider border border-white/10">
+                                            {item.yearCreated}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                        <CardContent className="p-4">
-                            <h3 className="font-bold truncate">{item.title}</h3>
-                            <p className="text-xs text-muted-foreground line-clamp-1">{item.description}</p>
-                        </CardContent>
-                    </Card>
-                ))}
+                            <CardContent className="p-4">
+                                <h3 className="font-bold truncate">{item.title}</h3>
+                                <p className="text-xs text-muted-foreground line-clamp-1">{item.description}</p>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
                 {(!portfoliosResponse?.data || portfoliosResponse.data.length === 0) && (
                     <div className="col-span-full py-20 border-2 border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center text-muted-foreground">
                         <ImageIcon className="w-12 h-12 mb-4 opacity-20" />

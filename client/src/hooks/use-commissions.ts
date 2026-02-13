@@ -38,6 +38,25 @@ export function useCreatePortfolio() {
     });
 }
 
+export function useDeletePortfolio() {
+    const queryClient = useQueryClient();
+    const { toast } = useToast();
+
+    return useMutation({
+        mutationFn: async (id: string) => {
+            const res = await apiRequest("DELETE", `/api/portfolios/${id}`);
+            return res.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["/api/portfolios"] });
+            toast({ title: "Portfolio Item Deleted", description: "The work has been removed from your portfolio." });
+        },
+        onError: (err: any) => {
+            toast({ title: "Delete Failed", description: err.message, variant: "destructive" });
+        }
+    });
+}
+
 // --- Commission / Design Request Hooks ---
 export function useDesignRequests(params: { clientId?: string; artistId?: string; status?: string; page?: number }) {
     return useQuery<{ data: DesignRequest[], total: number, page: number }>({

@@ -1191,6 +1191,29 @@ export async function registerRoutes(
     res.json(data);
   });
 
+  app.delete("/api/portfolios/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+    const { id } = req.params;
+
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseUrl = process.env.SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Verify ownership before delete or just use RLS (if configured)
+    // Here we do a soft delete or hard delete. Let's do a hard delete for simplicity or soft delete if 'deleted_at' column exists.
+    // Based on schema, 'deletedAt' exists.
+    const { error } = await supabase
+      .from('portfolios')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id)
+      .eq('artist_id', userId);
+
+    if (error) return res.status(500).json({ message: error.message });
+    res.json({ success: true });
+  });
+
   // Design Requests
   app.get("/api/design-requests", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
