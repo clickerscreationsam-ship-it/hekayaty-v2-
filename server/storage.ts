@@ -49,7 +49,7 @@ export interface IStorage {
   clearCart(userId: string): Promise<void>;
 
   // Orders & Earnings
-  createOrder(order: InsertOrder, items: { productId: number; variantId?: number; price: number; creatorId: string }[]): Promise<Order>;
+  createOrder(order: InsertOrder, items: { productId?: number; collectionId?: string; variantId?: number; price: number; creatorId: string }[]): Promise<Order>;
   verifyOrder(orderId: number, adminId: string): Promise<Order>;
   listPendingOrders(): Promise<Order[]>;
   getOrder(id: number): Promise<Order | undefined>;
@@ -152,6 +152,7 @@ export class MemStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id,
+      password: insertUser.password ?? null,
       createdAt: new Date(),
       role: insertUser.role || "reader",
       bio: insertUser.bio || null,
@@ -358,7 +359,7 @@ export class MemStorage implements IStorage {
   }
 
   // Orders
-  async createOrder(insertOrder: InsertOrder, items: { productId: number; variantId?: number; price: number; creatorId: string }[]): Promise<Order> {
+  async createOrder(insertOrder: InsertOrder, items: { productId?: number; collectionId?: string; variantId?: number; price: number; creatorId: string }[]): Promise<Order> {
     const id = this.currentOrderId++;
     const order: Order = {
       ...insertOrder,
@@ -382,7 +383,8 @@ export class MemStorage implements IStorage {
       this.orderItems.set(itemId, {
         id: itemId,
         orderId: id,
-        productId: item.productId,
+        productId: item.productId || null,
+        collectionId: item.collectionId || null,
         variantId: item.variantId || null,
         price: item.price,
         licenseType: "standard", // simplify for now
