@@ -1,10 +1,13 @@
 -- Migration: 032_add_collection_id_to_cart_items.sql
 -- Description: Adds collection_id to cart_items table to support story collections in cart.
 
-ALTER TABLE public.cart_items ADD COLUMN IF NOT EXISTS collection_id TEXT;
+-- 1. Add collection_id as UUID to match collections.id
+ALTER TABLE public.cart_items ADD COLUMN IF NOT EXISTS collection_id UUID REFERENCES public.collections(id) ON DELETE SET NULL;
+
+-- 2. Allow items to be added without a product_id (needed for collections)
 ALTER TABLE public.cart_items ALTER COLUMN product_id DROP NOT NULL;
 
--- Update RLS or indexes if needed
+-- 3. Add an index to keep it fast
 CREATE INDEX IF NOT EXISTS idx_cart_items_collection_id ON public.cart_items(collection_id);
 
 -- If there are FK requirements, although collection_id is TEXT here matching the schema.ts

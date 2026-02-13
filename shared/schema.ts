@@ -219,7 +219,7 @@ export const cartItems = pgTable("cart_items", {
   id: serial("id").primaryKey(),
   userId: text("user_id").notNull(),
   productId: integer("product_id"),
-  collectionId: text("collection_id"),
+  collectionId: uuid("collection_id"),
   variantId: integer("variant_id"),
   quantity: integer("quantity").default(1),
   addedAt: timestamp("added_at").defaultNow(),
