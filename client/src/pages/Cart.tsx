@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useCart, useRemoveFromCart, useCheckout, useCalculateShipping, useUpdateCartQuantity } from "@/hooks/use-cart";
+import { useShippingAddresses } from "@/hooks/use-shipping";
 import { Button } from "@/components/ui/button";
 import { Loader2, Trash2, ShoppingBag, CreditCard, Banknote, Smartphone, Receipt, Upload, Truck, MapPin } from "lucide-react";
 import { Link, useLocation } from "wouter";
@@ -32,6 +33,11 @@ export default function Cart() {
     const [shippingCost, setShippingCost] = useState(0);
     const [shippingBreakdown, setShippingBreakdown] = useState<any[]>([]);
 
+    // User Addresses
+    const { data: userAddresses } = useShippingAddresses();
+
+
+
     // Payment State
     const [paymentMethod, setPaymentMethod] = useState("instapay");
     const [proofUrl, setProofUrl] = useState<string | null>(null);
@@ -54,6 +60,43 @@ export default function Cart() {
     }, 0);
 
     const grandTotal = itemsTotal + shippingCost;
+
+    // Auto-calculate shipping if user has an address
+    useEffect(() => {
+        if (requiresShipping && userAddresses && userAddresses.length > 0 && shippingCost === 0 && !calculateShipping.isPending) {
+            const latestAddress = userAddresses[0];
+
+            // Sync state for checkout dialog
+            setShippingDetails({
+                fullName: latestAddress.fullName,
+                phoneNumber: latestAddress.phoneNumber,
+                city: latestAddress.city,
+                addressLine: latestAddress.addressLine
+            });
+
+            // Calculate shipping
+            const physicalItems = validItems
+                .filter(item => item.product?.requiresShipping)
+                .map(item => ({
+                    productId: item.productId,
+                    variantId: item.variantId,
+                    price: item.product!.price,
+                    creatorId: item.product!.writerId
+                }));
+
+            if (physicalItems.length > 0) {
+                calculateShipping.mutate({
+                    items: physicalItems,
+                    city: latestAddress.city.trim()
+                }, {
+                    onSuccess: (data) => {
+                        setShippingCost(data.total);
+                        setShippingBreakdown(data.breakdown);
+                    }
+                });
+            }
+        }
+    }, [requiresShipping, userAddresses, validItems.length]);
 
     useEffect(() => {
         if (isCheckoutOpen) {
@@ -258,7 +301,16 @@ export default function Cart() {
                                     {requiresShipping && (
                                         <div className="flex justify-between text-muted-foreground">
                                             <span>Shipping</span>
-                                            <span>{shippingCost > 0 ? `${shippingCost} EGP` : 'Calculated at checkout'}</span>
+                                            <span>
+                                                {calculateShipping.isPending ? (
+                                                    <span className="flex items-center gap-2">
+                                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                                        Calculating...
+                                                    </span>
+                                                ) : (
+                                                    shippingCost > 0 ? `${shippingCost} EGP` : 'Calculated at checkout'
+                                                )}
+                                            </span>
                                         </div>
                                     )}
                                     <div className="flex justify-between text-muted-foreground">

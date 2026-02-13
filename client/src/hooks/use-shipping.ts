@@ -24,6 +24,28 @@ function mapRate(r: any): ShippingRate {
     };
 }
 
+export interface ShippingAddress {
+    id: number;
+    userId: string;
+    fullName: string;
+    phoneNumber: string;
+    city: string;
+    addressLine: string;
+    createdAt: string;
+}
+
+function mapAddress(a: any): ShippingAddress {
+    return {
+        id: a.id,
+        userId: a.user_id,
+        fullName: a.full_name,
+        phoneNumber: a.phone_number,
+        city: a.city,
+        addressLine: a.address_line,
+        createdAt: a.created_at,
+    };
+}
+
 export function useShippingRates(creatorId?: string) {
     return useQuery({
         queryKey: ["shipping-rates", creatorId],
@@ -92,5 +114,24 @@ export function useDeleteShippingRate() {
             queryClient.invalidateQueries({ queryKey: ["shipping-rates", variables.creatorId] });
             toast({ title: "Shipping rate removed" });
         },
+    });
+}
+
+export function useShippingAddresses() {
+    return useQuery({
+        queryKey: ["shipping-addresses"],
+        queryFn: async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) return [];
+
+            const { data, error } = await supabase
+                .from('shipping_addresses')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            return data.map(mapAddress);
+        }
     });
 }
