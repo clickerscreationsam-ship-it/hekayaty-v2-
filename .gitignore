@@ -18,7 +18,7 @@ replit.nix
 .gemini/
 .agent/
 *.cjs
-*.sql
+
 *.ipynb
 *.sh
 *.cjs
