@@ -7,8 +7,18 @@ import {
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 const MemoryStore = createMemoryStore(session);
+
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+if (!supabaseUrl || !supabaseKey) {
+  console.warn("⚠️ Supabase credentials missing during storage initialization.");
+}
+
+const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
 
 export interface IStorage {
   sessionStore: session.Store;
@@ -71,6 +81,7 @@ export interface IStorage {
   // Coupons
   getCoupons(writerId: string): Promise<Coupon[]>;
   createCoupon(coupon: InsertCoupon): Promise<Coupon>;
+  validateCoupon(code: string, writerId?: string): Promise<Coupon | undefined>;
   // Shipping Rates
   getShippingRates(creatorId: string): Promise<ShippingRate[]>;
   createShippingRate(rate: InsertShippingRate): Promise<ShippingRate>;
@@ -81,479 +92,317 @@ export interface IStorage {
   createShippingAddress(address: InsertShippingAddress): Promise<ShippingAddress>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private products: Map<number, Product>;
-  private variants: Map<number, Variant>;
-  private reviews: Map<number, Review>;
-  private coupons: Map<number, Coupon>;
-  private orders: Map<number, Order>;
-  private orderItems: Map<number, OrderItem>;
-  private cart: Map<number, CartItem>;
-  private follows: Map<string, boolean>; // simplified "followerId-creatorId": true
-  private likes: Map<string, boolean>; // "userId-productId": true
-  private library: Map<string, boolean>; // "userId-productId": true
-  private earnings: Map<number, Earning>;
-  private payouts: Map<number, Payout>;
-  private shippingRates: Map<number, ShippingRate>;
-  private shippingAddresses: Map<number, ShippingAddress>;
-
+export class DatabaseStorage implements IStorage {
   sessionStore: session.Store;
-
-  private currentUserId = 1;
-  private currentProductId = 1;
-  private currentVariantId = 1;
-  private currentReviewId = 1;
-  private currentCouponId = 1;
-  private currentOrderId = 1;
-  private currentOrderItemId = 1;
-  private currentCartId = 1;
-  private currentEarningId = 1;
-  private currentPayoutId = 1;
-  private currentShippingRateId = 1;
-  private currentShippingAddressId = 1;
 
   constructor() {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
-    this.users = new Map();
-    this.products = new Map();
-    this.variants = new Map();
-    this.reviews = new Map();
-    this.coupons = new Map();
-    this.orders = new Map();
-    this.orderItems = new Map();
-    this.cart = new Map();
-    this.follows = new Map();
-    this.likes = new Map();
-    this.library = new Map();
-    this.earnings = new Map();
-    this.payouts = new Map();
-    this.shippingRates = new Map();
-    this.shippingAddresses = new Map();
   }
 
   // User
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const { data, error } = await supabaseAdmin.from('users').select('*').eq('id', id).single();
+    if (error || !data) return undefined;
+    return data as User;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(u => u.username === username);
+    const { data, error } = await supabaseAdmin.from('users').select('*').eq('username', username).single();
+    if (error || !data) return undefined;
+    return data as User;
   }
 
   async listWriters(): Promise<User[]> {
-    return Array.from(this.users.values()).filter(u => u.role === 'writer' || u.role === 'artist');
+    const { data, error } = await supabaseAdmin.from('users').select('*').in('role', ['writer', 'artist']);
+    if (error || !data) return [];
+    return data as User[];
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = "user_" + (this.currentUserId++);
-    const user: User = {
+    const { data, error } = await supabaseAdmin.from('users').insert({
       ...insertUser,
-      id,
-      password: insertUser.password ?? null,
-      createdAt: new Date(),
-      role: insertUser.role || "reader",
-      bio: insertUser.bio || null,
-      avatarUrl: insertUser.avatarUrl || null,
-      bannerUrl: insertUser.bannerUrl || null,
-      storeSettings: (insertUser.storeSettings as any) || null,
-      stripeAccountId: null,
-      subscriptionTier: insertUser.subscriptionTier || 'free',
-      commissionRate: insertUser.commissionRate || 20,
-      isActive: insertUser.isActive ?? true,
-      shippingPolicy: insertUser.shippingPolicy ?? null,
-      skills: insertUser.skills ?? null
-    };
-    this.users.set(id, user);
-    return user;
+      isActive: true,
+      createdAt: new Date()
+    }).select().single();
+    if (error) throw error;
+    return data as User;
   }
 
   async updateUser(id: string, updates: Partial<InsertUser>): Promise<User> {
-    const existing = this.users.get(id);
-    if (!existing) throw new Error("User not found");
-    const updated = {
-      ...existing,
-      ...updates,
-      storeSettings: (updates.storeSettings !== undefined ? updates.storeSettings : existing.storeSettings) as any
-    };
-    this.users.set(id, updated);
-    return updated;
+    const { data, error } = await supabaseAdmin.from('users').update(updates).eq('id', id).select().single();
+    if (error) throw error;
+    return data as User;
   }
 
   // Products
   async getProducts(filters?: { writerId?: string; genre?: string; search?: string; type?: string; isPublished?: boolean }): Promise<Product[]> {
-    let products = Array.from(this.products.values());
-    if (filters) {
-      if (filters.writerId) products = products.filter(p => p.writerId === filters.writerId);
-      if (filters.genre) products = products.filter(p => p.genre.toLowerCase() === filters.genre?.toLowerCase());
-      if (filters.search) {
-        const query = filters.search.toLowerCase();
-        products = products.filter(p => p.title.toLowerCase().includes(query) || p.description.toLowerCase().includes(query));
-      }
-      if (filters.type) products = products.filter(p => p.type === filters.type);
-      if (filters.isPublished !== undefined) products = products.filter(p => p.isPublished === filters.isPublished);
-    }
-    return products;
+    let query = supabaseAdmin.from('products').select('*');
+    if (filters?.writerId) query = query.eq('writer_id', filters.writerId);
+    if (filters?.genre) query = query.eq('genre', filters.genre);
+    if (filters?.type) query = query.eq('type', filters.type);
+    if (filters?.isPublished !== undefined) query = query.eq('is_published', filters.isPublished);
+    if (filters?.search) query = query.ilike('title', `%${filters.search}%`);
+
+    const { data, error } = await query;
+    if (error || !data) return [];
+    return data as Product[];
   }
 
   async getProduct(id: number): Promise<Product | undefined> {
-    return this.products.get(id);
+    const { data, error } = await supabaseAdmin.from('products').select('*').eq('id', id).single();
+    if (error || !data) return undefined;
+    return data as Product;
   }
 
-  async createProduct(insertProduct: InsertProduct): Promise<Product> {
-    const id = this.currentProductId++;
-    const product: Product = {
-      ...insertProduct,
-      id,
-      rating: 0,
-      reviewCount: 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      type: insertProduct.type || "ebook",
-      licenseType: insertProduct.licenseType || "personal",
-      fileUrl: insertProduct.fileUrl || null,
-      content: insertProduct.content || null,
-      isPublished: insertProduct.isPublished ?? false,
-      salePrice: insertProduct.salePrice || null,
-      saleEndsAt: insertProduct.saleEndsAt || null,
-      // Physical columns handling
-      stockQuantity: insertProduct.stockQuantity || null,
-      weight: insertProduct.weight || null,
-      requiresShipping: insertProduct.requiresShipping || false,
-      salesCount: insertProduct.salesCount || 0,
-      appearanceSettings: (insertProduct.appearanceSettings as any) || null,
-      isSerialized: insertProduct.isSerialized ?? false,
-      seriesStatus: insertProduct.seriesStatus ?? "ongoing",
-      lastChapterUpdatedAt: new Date()
-    };
-    this.products.set(id, product);
-    return product;
+  async createProduct(product: InsertProduct): Promise<Product> {
+    const { data, error } = await supabaseAdmin.from('products').insert({
+      ...product,
+      createdAt: new Date()
+    }).select().single();
+    if (error) throw error;
+    return data as Product;
   }
 
-  async updateProduct(id: number, updates: Partial<InsertProduct>): Promise<Product> {
-    const existing = this.products.get(id);
-    if (!existing) throw new Error("Product not found");
-    const updated: Product = {
-      ...existing,
-      ...updates,
-      appearanceSettings: updates.appearanceSettings !== undefined ? (updates.appearanceSettings as any) : existing.appearanceSettings
-    };
-    this.products.set(id, updated);
-    return updated;
+  async updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product> {
+    const { data, error } = await supabaseAdmin.from('products').update(product).eq('id', id).select().single();
+    if (error) throw error;
+    return data as Product;
   }
 
   async deleteProduct(id: number): Promise<void> {
-    this.products.delete(id);
+    await supabaseAdmin.from('products').delete().eq('id', id);
   }
 
+  // Variants
   async createVariant(variant: InsertVariant): Promise<Variant> {
-    const id = this.currentVariantId++;
-    const newVariant: Variant = {
-      ...variant,
-      id,
-      licenseType: variant.licenseType || "standard",
-      fileUrl: variant.fileUrl || null,
-      type: variant.type || "digital"
-    };
-    this.variants.set(id, newVariant);
-    return newVariant;
+    const { data, error } = await supabaseAdmin.from('product_variants').insert(variant).select().single();
+    if (error) throw error;
+    return data as Variant;
   }
 
   async getVariants(productId: number): Promise<Variant[]> {
-    return Array.from(this.variants.values()).filter(v => v.productId === productId);
+    const { data, error } = await supabaseAdmin.from('product_variants').select('*').eq('product_id', productId);
+    if (error || !data) return [];
+    return data as Variant[];
   }
 
   // Social
   async followUser(followerId: string, creatorId: string): Promise<void> {
-    this.follows.set(`${followerId}-${creatorId}`, true);
+    await supabaseAdmin.from('follows').insert({ follower_id: followerId, creator_id: creatorId });
   }
 
   async unfollowUser(followerId: string, creatorId: string): Promise<void> {
-    this.follows.delete(`${followerId}-${creatorId}`);
+    await supabaseAdmin.from('follows').delete().match({ follower_id: followerId, creator_id: creatorId });
   }
 
   async getFollowers(creatorId: string): Promise<number> {
-    return Array.from(this.follows.keys()).filter(k => k.endsWith(`-${creatorId}`)).length;
+    const { count, error } = await supabaseAdmin.from('follows').select('*', { count: 'exact', head: true }).eq('creator_id', creatorId);
+    return count || 0;
   }
 
   async getFollowing(userId: string): Promise<string[]> {
-    return Array.from(this.follows.keys())
-      .filter(k => k.startsWith(`${userId}-`))
-      .map(k => k.split('-')[1]);
+    const { data } = await supabaseAdmin.from('follows').select('creator_id').eq('follower_id', userId);
+    return data?.map(f => f.creator_id) || [];
   }
 
   async toggleLike(userId: string, productId: number): Promise<boolean> {
-    const key = `${userId}-${productId}`;
-    if (this.likes.has(key)) {
-      this.likes.delete(key);
+    const { data: existing } = await supabaseAdmin.from('likes').select('*').match({ user_id: userId, product_id: productId }).single();
+    if (existing) {
+      await supabaseAdmin.from('likes').delete().match({ user_id: userId, product_id: productId });
       return false;
+    } else {
+      await supabaseAdmin.from('likes').insert({ user_id: userId, product_id: productId });
+      return true;
     }
-    this.likes.set(key, true);
-    return true;
   }
 
   async getLikes(productId: number): Promise<number> {
-    return Array.from(this.likes.keys()).filter(k => k.endsWith(`-${productId}`)).length;
+    const { count } = await supabaseAdmin.from('likes').select('*', { count: 'exact', head: true }).eq('product_id', productId);
+    return count || 0;
   }
 
   async addToLibrary(userId: string, productId: number): Promise<void> {
-    this.library.set(`${userId}-${productId}`, true);
+    await supabaseAdmin.from('saved_library').insert({ user_id: userId, product_id: productId });
   }
 
   async getLibrary(userId: string): Promise<Product[]> {
-    const productIds = Array.from(this.library.keys())
-      .filter(k => k.startsWith(`${userId}-`))
-      .map(k => parseInt(k.split('-')[1]));
-
-    // Manual join
-    return productIds
-      .map(id => this.products.get(id))
-      .filter((p): p is Product => !!p);
+    const { data } = await supabaseAdmin.from('saved_library').select('products(*)').eq('user_id', userId);
+    return (data?.map((d: any) => d.products) || []).filter(Boolean) as Product[];
   }
 
   // Cart
   async getCart(userId: string): Promise<(CartItem & { product?: Product, variant?: Variant })[]> {
-    const items = Array.from(this.cart.values()).filter(i => i.userId === userId);
-    return items.map(item => ({
-      ...item,
-      product: item.productId ? this.products.get(item.productId) : undefined,
-      variant: item.variantId ? this.variants.get(item.variantId) : undefined
-    }));
+    const { data, error } = await supabaseAdmin
+      .from('cart_items')
+      .select('*, product:products(*), variant:product_variants(*)')
+      .eq('user_id', userId);
+
+    if (error || !data) return [];
+    return data as any;
   }
 
   async addToCart(item: InsertCartItem): Promise<CartItem> {
-    const id = this.currentCartId++;
-    const newItem: CartItem = {
-      ...item,
-      id,
-      addedAt: new Date(),
-      quantity: item.quantity || 1,
-      variantId: item.variantId || null,
-      productId: item.productId ?? null,
-      collectionId: item.collectionId ?? null
-    };
-    this.cart.set(id, newItem);
-    return newItem;
+    const { data, error } = await supabaseAdmin.from('cart_items').insert(item).select().single();
+    if (error) throw error;
+    return data as CartItem;
   }
 
   async updateCartItem(id: number, quantity: number): Promise<CartItem> {
-    const item = this.cart.get(id);
-    if (!item) throw new Error("Item not found");
-    const updated = { ...item, quantity };
-    this.cart.set(id, updated);
-    return updated;
+    const { data, error } = await supabaseAdmin.from('cart_items').update({ quantity }).eq('id', id).select().single();
+    if (error) throw error;
+    return data as CartItem;
   }
 
   async removeFromCart(id: number): Promise<void> {
-    this.cart.delete(id);
+    await supabaseAdmin.from('cart_items').delete().eq('id', id);
   }
 
   async clearCart(userId: string): Promise<void> {
-    // Inefficient but works for mem
-    const entries = Array.from(this.cart.entries());
-    for (const [key, val] of entries) {
-      if (val.userId === userId) this.cart.delete(key);
-    }
+    await supabaseAdmin.from('cart_items').delete().eq('user_id', userId);
   }
 
   // Orders
-  async createOrder(insertOrder: InsertOrder, items: { productId?: number; collectionId?: string; variantId?: number; price: number; creatorId: string }[]): Promise<Order> {
-    const id = this.currentOrderId++;
-    const order: Order = {
-      ...insertOrder,
-      id,
-      paymentIntentId: insertOrder.paymentIntentId || "local_ref_" + id,
-      status: insertOrder.status || "pending_verification",
-      paymentMethod: insertOrder.paymentMethod || "card",
-      paymentProofUrl: insertOrder.paymentProofUrl || null,
-      paymentReference: insertOrder.paymentReference || null,
-      isVerified: insertOrder.isVerified || false,
-      // Physical
-      shippingAddress: (insertOrder.shippingAddress as any) || null,
-      shippingCost: insertOrder.shippingCost || 0,
+  async createOrder(order: InsertOrder, items: { productId?: number; collectionId?: string; variantId?: number; price: number; creatorId: string }[]): Promise<Order> {
+    const { data: ord, error: ordErr } = await supabaseAdmin.from('orders').insert({
+      ...order,
       createdAt: new Date()
-    };
-    this.orders.set(id, order);
+    }).select().single();
+    if (ordErr) throw ordErr;
 
-    // Create Order Items
-    items.forEach(item => {
-      const itemId = this.currentOrderItemId++;
-      this.orderItems.set(itemId, {
-        id: itemId,
-        orderId: id,
-        productId: item.productId || null,
-        collectionId: item.collectionId || null,
-        variantId: item.variantId || null,
-        price: item.price,
-        licenseType: "standard", // simplify for now
-        creatorId: item.creatorId,
-        fulfillmentStatus: "pending",
-        trackingNumber: null,
-        shippedAt: null
-      });
-    });
+    const orderItems = items.map(item => ({
+      order_id: ord.id,
+      product_id: item.productId,
+      collection_id: item.collectionId,
+      variant_id: item.variantId,
+      price: item.price,
+      creator_id: item.creatorId,
+      fulfillment_status: 'pending'
+    }));
 
-    return order;
+    const { error: itemErr } = await supabaseAdmin.from('order_items').insert(orderItems);
+    if (itemErr) throw itemErr;
+
+    return ord as Order;
   }
 
   async verifyOrder(orderId: number, adminId: string): Promise<Order> {
-    const order = this.orders.get(orderId);
-    if (!order) throw new Error("Order not found");
-
-    const updated = { ...order, status: "paid", isVerified: true };
-    this.orders.set(orderId, updated);
-    return updated;
+    const { data, error } = await supabaseAdmin.from('orders').update({ isVerified: true, status: 'paid' }).eq('id', orderId).select().single();
+    if (error) throw error;
+    return data as Order;
   }
 
   async listPendingOrders(): Promise<Order[]> {
-    return Array.from(this.orders.values()).filter(o => o.status === "pending_verification");
+    const { data } = await supabaseAdmin.from('orders').select('*').eq('isVerified', false);
+    return data as Order[] || [];
   }
 
   async getOrder(id: number): Promise<Order | undefined> {
-    return this.orders.get(id);
+    const { data } = await supabaseAdmin.from('orders').select('*').eq('id', id).single();
+    return data as Order || undefined;
   }
 
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
-    return Array.from(this.orderItems.values()).filter(item => item.orderId === orderId);
+    const { data } = await supabaseAdmin.from('order_items').select('*').eq('order_id', orderId);
+    return data as OrderItem[] || [];
   }
 
   async getUserOrders(userId: string): Promise<Order[]> {
-    return Array.from(this.orders.values()).filter(o => o.userId === userId);
+    const { data } = await supabaseAdmin.from('orders').select('*').eq('user_id', userId).order('createdAt', { ascending: false });
+    return data as Order[] || [];
   }
 
   async getCreatorOrders(creatorId: string): Promise<Order[]> {
-    // This implies a join in SQL. For memory, we look at orderItems first
-    const orderIds = new Set(
-      Array.from(this.orderItems.values())
-        .filter(i => i.creatorId === creatorId)
-        .map(i => i.orderId)
-    );
-
-    return Array.from(this.orders.values()).filter(o => orderIds.has(o.id));
+    // This is simplified, usually joins or multiple queries are needed
+    const { data: itemIds } = await supabaseAdmin.from('order_items').select('order_id').eq('creator_id', creatorId);
+    const orderIds = Array.from(new Set(itemIds?.map(i => i.order_id)));
+    const { data: orders } = await supabaseAdmin.from('orders').select('*').in('id', orderIds).order('createdAt', { ascending: false });
+    return orders as Order[] || [];
   }
 
-  // Economic System
+  // Economic
   async createEarning(earning: InsertEarning): Promise<Earning> {
-    const id = this.currentEarningId++;
-    const newEarning: Earning = {
-      ...earning,
-      id,
-      createdAt: new Date(),
-      status: earning.status || "pending",
-      orderId: earning.orderId ?? null,
-      designRequestId: earning.designRequestId ?? null
-    };
-    this.earnings.set(id, newEarning);
-    return newEarning;
+    const { data, error } = await supabaseAdmin.from('earnings').insert(earning).select().single();
+    if (error) throw error;
+    return data as Earning;
   }
 
   async getEarnings(userId: string): Promise<Earning[]> {
-    return Array.from(this.earnings.values()).filter(e => e.creatorId === userId);
+    const { data } = await supabaseAdmin.from('earnings').select('*').eq('creator_id', userId);
+    return data as Earning[] || [];
   }
 
   async createPayout(payout: InsertPayout): Promise<Payout> {
-    const id = this.currentPayoutId++;
-    const newPayout: Payout = {
-      ...payout,
-      id,
-      status: "pending",
-      requestedAt: new Date(),
-      processedAt: null,
-      method: payout.method || "stripe",
-      methodDetails: payout.methodDetails ?? null
-    };
-    this.payouts.set(id, newPayout);
-    return newPayout;
+    const { data, error } = await supabaseAdmin.from('payouts').insert(payout).select().single();
+    if (error) throw error;
+    return data as Payout;
   }
 
   async getPayouts(userId: string): Promise<Payout[]> {
-    return Array.from(this.payouts.values()).filter(p => p.userId === userId);
+    const { data } = await supabaseAdmin.from('payouts').select('*').eq('user_id', userId).order('requested_at', { ascending: false });
+    return data as Payout[] || [];
   }
-
 
   // Reviews
   async getReviews(productId: number): Promise<Review[]> {
-    return Array.from(this.reviews.values()).filter(r => r.productId === productId);
+    const { data } = await supabaseAdmin.from('reviews').select('*').eq('product_id', productId).order('createdAt', { ascending: false });
+    return data as Review[] || [];
   }
 
-  async createReview(insertReview: InsertReview): Promise<Review> {
-    const id = this.currentReviewId++;
-    const review: Review = {
-      ...insertReview,
-      id,
-      createdAt: new Date(),
-      comment: insertReview.comment || null
-    };
-    this.reviews.set(id, review);
-    return review;
+  async createReview(review: InsertReview): Promise<Review> {
+    const { data, error } = await supabaseAdmin.from('reviews').insert({ ...review, createdAt: new Date() }).select().single();
+    if (error) throw error;
+    return data as Review;
   }
 
   // Coupons
   async getCoupons(writerId: string): Promise<Coupon[]> {
-    return Array.from(this.coupons.values()).filter(c => c.writerId === writerId);
+    const { data } = await supabaseAdmin.from('coupons').select('*').eq('writerId', writerId);
+    return data as Coupon[] || [];
   }
 
-  async createCoupon(insertCoupon: InsertCoupon): Promise<Coupon> {
-    const id = this.currentCouponId++;
-    const newCoupon: Coupon = {
-      ...insertCoupon,
-      id,
-      usageLimit: insertCoupon.usageLimit || null,
-      usageCount: 0,
-      expiresAt: insertCoupon.expiresAt || null,
-      discountType: insertCoupon.discountType || "percentage",
-      createdAt: new Date()
-    };
-    this.coupons.set(id, newCoupon);
-    return newCoupon;
+  async createCoupon(coupon: InsertCoupon): Promise<Coupon> {
+    const { data, error } = await supabaseAdmin.from('coupons').insert({ ...coupon, createdAt: new Date() }).select().single();
+    if (error) throw error;
+    return data as Coupon;
   }
 
   async validateCoupon(code: string, writerId?: string): Promise<Coupon | undefined> {
-    return Array.from(this.coupons.values()).find(c => c.code === code && (!writerId || c.writerId === writerId));
+    let query = supabaseAdmin.from('coupons').select('*').eq('code', code);
+    if (writerId) query = query.eq('writerId', writerId);
+
+    const { data, error } = await query.single();
+    if (error || !data) return undefined;
+    return data as Coupon;
   }
 
-  // Shipping Rates
+  // Shipping
   async getShippingRates(creatorId: string): Promise<ShippingRate[]> {
-    return Array.from(this.shippingRates.values()).filter(r => r.creatorId === creatorId);
+    const { data } = await supabaseAdmin.from('shipping_rates').select('*').eq('creatorId', creatorId);
+    return data as ShippingRate[] || [];
   }
 
-  async createShippingRate(insertRate: InsertShippingRate): Promise<ShippingRate> {
-    const id = this.currentShippingRateId++;
-    const rate: ShippingRate = {
-      ...insertRate,
-      id,
-      createdAt: new Date(),
-      amount: insertRate.amount || 0,
-      deliveryTimeMin: insertRate.deliveryTimeMin || null,
-      deliveryTimeMax: insertRate.deliveryTimeMax || null
-    };
-    this.shippingRates.set(id, rate);
-    return rate;
+  async createShippingRate(rate: InsertShippingRate): Promise<ShippingRate> {
+    const { data, error } = await supabaseAdmin.from('shipping_rates').insert({ ...rate, createdAt: new Date() }).select().single();
+    if (error) throw error;
+    return data as ShippingRate;
   }
 
   async deleteShippingRate(id: number): Promise<void> {
-    this.shippingRates.delete(id);
+    await supabaseAdmin.from('shipping_rates').delete().eq('id', id);
   }
 
-  // Shipping Addresses
   async getShippingAddresses(userId: string): Promise<ShippingAddress[]> {
-    return Array.from(this.shippingAddresses.values()).filter(a => a.userId === userId);
+    const { data } = await supabaseAdmin.from('shipping_addresses').select('*').eq('userId', userId);
+    return data as ShippingAddress[] || [];
   }
 
-  async createShippingAddress(insertAddress: InsertShippingAddress): Promise<ShippingAddress> {
-    const id = this.currentShippingAddressId++;
-    const address: ShippingAddress = {
-      ...insertAddress,
-      id,
-      userId: insertAddress.userId || null,
-      createdAt: new Date()
-    };
-    this.shippingAddresses.set(id, address);
-    return address;
+  async createShippingAddress(address: InsertShippingAddress): Promise<ShippingAddress> {
+    const { data, error } = await supabaseAdmin.from('shipping_addresses').insert({ ...address, createdAt: new Date() }).select().single();
+    if (error) throw error;
+    return data as ShippingAddress;
   }
 }
 
-export const storage = new MemStorage();
-
+export const storage = new DatabaseStorage();

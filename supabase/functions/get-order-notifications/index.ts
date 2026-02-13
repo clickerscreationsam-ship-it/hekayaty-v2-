@@ -8,31 +8,19 @@ serve(async (req: Request) => {
     }
 
     try {
+        const authHeader = req.headers.get('Authorization')
+        if (!authHeader) throw new Error('Unauthorized: Missing token')
+
         const supabaseAdmin = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         )
 
-        console.log(`Incoming request Headers:`, Object.fromEntries(req.headers.entries()))
-
-        // Get user ID strictly from JWT
-        const authHeader = req.headers.get('Authorization')
-        if (!authHeader) {
-            return new Response(JSON.stringify({ error: 'Missing Authorization header' }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 401
-            })
-        }
-
         const token = authHeader.replace('Bearer ', '')
         const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
 
         if (authError || !user) {
-            console.error('Auth error verifying token:', authError)
-            return new Response(JSON.stringify({ error: 'Unauthorized: Invalid session' }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 401
-            })
+            throw new Error('Unauthorized: Invalid session')
         }
 
         const userId = user.id

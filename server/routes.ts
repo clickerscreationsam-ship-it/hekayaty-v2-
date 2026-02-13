@@ -48,11 +48,6 @@ export async function registerRoutes(
     if (!user || user.role === 'admin') return res.status(404).json({ message: "User not found" });
 
     try {
-      const { createClient } = await import('@supabase/supabase-js');
-      const supabaseUrl = process.env.SUPABASE_URL!;
-      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
       // 1. Get real sales count from Supabase products
       const { data: products } = await supabase
         .from('products')
@@ -463,12 +458,6 @@ export async function registerRoutes(
     const orderId = parseInt(req.params.id);
 
     try {
-      // Import supabase client at runtime
-      const { createClient } = await import('@supabase/supabase-js');
-      const supabaseUrl = process.env.SUPABASE_URL!;
-      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
       // 1. Get order from Supabase
       const { data: order, error: orderError } = await supabase
         .from('orders')

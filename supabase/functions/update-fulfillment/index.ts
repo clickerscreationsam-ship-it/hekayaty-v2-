@@ -11,30 +11,18 @@ serve(async (req) => {
 
     try {
         const authHeader = req.headers.get('Authorization')
-        if (!authHeader) {
-            return new Response(
-                JSON.stringify({ error: 'Missing authorization header' }),
-                { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-        }
-
-        const supabaseClient = createClient(
-            Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-            { global: { headers: { Authorization: authHeader } } }
-        )
+        if (!authHeader) throw new Error('Unauthorized: Missing token')
 
         const supabaseAdmin = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         )
 
-        const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
+        const token = authHeader.replace('Bearer ', '')
+        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+
         if (authError || !user) {
-            return new Response(
-                JSON.stringify({ error: 'Unauthorized' }),
-                { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
+            throw new Error('Unauthorized: Invalid session')
         }
 
         const { orderItemId, status, trackingNumber } = await req.json()

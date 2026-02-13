@@ -65,14 +65,8 @@ serve(async (req: Request) => {
         const finalGross = Math.max(transGross, legacyGross);
         const finalUnits = Math.max(transUnits, legacyUnits);
 
-        // Calculate Expected Net (80% of Gross)
-        const expectedNet = Math.round(finalGross * creatorShare);
-
-        // Use the higher value between actual records and predicted share
-        // This fixes the issue where some sales might not have earning records yet
-        const actualRecordsNet = earningsRecords?.reduce((sum, r) => sum + (r.amount || 0), 0) || 0;
-        const finalNet = Math.max(actualRecordsNet, expectedNet);
-
+        // Calculate Expected Net based on current commission settings
+        const finalNet = Math.round(finalGross * creatorShare);
         const totalCommission = finalGross - finalNet;
 
         // Payouts

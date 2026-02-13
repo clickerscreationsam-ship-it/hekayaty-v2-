@@ -8,25 +8,22 @@ serve(async (req) => {
     }
 
     try {
+        const authHeader = req.headers.get('Authorization')
+        if (!authHeader) throw new Error('Unauthorized: Missing token')
+
         const supabaseAdmin = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         )
 
-        // Get auth token
-        const authHeader = req.headers.get('Authorization')
-        if (!authHeader) {
-            throw new Error('Unauthorized: Missing token')
+        const token = authHeader.replace('Bearer ', '')
+        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+
+        if (authError || !user) {
+            throw new Error('Unauthorized: Invalid session')
         }
 
-        const token = authHeader.replace('Bearer ', '');
-        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
-
-        if (authError || !authUser) {
-            throw new Error('Unauthorized: Invalid session');
-        }
-
-        const makerId = authUser.id;
+        const makerId = user.id
 
         // Parse body once
         const body = await req.json().catch(() => ({}))

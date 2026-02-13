@@ -20,7 +20,6 @@ serve(async (req) => {
             throw new Error('Unauthorized: Missing token')
         }
 
-        // 1. VERIFY JWT SIGNATURE (Official Way)
         const token = authHeader.replace('Bearer ', '');
         const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
 
@@ -29,38 +28,30 @@ serve(async (req) => {
         }
 
         const userId = authUser.id;
-        const body = await req.json();
+        const { orderId } = await req.json();
 
         // Check if user is admin
         const { data: userData } = await supabaseAdmin.from('users').select('role').eq('id', userId).single()
         if (userData?.role !== 'admin') throw new Error('Forbidden: Admin only')
-
-        const { orderId } = body
 
         // 1. Fetch Order
         const { data: order } = await supabaseAdmin.from('orders').select('*').eq('id', orderId).single()
         if (!order) throw new Error("Order not found")
         if (order.status === 'paid') throw new Error("Order already paid")
 
-        // Fetch Items
-        const { data: items } = await supabaseAdmin
+        // 2. Fetch Items (Include product and collection details)
+        const { data: items, error: itemsError } = await supabaseAdmin
             .from('order_items')
-            .select('*, product:products(writer_id, type)')
+            .select(`
+                *,
+                product:products(writer_id, type),
+                collection:collections(writer_id)
+            `)
             .eq('order_id', orderId)
 
-        if (!items || items.length === 0) throw new Error("No items found")
+        if (itemsError || !items || items.length === 0) throw new Error("No items found or failed to fetch")
 
-        // Fetch writer rates
-        const writerIds = Array.from(new Set(items.map((i: any) => i.product?.writer_id).filter(Boolean)))
-        const { data: writers } = await supabaseAdmin
-            .from('users')
-            .select('id, commission_rate')
-            .in('id', writerIds as string[])
-
-        const ratesMap = new Map<string, number>()
-        writers?.forEach((w: any) => ratesMap.set(w.id, w.commission_rate))
-
-        // 2. Update Order Status
+        // 3. Update Order Status
         const { error: updateError } = await supabaseAdmin
             .from('orders')
             .update({ status: 'paid', is_verified: true })
@@ -68,28 +59,44 @@ serve(async (req) => {
 
         if (updateError) throw updateError
 
-        // 3. Create Earnings Logic
+        // 4. Calculate Earnings
         const earningsByCreator = new Map<string, number>()
+        const writerIds = new Set<string>()
 
-        // 3a. Product Sales
+        // First pass: Identify all writers to fetch their rates
+        items.forEach((item: any) => {
+            const writerId = item.product?.writer_id || item.collection?.writer_id
+            if (writerId) writerIds.add(writerId)
+        })
+
+        const { data: writers } = await supabaseAdmin
+            .from('users')
+            .select('id, commission_rate')
+            .in('id', Array.from(writerIds))
+
+        const ratesMap = new Map<string, number>()
+        writers?.forEach((w: any) => ratesMap.set(w.id, w.commission_rate))
+
+        // Process each item
         for (const item of items) {
-            const product = (item as any).product
-            if (!product) continue
+            const writerId = (item as any).product?.writer_id || (item as any).collection?.writer_id
+            if (!writerId) continue
 
-            const isPhysical = product.type === 'physical'
-            const writerRate = ratesMap.get(product.writer_id) ?? 20
-            const rate = isPhysical ? 12 : writerRate
-            const fee = Math.round(item.price * (rate / 100))
+            // Use the writer's specific commission rate or default to 20%
+            const platformRate = ratesMap.get(writerId) ?? 20
+
+            const fee = Math.round(item.price * (platformRate / 100))
             const earning = item.price - fee
 
-            const current = earningsByCreator.get(product.writer_id) || 0
-            earningsByCreator.set(product.writer_id, current + earning)
+            earningsByCreator.set(writerId, (earningsByCreator.get(writerId) || 0) + earning)
 
-            // Increment Sales Count
-            await supabaseAdmin.rpc('increment_sales_count', { product_id: item.product_id })
+            // Increment sales count for products
+            if (item.product_id) {
+                await supabaseAdmin.rpc('increment_sales_count', { product_id: item.product_id })
+            }
         }
 
-        // 3b. Shipping Logic
+        // 4b. Shipping Logic
         if (order.shipping_cost > 0 && order.shipping_address) {
             const city = (order.shipping_address as any).city?.toLowerCase().trim();
             const creatorIds = Array.from(earningsByCreator.keys());
@@ -97,22 +104,21 @@ serve(async (req) => {
             for (const creatorId of creatorIds) {
                 const { data: rates } = await supabaseAdmin.from('shipping_rates').select('*').eq('creator_id', creatorId);
                 if (rates && rates.length > 0) {
-                    const cityRate = rates.find((r: any) => r.region_name.toLowerCase() === city) ||
-                        rates.find((r: any) => r.region_name.toLowerCase() === 'all');
-                    if (cityRate) {
-                        const current = earningsByCreator.get(creatorId) || 0;
-                        earningsByCreator.set(creatorId, current + cityRate.amount);
+                    const matchedRate = rates.find((r: any) => r.region_name.toLowerCase() === city) ||
+                        rates.find((r: any) => ['all', 'default', 'nationwide'].includes(r.region_name.toLowerCase()));
+                    if (matchedRate) {
+                        earningsByCreator.set(creatorId, (earningsByCreator.get(creatorId) || 0) + matchedRate.amount);
                     }
                 }
             }
         }
 
-        // 4. Insert Earnings Records
+        // 5. Insert Earnings Records
         for (const [creatorId, amount] of Array.from(earningsByCreator.entries())) {
             await supabaseAdmin.from('earnings').insert({
                 creator_id: creatorId,
                 order_id: orderId,
-                amount: amount,
+                amount: Math.round(amount),
                 status: 'pending'
             })
         }
@@ -123,6 +129,7 @@ serve(async (req) => {
         })
 
     } catch (error) {
+        console.error('Verify payment error:', error)
         return new Response(JSON.stringify({ error: error.message }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400
