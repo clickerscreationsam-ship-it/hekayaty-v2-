@@ -43,20 +43,22 @@ export default function Cart() {
     const [proofUrl, setProofUrl] = useState<string | null>(null);
     const [reference, setReference] = useState("");
 
-    // Filter out invalid items where product might be null (deleted product)
-    const validItems = cartItems?.filter(item => item.product) || [];
+    // Filter out invalid items where product or collection might be null (deleted product)
+    const validItems = cartItems?.filter(item => item.product || item.collection) || [];
     const requiresShipping = validItems.some(item => item.product?.requiresShipping);
 
     // Prepare order items early for calculation
     const orderItems = validItems.map(item => ({
         productId: item.productId,
+        collectionId: item.collectionId,
         variantId: item.variantId,
-        price: item.product!.price,
-        creatorId: item.product!.writerId
+        price: item.product?.price || item.collection?.price || 0,
+        creatorId: item.product?.writerId || item.collection?.writerId || null
     }));
 
     const itemsTotal = validItems.reduce((sum, item) => {
-        return sum + (item.product?.price || 0) * (item.quantity || 1);
+        const price = item.product?.price || item.collection?.price || 0;
+        return sum + price * (item.quantity || 1);
     }, 0);
 
     const grandTotal = itemsTotal + shippingCost;
@@ -237,17 +239,19 @@ export default function Cart() {
                                 <div key={item.id} className="glass-card p-4 rounded-xl flex gap-4 items-center">
                                     <div className="w-20 h-28 shrink-0 rounded-lg overflow-hidden bg-muted">
                                         <img
-                                            src={item.product!.coverUrl}
-                                            alt={item.product!.title}
+                                            src={item.product?.coverUrl || item.collection?.coverUrl || ""}
+                                            alt={item.product?.title || item.collection?.title || ""}
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
 
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-bold text-lg truncate">{item.product!.title}</h3>
-                                        <p className="text-sm text-muted-foreground capitalize">{item.product!.type}</p>
+                                        <h3 className="font-bold text-lg truncate">{item.product?.title || item.collection?.title}</h3>
+                                        <p className="text-sm text-muted-foreground capitalize">
+                                            {item.product?.type || (item.collection ? "Story Collection" : "")}
+                                        </p>
                                         <div className="mt-2 text-primary font-bold">
-                                            {item.product!.price} EGP
+                                            {item.product?.price || item.collection?.price} EGP
                                             {item.quantity && item.quantity > 1 && <span className="text-muted-foreground text-xs font-normal"> x {item.quantity}</span>}
                                         </div>
                                     </div>

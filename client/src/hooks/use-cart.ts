@@ -1,10 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { type InsertCartItem, type CartItem, type Product, type Variant } from "@shared/schema";
+import { type InsertCartItem, type CartItem, type Product, type Variant, type Collection } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { supabase } from "@/lib/supabase"; // Direct supabase usage
 
-type CartItemWithDetails = CartItem & { product: Product; variant?: Variant };
+type CartItemWithDetails = CartItem & {
+    product: Product | null;
+    collection: {
+        id: string;
+        writerId: string;
+        title: string;
+        description: string | null;
+        coverUrl: string | null;
+        price: number;
+        isCollection: boolean;
+    } | null;
+    variant?: Variant
+};
 
 export function useCart() {
     return useQuery<CartItemWithDetails[]>({
@@ -26,12 +38,15 @@ export function useCart() {
             // Map data from snake_case to camelCase
             return cartItems.map(item => {
                 const p = item.product;
-                if (!p) return null;
+                const c = item.collection;
+
+                if (!p && !c) return null;
 
                 return {
                     id: item.id,
                     userId: item.user_id,
                     productId: item.product_id,
+                    collectionId: item.collection_id,
                     variantId: item.variant_id,
                     quantity: item.quantity,
                     addedAt: item.added_at,
@@ -56,12 +71,13 @@ export function useCart() {
                         createdAt: p.created_at,
                         updatedAt: p.updated_at
                     } : null,
-                    collection: item.collection ? {
-                        id: item.collection.id,
-                        title: item.collection.title,
-                        description: item.collection.description,
-                        coverUrl: item.collection.cover_image_url,
-                        price: item.collection.price,
+                    collection: c ? {
+                        id: c.id,
+                        writerId: c.writer_id,
+                        title: c.title,
+                        description: c.description,
+                        coverUrl: c.cover_image_url,
+                        price: Number(c.price) || 0,
                         isCollection: true
                     } : null
                 };
