@@ -35,6 +35,7 @@ export type Database = {
                     commission_rate: number;
                     is_active: boolean;
                     shipping_policy: string | null;
+                    skills: string | null;
                     created_at: string;
                     updated_at: string;
                 };

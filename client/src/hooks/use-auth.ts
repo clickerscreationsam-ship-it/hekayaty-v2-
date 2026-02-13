@@ -3,11 +3,8 @@ import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/lib/supabase";
 
-// Manually extend the type until codegen is updated
-type DbUser = Database['public']['Tables']['users']['Row'] & {
-    subscription_tier?: string;
-    commission_rate?: number;
-};
+// Use the manual type helper from supabase.ts
+type DbUser = Database['public']['Tables']['users']['Row'];
 
 export type User = DbUser & {
     displayName: string;
@@ -17,6 +14,10 @@ export type User = DbUser & {
     stripeAccountId: string | null;
     subscriptionTier: string;
     commissionRate: number;
+    isActive: boolean;
+    shippingPolicy: string | null;
+    skills: string | null;
+    createdAt: Date;
 };
 
 interface SignUpData {
@@ -69,6 +70,10 @@ export function useAuth() {
                 stripeAccountId: dbUser.stripe_account_id,
                 subscriptionTier: dbUser.subscription_tier || 'free',
                 commissionRate: dbUser.commission_rate || 20,
+                isActive: dbUser.is_active ?? true,
+                shippingPolicy: dbUser.shipping_policy,
+                skills: dbUser.skills,
+                createdAt: new Date(dbUser.created_at),
             };
         },
         enabled: !!session?.user?.id,

@@ -8,7 +8,7 @@ import { relations } from "drizzle-orm";
 export const users = pgTable("users", {
   id: text("id").primaryKey(), // UUID from Supabase Auth
   username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"),
   email: text("email").notNull(),
   displayName: text("display_name").notNull(),
   role: text("role").notNull().default("reader"),
