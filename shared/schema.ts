@@ -252,7 +252,8 @@ export const orders = pgTable("orders", {
 export const orderItems = pgTable("order_items", {
   id: serial("id").primaryKey(),
   orderId: integer("order_id").notNull(),
-  productId: integer("product_id").notNull(),
+  productId: integer("product_id"),
+  collectionId: uuid("collection_id"),
   variantId: integer("variant_id"),
   price: integer("price").notNull(),
   licenseType: text("license_type"),
