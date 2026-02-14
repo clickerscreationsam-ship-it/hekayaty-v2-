@@ -51,7 +51,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8 lg:gap-10">
+          <div className="hidden md:flex items-center gap-4 lg:gap-8 px-4">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.href;
@@ -60,14 +60,14 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
                   key={item.href}
                   href={item.href}
                   className={`
-                    flex items-center gap-3 text-sm font-medium transition-colors duration-200 touch-target
-                    ${isActive ? "text-primary font-bold" : "text-muted-foreground hover:text-primary"}
+                    flex items-center gap-2 text-sm font-medium transition-all duration-200 touch-target
+                    ${isActive ? "text-primary font-bold scale-105" : "text-muted-foreground hover:text-primary hover:scale-105"}
                   `}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className="hidden lg:inline">{item.label}</span>
+                  <Icon className="w-4 h-4 opacity-80" />
+                  <span className="hidden xl:inline">{item.label}</span>
                   {(item.href === '/studio' || item.href === '/admin') && unreadMessagesCount > 0 && (
-                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground font-bold shadow-lg shadow-primary/20 animate-pulse">
+                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-white font-bold shadow-lg shadow-primary/20 animate-pulse">
                       {unreadMessagesCount}
                     </span>
                   )}
@@ -77,74 +77,78 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-2 sm:gap-4">
-            <LanguageSwitcher />
-
-            {user && <OrderNotificationDrawer />}
-
-            {user && (user.role === 'writer' || user.role === 'artist' || user.role === 'admin') && (
-              <Link href={user.role === 'admin' ? "/admin" : "/dashboard?tab=admin_messages"}>
-                <Button variant="ghost" size="icon" className="relative text-foreground hover:text-primary transition-colors touch-target">
-                  <MessageSquare className="w-5 h-5" />
-                  {unreadMessagesCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-bounce">
-                      {unreadMessagesCount}
+          <div className="flex items-center gap-1.5 sm:gap-3">
+            {/* Utility Group */}
+            <div className="flex items-center gap-1 sm:gap-2 mr-1 sm:mr-2 pr-1 sm:pr-2 border-r border-white/5">
+              <LanguageSwitcher />
+              {user && <OrderNotificationDrawer />}
+              {user && (user.role === 'writer' || user.role === 'artist' || user.role === 'admin') && (
+                <Link href={user.role === 'admin' ? "/admin" : "/dashboard?tab=admin_messages"}>
+                  <Button variant="ghost" size="icon" className="relative h-9 w-9 text-foreground hover:text-primary transition-colors touch-target">
+                    <MessageSquare className="w-5 h-5" />
+                    {unreadMessagesCount > 0 && (
+                      <span className="absolute top-1 right-1 flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                      </span>
+                    )}
+                  </Button>
+                </Link>
+              )}
+              <Link href="/cart">
+                <Button variant="ghost" size="icon" className="relative h-9 w-9 text-foreground hover:text-primary transition-colors touch-target">
+                  <ShoppingBag className="w-5 h-5" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
+                      {cartCount}
                     </span>
                   )}
                 </Button>
               </Link>
-            )}
+            </div>
 
-            <Link href="/cart">
-              <Button variant="ghost" size="icon" className="relative text-foreground hover:text-primary transition-colors touch-target">
-                <ShoppingBag className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-in zoom-in">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
-
-            {user ? (
-              <>
-                {(user.role === "writer" || user.role === "artist") && (
-                  <Link href={`/writer/${user.username}`} className="hidden sm:block">
-                    <Button variant="ghost" size="sm" className="gap-3 text-primary hover:text-primary/80 touch-target">
-                      <Store className="w-4 h-4" />
-                      <span className="hidden lg:inline">{t("nav.myStore")}</span>
+            {/* User Actions */}
+            <div className="flex items-center gap-2">
+              {user ? (
+                <>
+                  {(user.role === "writer" || user.role === "artist") && (
+                    <Link href={`/writer/${user.username}`} className="hidden md:block">
+                      <Button variant="ghost" size="sm" className="h-9 gap-2 text-primary hover:text-primary/80 hover:bg-primary/5 transition-all touch-target">
+                        <Store className="w-4 h-4" />
+                        <span className="hidden xxl:inline">{t("nav.myStore")}</span>
+                      </Button>
+                    </Link>
+                  )}
+                  <Link href="/dashboard" className="hidden sm:block">
+                    <Button variant="ghost" size="sm" className="h-9 hover:bg-white/5 transition-all touch-target font-medium">
+                      {user.role === "writer" || user.role === "artist" ? t("nav.dashboard") : t("nav.profile")}
                     </Button>
                   </Link>
-                )}
-                <Link href="/dashboard" className="hidden sm:block">
-                  <Button variant="ghost" size="sm" className="touch-target">
-                    {user.role === "writer" || user.role === "artist" ? t("nav.dashboard") : t("nav.profile")}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hidden sm:flex h-9 text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-all touch-target"
+                    onClick={() => logoutMutation.mutate()}
+                    disabled={logoutMutation.isPending}
+                  >
+                    {t("nav.logout")}
                   </Button>
-                </Link>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="hidden sm:flex touch-target"
-                  onClick={() => logoutMutation.mutate()}
-                  disabled={logoutMutation.isPending}
-                >
-                  {t("nav.logout")}
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link href="/auth" className="hidden sm:block">
-                  <Button variant="ghost" size="sm" className="touch-target">
-                    {t("nav.login")}
-                  </Button>
-                </Link>
-                <Link href="/auth" className="hidden sm:block">
-                  <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 touch-target">
-                    {t("nav.getStarted")}
-                  </Button>
-                </Link>
-              </>
-            )}
+                </>
+              ) : (
+                <>
+                  <Link href="/auth" className="hidden sm:block">
+                    <Button variant="ghost" size="sm" className="h-9 hover:bg-white/5 transition-all touch-target">
+                      {t("nav.login")}
+                    </Button>
+                  </Link>
+                  <Link href="/auth" className="hidden sm:block">
+                    <Button className="h-9 bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg shadow-primary/10 transition-all touch-target px-6">
+                      {t("nav.getStarted")}
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
 
             {/* Mobile Menu Button */}
             <Button
