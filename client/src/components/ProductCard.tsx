@@ -135,7 +135,11 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
             {isCollection ? (
               <div className="flex items-center gap-2">
                 <span className="font-black text-xl text-secondary">
-                  {item.price} {t("common.egp")}
+                  {item.price > 0 ? (
+                    `${item.price} ${t("common.egp")}`
+                  ) : (
+                    <span className="text-secondary uppercase tracking-wider">{t("dashboard.products.free")}</span>
+                  )}
                 </span>
               </div>
             ) : product?.type === "promotional" ? (
@@ -144,7 +148,11 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
               </span>
             ) : (
               <span className="font-black text-xl text-primary">
-                {item.price} {t("common.egp")}
+                {item.price > 0 ? (
+                  `${item.price} ${t("common.egp")}`
+                ) : (
+                  <span className="text-primary uppercase tracking-wider">{t("dashboard.products.free")}</span>
+                )}
               </span>
             )}
           </div>
