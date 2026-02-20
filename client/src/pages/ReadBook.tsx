@@ -76,7 +76,7 @@ export default function ReadBook() {
             return {
                 base: theme === "light" ? "bg-[#fdfcf0] text-[#432d1d]" :
                     "bg-[#1a1b26] text-white",
-                accent: theme === 'dark' ? "text-amber-400" : "text-[#d97706]",
+                accent: theme === 'dark' ? "text-amber-400" : "text-amber-600",
                 font: "font-serif",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/old-map.png')] opacity-10"
             };
@@ -85,7 +85,7 @@ export default function ReadBook() {
             return {
                 base: theme === "light" ? "bg-[#fffafa] text-[#702459]" :
                     "bg-[#2d1b2d] text-white",
-                accent: theme === 'dark' ? "text-pink-300" : "text-[#db2777]",
+                accent: theme === 'dark' ? "text-pink-300" : "text-amber-600",
                 font: "font-serif",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/pinstripe-light.png')] opacity-5"
             };
@@ -94,7 +94,7 @@ export default function ReadBook() {
             return {
                 base: theme === "light" ? "bg-[#f0f9ff] text-[#0c4a6e]" :
                     "bg-[#020617] text-white",
-                accent: theme === 'dark' ? "text-cyan-400" : "text-[#0ea5e9]",
+                accent: theme === 'dark' ? "text-cyan-400" : "text-amber-600",
                 font: "font-sans",
                 overlay: "bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5"
             };
@@ -111,7 +111,7 @@ export default function ReadBook() {
 
         return {
             base: theme === 'light' ? bgColors.light : bgColors.dark,
-            accent: theme === 'dark' ? "text-amber-400" : "text-primary",
+            accent: theme === 'dark' ? "text-amber-400" : "text-amber-600",
             font: fontFamily === 'serif' ? 'font-serif' : 'font-sans',
             overlay: ""
         };
@@ -126,21 +126,21 @@ export default function ReadBook() {
 
             <div className="relative z-10 w-full">
                 {/* Reader Nav */}
-                <nav className={`fixed top-0 w-full h-16 flex items-center justify-between px-4 sm:px-8 border-b z-50 transition-all duration-500 backdrop-blur-md bg-opacity-80 ${gTheme.base}`}>
+                <nav className={`fixed top-0 w-full h-16 flex items-center justify-between px-4 sm:px-8 border-b z-50 transition-all duration-500 backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-900/95 text-gray-100 border-gray-800' : 'bg-white/95 text-gray-900 border-gray-200'}`}>
                     <Link href="/dashboard">
                         <Button variant="ghost" size="sm" className="gap-2">
                             <ArrowLeft className={cn("w-4 h-4", i18n.language === 'ar' ? 'rotate-180' : '')} /> {t("common.back")}
                         </Button>
                     </Link>
 
-                    <h1 className={`${gTheme.font} font-bold truncate max-w-[200px] sm:max-w-md hidden sm:block`} dir="auto">
+                    <h1 className={`${gTheme.font} font-bold truncate max-w-[200px] sm:max-w-md hidden sm:block ${theme === 'dark' ? 'text-amber-400' : 'text-amber-600'}`} dir="auto">
                         {product.title}
                         {chapters && chapters.length > 0 && (
-                            <span className="opacity-50 font-normal mx-2 text-sm">
+                            <span className={`font-normal mx-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                                 — {chapters[activeChapterIndex]?.title}
                             </span>
                         )}
-                        <span className="mx-4 px-2 py-0.5 rounded-full bg-green-500/10 text-green-500 text-[10px] font-bold uppercase tracking-widest border border-green-500/20">
+                        <span className="mx-4 px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 text-[10px] font-bold uppercase tracking-widest border border-green-500/30">
                             {t("reader.protected", "Protected View")}
                         </span>
                     </h1>
