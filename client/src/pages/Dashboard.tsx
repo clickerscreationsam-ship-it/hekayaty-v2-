@@ -432,18 +432,31 @@ export default function Dashboard() {
                         <Button variant="outline" size="icon">
                           <Edit2 className="w-4 h-4" />
                         </Button>
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => {
-                            if (confirm(t("dashboard.products.deleteConfirm"))) {
-                              deleteProduct.mutate(product.id);
-                            }
-                          }}
-                          disabled={deleteProduct.isPending}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        {((product as any).salesCount || (product as any).sales_count || 0) > 0 ? (
+                          <div title={t("dashboard.products.cannotDeletePurchased") || "You cannot delete this product because it has already been purchased."}>
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              className="opacity-20 cursor-not-allowed"
+                              disabled
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => {
+                              if (confirm(t("dashboard.products.deleteConfirm"))) {
+                                deleteProduct.mutate(product.id);
+                              }
+                            }}
+                            disabled={deleteProduct.isPending}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}

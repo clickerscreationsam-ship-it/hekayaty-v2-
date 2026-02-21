@@ -152,6 +152,7 @@
             "saveDraft": "Save as Draft",
             "publishItem": "Publish Item",
             "deleteConfirm": "Are you sure you want to delete this product?",
+            "cannotDeletePurchased": "You cannot delete this product because it has already been purchased by users. You can take it offline instead.",
             "sold": "Sold",
             "revenue": "Rev",
             "ebookGuide": "Manage your e-book content directly in the Writer Studio for maximum security and anti-theft protection."

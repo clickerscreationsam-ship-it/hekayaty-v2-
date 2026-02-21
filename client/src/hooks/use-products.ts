@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 type ProductRow = Database['public']['Tables']['products']['Row'];
 type InsertProduct = Database['public']['Tables']['products']['Insert'];
@@ -255,16 +256,19 @@ export function useDeleteProduct() {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
+      await apiRequest('DELETE', `/api/products/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast({ title: "Product deleted" });
     },
+    onError: (err: Error) => {
+      toast({
+        title: "Delete Failed",
+        description: err.message,
+        variant: "destructive"
+      });
+    }
   });
 }
 

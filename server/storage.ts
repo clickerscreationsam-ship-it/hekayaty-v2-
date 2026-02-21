@@ -172,6 +172,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProduct(id: number): Promise<void> {
+    const product = await this.getProduct(id);
+    const p = product as any;
+    if (p && ((p.salesCount ?? 0) > 0 || (p.sales_count ?? 0) > 0)) {
+      throw new Error("Cannot delete product with existing sales");
+    }
     await supabaseAdmin.from('products').delete().eq('id', id);
   }
 
