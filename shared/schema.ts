@@ -66,6 +66,7 @@ export const products = pgTable("products", {
   }>(),
   merchandiseCategory: text("merchandise_category"),
   customFields: jsonb("custom_fields").default([]),
+  productImages: jsonb("product_images").default([]),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   isSerialized: boolean("is_serialized").default(false),

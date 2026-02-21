@@ -28,6 +28,7 @@ import { useEarnings, usePayouts, useRequestPayout } from "@/hooks/use-earnings"
 import { formatDate, cn } from "@/lib/utils";
 import { useUserOrders } from "@/hooks/use-orders";
 import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
+import { CloudinaryGalleryUpload } from "@/components/ui/cloudinary-gallery-upload";
 import { useAdminPrivateMessages, useSendAdminPrivateMessage, useMarkMessageRead, useAdminAnnouncements } from "@/hooks/use-admin-system";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PortfolioManager } from "@/components/creative-hub/PortfolioManager";
@@ -856,6 +857,7 @@ const createSchema = insertProductSchema.extend({
   stockQuantity: z.coerce.number().optional(),
   weight: z.coerce.number().optional(),
   requiresShipping: z.boolean().optional(),
+  productImages: z.array(z.string()).optional(),
 });
 
 function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
@@ -962,7 +964,6 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                     <select {...register("merchandiseCategory" as any)} className="w-full p-2 rounded-md border bg-background">
                       <option value="clothing">{t("dashboard.products.categories.clothing")}</option>
                       <option value="accessories">{t("dashboard.products.categories.accessories")}</option>
-                      <option value="home">{t("dashboard.products.categories.home")}</option>
                       <option value="collectibles">{t("dashboard.products.categories.collectibles")}</option>
                       <option value="other">{t("dashboard.products.categories.other")}</option>
                     </select>
@@ -1105,6 +1106,16 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
               <Input type="hidden" {...register("coverUrl")} />
               {errors.coverUrl && <p className="text-red-500 text-xs">{String(errors.coverUrl.message)}</p>}
             </div>
+
+            {type === "merchandise" && (
+              <div className="space-y-2 col-span-2 border-t pt-4">
+                <CloudinaryGalleryUpload
+                  label={t("dashboard.products.gallery")}
+                  onUpload={(urls) => setValue("productImages", urls)}
+                />
+                <Input type="hidden" {...register("productImages" as any)} />
+              </div>
+            )}
 
             <div className="space-y-2 col-span-2">
               <label className="text-sm font-medium">{t("dashboard.products.description")}</label>

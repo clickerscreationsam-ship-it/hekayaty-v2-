@@ -128,12 +128,12 @@
             "categories": {
                 "clothing": "Clothing",
                 "accessories": "Accessories",
-                "home": "Home & Living",
                 "collectibles": "Collectibles",
                 "other": "Other"
             },
             "customization": "Customization Options",
-            "customizationLabel": "e.g. Color, Size, or 'Enter Name'",
+            "customizationLabel": "e.g. Color, Size, or 'Enter your name'",
+            "gallery": "Product Gallery",
             "stock": "Stock Quantity",
             "weight": "Weight (grams)",
             "requiresShipping": "Requires Shipping",

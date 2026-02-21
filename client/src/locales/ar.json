@@ -291,12 +291,12 @@
             "categories": {
                 "clothing": "ملابس",
                 "accessories": "إكسسوارات",
-                "home": "منزل ومعيشة",
                 "collectibles": "مقتنيات",
                 "other": "أخرى"
             },
             "customization": "خيارات التخصيص",
             "customizationLabel": "مثلاً: اللون، المقاس، أو 'أدخل اسمك'",
+            "gallery": "معرض صور المنتج",
             "stock": "كمية المخزون",
             "weight": "الوزن (جرام)",
             "requiresShipping": "يتطلب شحن",

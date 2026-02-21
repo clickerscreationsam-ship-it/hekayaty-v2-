@@ -29,6 +29,7 @@ export default function ProductDetails() {
 
   const { data: product, isLoading } = useProduct(id);
   const { data: reviews } = useReviews(id);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const addToCart = useAddToCart();
   const likeProduct = useLikeProduct();
@@ -36,12 +37,15 @@ export default function ProductDetails() {
   if (isLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
   if (!product) return <div>Product not found</div>;
 
+  const displayImage = selectedImage || (product as any).coverUrl;
+  const galleryImages = [(product as any).coverUrl, ...((product as any).productImages || [])];
+
   const productSchema = {
     "@context": "https://schema.org/",
     "@type": "Book",
     "name": product.title,
     "description": product.description,
-    "image": product.coverUrl,
+    "image": displayImage,
     "offers": {
       "@type": "Offer",
       "priceCurrency": "EGP",
@@ -62,28 +66,57 @@ export default function ProductDetails() {
       <SEO
         title={product.title}
         description={product.description}
-        image={product.coverUrl}
+        image={displayImage}
         type="book"
         schema={productSchema}
       />
       <Navbar />
 
-      {/* Full Page Background (Product Cover) */}
+      {/* Full Page Background */}
       <div
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${product.coverUrl})` }}
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-700 ease-in-out"
+        style={{ backgroundImage: `url(${displayImage})` }}
       >
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-xl" />
       </div>
 
       {/* Hero / Header */}
       <div className="relative pt-32 pb-12 px-4 z-10">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10">
-          {/* Cover */}
-          <div className="w-full md:w-1/3 max-w-[300px] mx-auto md:mx-0 shrink-0">
-            <div className="aspect-[2/3] rounded-lg overflow-hidden shadow-2xl rotate-1 hover:rotate-0 transition-transform duration-500">
-              <img src={product.coverUrl} alt={product.title} className="w-full h-full object-cover" />
-            </div>
+          {/* Cover & Gallery */}
+          <div className="w-full md:w-1/2 lg:w-1/3 shrink-0 flex flex-col gap-4">
+            <motion.div
+              key={displayImage}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl border border-white/10 relative group"
+            >
+              <img
+                src={displayImage}
+                alt={product.title}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+            </motion.div>
+
+            {/* Thumbnails */}
+            {galleryImages.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {galleryImages.map((url, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(url)}
+                    className={cn(
+                      "w-20 h-20 rounded-xl overflow-hidden shrink-0 border-2 transition-all",
+                      displayImage === url ? "border-primary scale-95 shadow-lg shadow-primary/20" : "border-transparent opacity-60 hover:opacity-100"
+                    )}
+                  >
+                    <img src={url} className="w-full h-full object-cover" alt={`Preview ${idx}`} />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Info */}
