@@ -26,6 +26,11 @@ const registerSchema = insertUserSchema.pick({
     email: true,
     displayName: true,
     role: true,
+}).extend({
+    username: z.string().min(3, "Username must be at least 3 characters"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    email: z.string().email("Valid email is required"),
+    displayName: z.string().min(2, "Name must be at least 2 characters"),
 });
 
 export default function AuthPage() {

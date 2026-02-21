@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDesignRequests, useUpdateRequestStatus, useSendDesignMessage, useDesignRequest, useArtistAnalytics, useUpdateRequestDetails } from "@/hooks/use-commissions";
-import { User, DesignRequest, DesignMessage } from "@shared/schema";
+import { User } from "@/hooks/use-auth";
+import { DesignRequest, DesignMessage } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -124,7 +125,7 @@ function ArtistAnalytics() {
     );
 }
 
-export function CommissionThread({ requestId, user }: { requestId: string, user: any }) {
+export function CommissionThread({ requestId, user }: { requestId: string, user: User }) {
     const { data: request, isLoading } = useDesignRequest(requestId);
     const updateStatus = useUpdateRequestStatus();
     const sendMessage = useSendDesignMessage();

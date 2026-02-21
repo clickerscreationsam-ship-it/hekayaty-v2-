@@ -25,7 +25,7 @@ async function callEdgeFunction(
             headers
         };
 
-        if (method !== 'GET' && method !== 'HEAD') {
+        if (method !== 'GET') {
             invokeOptions.body = data;
         }
 
