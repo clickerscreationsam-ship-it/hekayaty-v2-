@@ -6,7 +6,7 @@ import { useUser, useUserById } from "@/hooks/use-users";
 import { useAddToCart } from "@/hooks/use-cart";
 import { useLikeProduct } from "@/hooks/use-social";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, Star, ShieldCheck, Download, ShoppingCart, Heart, BookOpen, Truck, MapPin, Info, Sparkles } from "lucide-react";
+import { Loader2, Star, ShieldCheck, Download, ShoppingCart, Heart, BookOpen, Truck, MapPin, Info, Sparkles, Palette } from "lucide-react";
 import { useShippingRates } from "@/hooks/use-shipping";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -23,6 +23,7 @@ export default function ProductDetails() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [quantity, setQuantity] = useState(1);
+  const [customization, setCustomization] = useState("");
   const [, params] = useRoute("/book/:id");
   const id = parseInt(params?.id || "0");
 
@@ -122,9 +123,58 @@ export default function ProductDetails() {
                     )}
                     <div className="flex items-center gap-2 text-primary font-semibold text-sm bg-primary/10 w-fit px-3 py-1 rounded-full border border-primary/20">
                       <Truck className="w-4 h-4" />
-                      Physical Product • Shipping Required
+                      Physical Book • Shipping Required
                     </div>
                   </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center bg-white/5 backdrop-blur-md rounded-2xl p-1 border border-white/10 shadow-lg">
+                      <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="w-10 h-10 rounded-xl hover:bg-white/10 transition-all flex items-center justify-center font-bold text-lg disabled:opacity-50"
+                        disabled={quantity <= 1}
+                      >
+                        -
+                      </button>
+                      <span className="w-12 text-center font-bold text-lg tabular-nums">{quantity}</span>
+                      <button
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="w-10 h-10 rounded-xl hover:bg-white/10 transition-all flex items-center justify-center font-bold text-lg"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {product.type === "merchandise" && (
+                <div className="space-y-6">
+                  <div className="flex flex-wrap items-center gap-3">
+                    {product.stockQuantity !== null && (
+                      <div className={`flex items-center gap-2 font-semibold text-sm px-3 py-1 rounded-full border ${product.stockQuantity > 0 ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+                        {product.stockQuantity > 0 ? `${product.stockQuantity} ${t("dashboard.products.stock")}` : 'Out of Stock'}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 text-amber-500 font-semibold text-sm bg-amber-500/10 w-fit px-3 py-1 rounded-full border border-amber-500/20">
+                      <Sparkles className="w-4 h-4" />
+                      {product.merchandiseCategory || t("dashboard.products.types.merchandise")}
+                    </div>
+                  </div>
+
+                  {product.customFields && (
+                    <div className="space-y-3 p-4 rounded-2xl bg-white/5 border border-white/10">
+                      <label className="text-sm font-bold text-amber-500 flex items-center gap-2">
+                        <Palette className="w-4 h-4" />
+                        {product.customFields}
+                      </label>
+                      <input
+                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-sm focus:border-amber-500/50 outline-none transition-all"
+                        placeholder="Enter details here..."
+                        onChange={(e) => setCustomization(e.target.value)}
+                      />
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-4">
                     <div className="flex items-center bg-white/5 backdrop-blur-md rounded-2xl p-1 border border-white/10 shadow-lg">
@@ -177,8 +227,9 @@ export default function ProductDetails() {
                         onClick={() => addToCart.mutate({
                           productId: product.id,
                           quantity: quantity,
-                          userId: user?.id || "1"
-                        })}
+                          userId: user?.id || "1",
+                          customizationData: customization ? { text: customization } : undefined
+                        } as any)}
                         disabled={addToCart.isPending}
                         className="w-full sm:w-auto h-14 px-8 text-lg font-bold shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 rounded-2xl group transition-all hover:scale-[1.02]"
                       >

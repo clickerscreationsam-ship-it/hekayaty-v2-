@@ -34,6 +34,8 @@ function mapProduct(p: ProductRow) {
     isSerialized: (p as any).is_serialized ?? false,
     seriesStatus: (p as any).series_status ?? 'ongoing',
     lastChapterUpdatedAt: (p as any).last_chapter_updated_at,
+    merchandiseCategory: (p as any).merchandise_category,
+    customFields: (p as any).custom_fields,
   } as any;
 }
 
@@ -164,6 +166,8 @@ export function useCreateProduct() {
         appearance_settings: data.appearanceSettings,
         is_serialized: data.isSerialized,
         series_status: data.seriesStatus,
+        merchandise_category: data.merchandiseCategory,
+        custom_fields: data.customFields,
       };
 
       const { data: newProduct, error } = await supabase
@@ -217,6 +221,8 @@ export function useUpdateProduct() {
       if (data.appearanceSettings) dbData.appearance_settings = data.appearanceSettings;
       if (data.isSerialized !== undefined) dbData.is_serialized = data.isSerialized;
       if (data.seriesStatus) dbData.series_status = data.seriesStatus;
+      if (data.merchandiseCategory) dbData.merchandise_category = data.merchandiseCategory;
+      if (data.customFields) dbData.custom_fields = data.customFields;
 
       const { data: updated, error } = await supabase
         .from('products')

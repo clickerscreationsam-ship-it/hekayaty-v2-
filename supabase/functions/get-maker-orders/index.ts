@@ -58,6 +58,7 @@ serve(async (req) => {
                 preparing_at,
                 estimated_delivery_days,
                 creator_id,
+                customization_data,
                 product:products(id, title, cover_url),
                 order:orders(id, user_id, created_at, shipping_address, status, is_verified)
             `)
@@ -99,6 +100,7 @@ serve(async (req) => {
             price: item.price,
             fulfillmentStatus: item.fulfillment_status,
             trackingNumber: item.tracking_number,
+            customizationData: item.customization_data,
             shippingAddress: item.order?.shipping_address || null,
             buyerName: usersMap.get(item.order?.user_id) || 'Unknown',
             buyerId: item.order?.user_id,

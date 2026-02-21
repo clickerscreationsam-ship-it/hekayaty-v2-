@@ -66,6 +66,7 @@ serve(async (req) => {
                         price: item.price,
                         fulfillmentStatus: item.fulfillment_status,
                         trackingNumber: item.tracking_number,
+                        customizationData: item.customization_data,
                         estimatedDeliveryDays: item.estimated_delivery_days,
                         makerName: creatorsMap.get(item.creator_id) || 'Unknown Maker',
                         makerId: item.creator_id,

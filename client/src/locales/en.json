@@ -120,9 +120,20 @@
             "types": {
                 "ebook": "E-Book / Novel",
                 "physical": "Physical Book",
+                "merchandise": "Merchandise",
                 "asset": "Design Asset",
                 "promotional": "Promotional Content"
             },
+            "category": "Merchandise Category",
+            "categories": {
+                "clothing": "Clothing",
+                "accessories": "Accessories",
+                "home": "Home & Living",
+                "collectibles": "Collectibles",
+                "other": "Other"
+            },
+            "customization": "Customization Options",
+            "customizationLabel": "e.g. Color, Size, or 'Enter Name'",
             "stock": "Stock Quantity",
             "weight": "Weight (grams)",
             "requiresShipping": "Requires Shipping",

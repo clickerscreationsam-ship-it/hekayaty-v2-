@@ -283,9 +283,20 @@
             "types": {
                 "ebook": "كتاب إلكتروني / رواية",
                 "physical": "كتاب ورقي",
+                "merchandise": "منتجات (ميرش)",
                 "asset": "أصل تصميم",
                 "promotional": "محتوى ترويجي"
             },
+            "category": "فئة المنتج",
+            "categories": {
+                "clothing": "ملابس",
+                "accessories": "إكسسوارات",
+                "home": "منزل ومعيشة",
+                "collectibles": "مقتنيات",
+                "other": "أخرى"
+            },
+            "customization": "خيارات التخصيص",
+            "customizationLabel": "مثلاً: اللون، المقاس، أو 'أدخل اسمك'",
             "stock": "كمية المخزون",
             "weight": "الوزن (جرام)",
             "requiresShipping": "يتطلب شحن",

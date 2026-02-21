@@ -59,6 +59,12 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
               -{(item as any).discount}%
             </span>
           )}
+          {product?.type === 'merchandise' && (
+            <span className="px-2 py-1 rounded-md bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg flex items-center gap-1">
+              <Sparkles className="w-3 h-3" />
+              {t("dashboard.products.types.merchandise")}
+            </span>
+          )}
         </div>
 
         <img
@@ -93,6 +99,11 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
           )}>
             {item.genre}
           </span>
+          {product?.type === 'merchandise' && (
+            <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 text-[10px] font-bold uppercase tracking-tight">
+              {product.merchandiseCategory || t("dashboard.products.types.merchandise")}
+            </span>
+          )}
           {product?.isSerialized && (
             <span className={cn(
               "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tight",

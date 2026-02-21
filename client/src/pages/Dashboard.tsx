@@ -850,7 +850,7 @@ import { extractTextFromFile } from "@/lib/text-extractor";
 const createSchema = insertProductSchema.extend({
   price: z.coerce.number(),
   writerId: z.string(), // UUID string from Supabase
-  type: z.enum(["ebook", "physical", "asset", "bundle", "promotional"]),
+  type: z.enum(["ebook", "physical", "asset", "bundle", "promotional", "merchandise"]),
   licenseType: z.enum(["personal", "commercial", "standard", "extended"]).optional(),
   content: z.string().optional(), // For extracted ebook text
   stockQuantity: z.coerce.number().optional(),
@@ -948,10 +948,36 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
               >
                 <option value="ebook">{t("dashboard.products.types.ebook")}</option>
                 <option value="physical">{t("dashboard.products.types.physical")}</option>
+                <option value="merchandise">{t("dashboard.products.types.merchandise")}</option>
                 <option value="asset">{t("dashboard.products.types.asset")}</option>
                 <option value="promotional">{t("dashboard.products.types.promotional")}</option>
               </select>
             </div>
+
+            {type === "merchandise" && (
+              <div className="col-span-2 space-y-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">{t("dashboard.products.category")}</label>
+                    <select {...register("merchandiseCategory" as any)} className="w-full p-2 rounded-md border bg-background">
+                      <option value="clothing">{t("dashboard.products.categories.clothing")}</option>
+                      <option value="accessories">{t("dashboard.products.categories.accessories")}</option>
+                      <option value="home">{t("dashboard.products.categories.home")}</option>
+                      <option value="collectibles">{t("dashboard.products.categories.collectibles")}</option>
+                      <option value="other">{t("dashboard.products.categories.other")}</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">{t("dashboard.products.stock")}</label>
+                    <Input type="number" {...register("stockQuantity")} placeholder="e.g. 50" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{t("dashboard.products.customization")}</label>
+                  <Input {...register("customFields" as any)} placeholder={t("dashboard.products.customizationLabel")} />
+                </div>
+              </div>
+            )}
 
             {type === "physical" && (
               <div className="col-span-2 grid grid-cols-2 gap-4 p-4 rounded-lg bg-muted/30 border border-border">

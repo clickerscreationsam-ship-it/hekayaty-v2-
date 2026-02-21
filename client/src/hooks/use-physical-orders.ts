@@ -179,6 +179,7 @@ export interface MakerOrder {
     quantity: number;
     fulfillmentStatus: string;
     trackingNumber: string | null;
+    customizationData: any | null;
     shippingAddress: {
         fullName: string;
         phoneNumber: string;
@@ -238,6 +239,7 @@ export interface UserOrderItem {
     quantity: number;
     fulfillmentStatus: string;
     trackingNumber: string | null;
+    customizationData: any | null;
     estimatedDeliveryDays: number | null;
     makerName: string;
     makerId: string;

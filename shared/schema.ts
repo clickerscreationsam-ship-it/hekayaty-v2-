@@ -64,6 +64,8 @@ export const products = pgTable("products", {
     backgroundColor?: string;
     textColor?: string;
   }>(),
+  merchandiseCategory: text("merchandise_category"),
+  customFields: jsonb("custom_fields").default([]),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   isSerialized: boolean("is_serialized").default(false),
@@ -222,6 +224,7 @@ export const cartItems = pgTable("cart_items", {
   collectionId: uuid("collection_id"),
   variantId: integer("variant_id"),
   quantity: integer("quantity").default(1),
+  customizationData: jsonb("customization_data").default({}),
   addedAt: timestamp("added_at").defaultNow(),
 });
 
@@ -261,6 +264,7 @@ export const orderItems = pgTable("order_items", {
   // Physical/Tracking Fields
   fulfillmentStatus: text("fulfillment_status").default("pending"), // pending, shipped, delivered, cancelled
   trackingNumber: text("tracking_number"),
+  customizationData: jsonb("customization_data").default({}),
   shippedAt: timestamp("shipped_at"),
 });
 

@@ -161,16 +161,70 @@ export default function WriterStore() {
                 Published Works
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {products?.map((product: Product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-                {(!products || products.length === 0) && (
-                  <p className="text-muted-foreground col-span-full py-10 text-center">
-                    This scribe hasn't published any items yet.
-                  </p>
-                )}
-              </div>
+              {/* Filtering Toggle */}
+              {(products?.some(p => p.type === 'merchandise') && products?.some(p => p.type !== 'merchandise')) && (
+                <div className="flex justify-center mb-8">
+                  <div className="glass p-1 rounded-xl flex gap-1">
+                    <Button
+                      variant={(params as any).filter === 'all' || !(params as any).filter ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => window.history.replaceState(null, "", window.location.pathname)}
+                    >
+                      {t("common.all")}
+                    </Button>
+                    <Button
+                      variant={(params as any).filter === 'books' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => window.history.replaceState(null, "", `${window.location.pathname}?filter=books`)}
+                    >
+                      {t("dashboard.products.types.ebook")}
+                    </Button>
+                    <Button
+                      variant={(params as any).filter === 'merch' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => window.history.replaceState(null, "", `${window.location.pathname}?filter=merch`)}
+                    >
+                      {t("dashboard.products.types.merchandise")}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Books Section */}
+              {((params as any).filter !== 'merch') && (
+                <div className="space-y-8 mb-16">
+                  {(products?.some(p => p.type === 'merchandise')) && (
+                    <h3 className="text-xl font-bold opacity-60 flex items-center gap-2">
+                      <ChevronRight className="w-4 h-4" /> {t("dashboard.products.types.ebook")}
+                    </h3>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {products?.filter(p => p.type !== 'merchandise').map((product: Product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Merchandise Section */}
+              {((params as any).filter !== 'books') && products?.some(p => p.type === 'merchandise') && (
+                <div className="space-y-8">
+                  <h3 className="text-xl font-bold text-amber-500 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" /> {t("dashboard.products.types.merchandise")}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {products?.filter(p => p.type === 'merchandise').map((product: Product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {(!products || products.length === 0) && (
+                <p className="text-muted-foreground col-span-full py-10 text-center">
+                  This scribe hasn't published any items yet.
+                </p>
+              )}
             </>
           )}
         </div>

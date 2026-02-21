@@ -251,220 +251,234 @@ export default function MakerOrders() {
                         ))}
                     </div>
                 )}
-
-                {/* Accept Order Modal */}
-                <Dialog open={acceptModal.open} onOpenChange={(open) => setAcceptModal({ open })}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Accept Order</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                            <div>
-                                <Label htmlFor="delivery-days">Estimated Delivery (days)</Label>
-                                <Input
-                                    id="delivery-days"
-                                    type="number"
-                                    min="1"
-                                    max="90"
-                                    value={deliveryDays}
-                                    onChange={(e) => setDeliveryDays(parseInt(e.target.value) || 1)}
-                                    className="mt-2"
-                                />
-                                <p className="text-sm text-muted-foreground mt-1">
-                                    Tell the customer when to expect their order (1-90 days)
-                                </p>
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setAcceptModal({ open: false })}>
-                                Cancel
-                            </Button>
-                            <Button onClick={handleAccept} disabled={acceptOrder.isPending}>
-                                {acceptOrder.isPending ? "Accepting..." : "Confirm Acceptance"}
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-
-                {/* Reject Order Modal */}
-                <Dialog open={rejectModal.open} onOpenChange={(open) => setRejectModal({ open })}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Reject Order</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                            <div>
-                                <Label htmlFor="rejection-reason">Reason for Rejection</Label>
-                                <Textarea
-                                    id="rejection-reason"
-                                    value={rejectionReason}
-                                    onChange={(e) => setRejectionReason(e.target.value)}
-                                    placeholder="e.g., Out of stock, Cannot ship to location, etc."
-                                    className="mt-2"
-                                    rows={4}
-                                />
-                                <p className="text-sm text-muted-foreground mt-1">
-                                    Provide a clear reason to help the customer understand (minimum 5 characters)
-                                </p>
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setRejectModal({ open: false })}>
-                                Cancel
-                            </Button>
-                            <Button
-                                variant="destructive"
-                                onClick={handleReject}
-                                disabled={rejectOrder.isPending || rejectionReason.trim().length < 5}
-                            >
-                                {rejectOrder.isPending ? "Rejecting..." : "Reject Order"}
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-
-                {/* Ship Order Modal */}
-                <Dialog open={shipModal.open} onOpenChange={(open) => setShipModal({ open })}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Ship Order</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                            <div>
-                                <Label htmlFor="tracking-number">Tracking Number *</Label>
-                                <Input
-                                    id="tracking-number"
-                                    value={trackingNumber}
-                                    onChange={(e) => setTrackingNumber(e.target.value)}
-                                    placeholder="e.g., 1Z999AA10123456784"
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="carrier">Carrier (Optional)</Label>
-                                <Input
-                                    id="carrier"
-                                    value={carrier}
-                                    onChange={(e) => setCarrier(e.target.value)}
-                                    placeholder="e.g., DHL, Aramex, FedEx"
-                                    className="mt-2"
-                                />
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setShipModal({ open: false })}>
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={handleShip}
-                                disabled={updateShipment.isPending || trackingNumber.trim().length < 3}
-                            >
-                                {updateShipment.isPending ? "Updating..." : "Mark as Shipped"}
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-
-                {/* Detailed Shipping Info Modal */}
-                <Dialog open={detailsModal.open} onOpenChange={(open) => setDetailsModal({ ...detailsModal, open })}>
-                    <DialogContent className="max-w-lg">
-                        <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2 text-2xl">
-                                <MapPin className="w-6 h-6 text-primary" />
-                                Delivery Details
-                            </DialogTitle>
-                        </DialogHeader>
-
-                        {detailsModal.order && (
-                            <div className="space-y-6 py-4">
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-4">
-                                        <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Buyer Info</h4>
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                                    <User className="w-5 h-5 text-primary" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-semibold">{detailsModal.order.buyerName}</p>
-                                                    <p className="text-xs text-muted-foreground">Customer</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                                    <Calendar className="w-5 h-5 text-primary" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-semibold">{new Date(detailsModal.order.orderDate).toLocaleDateString()}</p>
-                                                    <p className="text-xs text-muted-foreground">Order Date</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Product Info</h4>
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-3">
-                                                <img src={detailsModal.order.productCoverUrl} className="w-10 h-10 rounded-lg object-cover border" />
-                                                <div>
-                                                    <p className="text-sm font-semibold truncate max-w-[120px]">{detailsModal.order.productTitle}</p>
-                                                    <p className="text-xs text-muted-foreground">Qty: {detailsModal.order.quantity || 1}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {detailsModal.order.shippingAddress && (
-                                    <div className="space-y-4 pt-4 border-t">
-                                        <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Shipping Address</h4>
-                                        <div className="bg-muted/50 p-6 rounded-2xl space-y-4 border border-border">
-                                            <div className="flex items-start gap-4">
-                                                <MapPin className="w-5 h-5 text-primary mt-1" />
-                                                <div className="space-y-1 flex-1">
-                                                    <p className="font-bold text-lg">{detailsModal.order.shippingAddress.fullName}</p>
-                                                    <p className="text-muted-foreground leading-relaxed">
-                                                        {detailsModal.order.shippingAddress.addressLine}
-                                                    </p>
-                                                    <div className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold mt-2">
-                                                        {detailsModal.order.shippingAddress.city}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-center gap-4 pt-4 border-t border-border/50">
-                                                <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center overflow-hidden">
-                                                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-muted-foreground uppercase font-bold">Contact Number</p>
-                                                    <p className="text-lg font-mono font-bold tracking-wider">{detailsModal.order.shippingAddress.phoneNumber}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 flex items-start gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0">
-                                        <Truck className="w-4 h-4 text-amber-600" />
-                                    </div>
-                                    <p className="text-xs text-amber-800 leading-relaxed font-medium">
-                                        Make sure to print these details clearly on your shipping label. Double check the phone number before dispatching.
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-
-                        <DialogFooter>
-                            <Button className="w-full" onClick={() => setDetailsModal({ open: false })}>
-                                Close Details
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
             </div>
+
+            {/* Accept Order Modal */}
+            <Dialog open={acceptModal.open} onOpenChange={(open) => setAcceptModal({ open })}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Accept Order</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div>
+                            <Label htmlFor="delivery-days">Estimated Delivery (days)</Label>
+                            <Input
+                                id="delivery-days"
+                                type="number"
+                                min="1"
+                                max="90"
+                                value={deliveryDays}
+                                onChange={(e) => setDeliveryDays(parseInt(e.target.value) || 1)}
+                                className="mt-2"
+                            />
+                            <p className="text-sm text-muted-foreground mt-1">
+                                Tell the customer when to expect their order (1-90 days)
+                            </p>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setAcceptModal({ open: false })}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleAccept} disabled={acceptOrder.isPending}>
+                            {acceptOrder.isPending ? "Accepting..." : "Confirm Acceptance"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Reject Order Modal */}
+            <Dialog open={rejectModal.open} onOpenChange={(open) => setRejectModal({ open })}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Reject Order</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div>
+                            <Label htmlFor="rejection-reason">Reason for Rejection</Label>
+                            <Textarea
+                                id="rejection-reason"
+                                value={rejectionReason}
+                                onChange={(e) => setRejectionReason(e.target.value)}
+                                placeholder="e.g., Out of stock, Cannot ship to location, etc."
+                                className="mt-2"
+                                rows={4}
+                            />
+                            <p className="text-sm text-muted-foreground mt-1">
+                                Provide a clear reason to help the customer understand (minimum 5 characters)
+                            </p>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setRejectModal({ open: false })}>
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={handleReject}
+                            disabled={rejectOrder.isPending || rejectionReason.trim().length < 5}
+                        >
+                            {rejectOrder.isPending ? "Rejecting..." : "Reject Order"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Ship Order Modal */}
+            <Dialog open={shipModal.open} onOpenChange={(open) => setShipModal({ open })}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Ship Order</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div>
+                            <Label htmlFor="tracking-number">Tracking Number *</Label>
+                            <Input
+                                id="tracking-number"
+                                value={trackingNumber}
+                                onChange={(e) => setTrackingNumber(e.target.value)}
+                                placeholder="e.g., 1Z999AA10123456784"
+                                className="mt-2"
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="carrier">Carrier (Optional)</Label>
+                            <Input
+                                id="carrier"
+                                value={carrier}
+                                onChange={(e) => setCarrier(e.target.value)}
+                                placeholder="e.g., DHL, Aramex, FedEx"
+                                className="mt-2"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShipModal({ open: false })}>
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleShip}
+                            disabled={updateShipment.isPending || trackingNumber.trim().length < 3}
+                        >
+                            {updateShipment.isPending ? "Updating..." : "Mark as Shipped"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Detailed Shipping Info Modal */}
+            <Dialog open={detailsModal.open} onOpenChange={(open) => setDetailsModal({ ...detailsModal, open })}>
+                <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-2xl">
+                            <MapPin className="w-6 h-6 text-primary" />
+                            Delivery Details
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    {detailsModal.order && (
+                        <div className="space-y-6 py-4">
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Buyer Info</h4>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                <User className="w-5 h-5 text-primary" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold">{(detailsModal.order as any).buyerName}</p>
+                                                <p className="text-xs text-muted-foreground">Customer</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                <Calendar className="w-5 h-5 text-primary" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold">{new Date((detailsModal.order as any).orderDate).toLocaleDateString()}</p>
+                                                <p className="text-xs text-muted-foreground">Order Date</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Product Info</h4>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <img src={(detailsModal.order as any).productCoverUrl} className="w-10 h-10 rounded-lg object-cover border" />
+                                            <div>
+                                                <p className="text-sm font-semibold truncate max-w-[120px]">{(detailsModal.order as any).productTitle}</p>
+                                                <p className="text-xs text-muted-foreground">Qty: {(detailsModal.order as any).quantity || 1}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {((detailsModal.order as any).customizationData) && Object.keys((detailsModal.order as any).customizationData).length > 0 && (
+                                <div className="space-y-4 pt-4 border-t">
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Customization Details</h4>
+                                    <div className="bg-amber-500/5 p-4 rounded-xl border border-amber-500/10">
+                                        {Object.entries((detailsModal.order as any).customizationData as Record<string, string>).map(([key, value]) => (
+                                            <div key={key} className="flex flex-col">
+                                                <span className="text-[10px] uppercase font-bold text-amber-600/70">{key}</span>
+                                                <span className="text-sm font-medium text-amber-900">{value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {((detailsModal.order as any).shippingAddress) && (
+                                <div className="space-y-4 pt-4 border-t">
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Shipping Address</h4>
+                                    <div className="bg-muted/50 p-6 rounded-2xl space-y-4 border border-border">
+                                        <div className="flex items-start gap-4">
+                                            <MapPin className="w-5 h-5 text-primary mt-1" />
+                                            <div className="space-y-1 flex-1">
+                                                <p className="font-bold text-lg">{(detailsModal.order as any).shippingAddress.fullName}</p>
+                                                <p className="text-muted-foreground leading-relaxed">
+                                                    {(detailsModal.order as any).shippingAddress.addressLine}
+                                                </p>
+                                                <div className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold mt-2">
+                                                    {(detailsModal.order as any).shippingAddress.city}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-4 pt-4 border-t border-border/50">
+                                            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center overflow-hidden">
+                                                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-muted-foreground uppercase font-bold">Contact Number</p>
+                                                <p className="text-lg font-mono font-bold tracking-wider">{(detailsModal.order as any).shippingAddress.phoneNumber}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 flex items-start gap-3">
+                                <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0">
+                                    <Truck className="w-4 h-4 text-amber-600" />
+                                </div>
+                                <p className="text-xs text-amber-800 leading-relaxed font-medium">
+                                    Make sure to print these details clearly on your shipping label. Double check the phone number before dispatching.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    <DialogFooter>
+                        <Button className="w-full" onClick={() => setDetailsModal({ open: false })}>
+                            Close Details
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog >
         </div>
     );
 }

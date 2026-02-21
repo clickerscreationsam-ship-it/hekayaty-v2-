@@ -49,6 +49,7 @@ export function useCart() {
                     collectionId: item.collection_id,
                     variantId: item.variant_id,
                     quantity: item.quantity,
+                    customizationData: item.customization_data,
                     addedAt: item.added_at,
                     product: p ? {
                         id: p.id,
@@ -209,7 +210,8 @@ export function useAddToCart() {
                         product_id: item.productId || null,
                         collection_id: item.collectionId || null,
                         variant_id: item.variantId || null,
-                        quantity: item.quantity || 1
+                        quantity: item.quantity || 1,
+                        customization_data: (item as any).customizationData || {}
                     })
                     .select()
                     .single();

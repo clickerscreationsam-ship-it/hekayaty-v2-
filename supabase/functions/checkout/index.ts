@@ -102,21 +102,21 @@ serve(async (req) => {
             let isPhysical = false
 
             if (item.productId) {
-                const product = productMap.get(item.productId)
+                const product = productMap.get(item.productId) as any
                 if (!product) throw new Error(`Product ${item.productId} no longer exists.`)
 
                 actualPrice = product.price
                 creatorId = product.writer_id
-                isPhysical = product.type === 'physical'
+                isPhysical = (product.type === 'physical' || product.type === 'merchandise')
 
                 if (item.variantId) {
-                    const variant = variantMap.get(item.variantId)
+                    const variant = variantMap.get(item.variantId) as any
                     if (variant && variant.product_id === item.productId) {
                         actualPrice = variant.price
                     }
                 }
             } else if (item.collectionId) {
-                const collection = collectionMap.get(item.collectionId)
+                const collection = collectionMap.get(item.collectionId) as any
                 if (!collection) throw new Error(`Collection ${item.collectionId} no longer exists.`)
 
                 actualPrice = Number(collection.price) || 0
@@ -126,13 +126,13 @@ serve(async (req) => {
                 throw new Error('Invalid cart item: No product or collection ID')
             }
 
-            const quantity = item.quantity || 1
-            const itemTotal = actualPrice * quantity
+            const quantity = Number(item.quantity) || 1
+            const itemTotal = Number(actualPrice) * quantity
             serverCalculatedTotalAmount += itemTotal
 
-            const writerRate = ratesMap.get(creatorId) ?? 20
+            const writerRate = Number(ratesMap.get(creatorId)) ?? 20
             const rate = isPhysical ? 12 : writerRate
-            const fee = Math.round(itemTotal * (rate / 100))
+            const fee = Math.round(itemTotal * (Number(rate) / 100))
             const earning = itemTotal - fee
 
             totalPlatformFee += fee
@@ -202,7 +202,8 @@ serve(async (req) => {
             price: item.price,
             creator_id: item.creatorId,
             fulfillment_status: 'pending',
-            license_type: 'standard'
+            license_type: 'standard',
+            customization_data: item.customizationData || {}
         }))
 
         const { error: itemsError } = await supabaseAdmin
@@ -217,8 +218,8 @@ serve(async (req) => {
         // 9. Atomic Stock Decrementing
         for (const item of verifiedItems) {
             if (item.productId) {
-                const product = productMap.get(item.productId)
-                if (product && product.type === 'physical') {
+                const product = productMap.get(item.productId) as any
+                if (product && (product.type === 'physical' || product.type === 'merchandise')) {
                     const { error: stockError } = await supabaseAdmin.rpc('decrement_product_stock', {
                         p_product_id: item.productId,
                         p_quantity: item.quantity || 1
