@@ -943,7 +943,7 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                 onChange={(e) => {
                   const val = e.target.value;
                   setValue("type", val as any);
-                  if (val === "physical") {
+                  if (val === "physical" || val === "merchandise") {
                     setValue("requiresShipping", true);
                   }
                 }}

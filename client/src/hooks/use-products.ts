@@ -36,6 +36,7 @@ function mapProduct(p: ProductRow) {
     lastChapterUpdatedAt: (p as any).last_chapter_updated_at,
     merchandiseCategory: (p as any).merchandise_category,
     customFields: (p as any).custom_fields,
+    productImages: (p as any).product_images || [],
   } as any;
 }
 
@@ -168,6 +169,7 @@ export function useCreateProduct() {
         series_status: data.seriesStatus,
         merchandise_category: data.merchandiseCategory,
         custom_fields: data.customFields,
+        product_images: data.productImages,
       };
 
       const { data: newProduct, error } = await supabase
@@ -223,6 +225,7 @@ export function useUpdateProduct() {
       if (data.seriesStatus) dbData.series_status = data.seriesStatus;
       if (data.merchandiseCategory) dbData.merchandise_category = data.merchandiseCategory;
       if (data.customFields) dbData.custom_fields = data.customFields;
+      if (data.productImages) dbData.product_images = data.productImages;
 
       const { data: updated, error } = await supabase
         .from('products')

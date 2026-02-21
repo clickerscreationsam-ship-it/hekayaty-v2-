@@ -20,7 +20,8 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 export default function ProductDetails() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === 'ar';
   const { user } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [customization, setCustomization] = useState("");
@@ -38,7 +39,10 @@ export default function ProductDetails() {
   if (!product) return <div>Product not found</div>;
 
   const displayImage = selectedImage || (product as any).coverUrl;
-  const galleryImages = [(product as any).coverUrl, ...((product as any).productImages || [])];
+  const galleryImages = Array.from(new Set([
+    (product as any).coverUrl,
+    ...((product as any).productImages || [])
+  ])).filter(Boolean) as string[];
 
   const productSchema = {
     "@context": "https://schema.org/",
@@ -292,13 +296,13 @@ export default function ProductDetails() {
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-green-500" /> Secure Payment
               </div>
-              {product.requiresShipping ? (
+              {product.requiresShipping || product.type === 'merchandise' || product.type === 'physical' ? (
                 <div className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-orange-500" /> Physical Product (Shipping Required)
+                  <Truck className="w-4 h-4 text-orange-500" /> {isArabic ? "منتج مادي (يتطلب شحن)" : "Physical Product (Shipping Required)"}
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Download className="w-4 h-4 text-blue-500" /> Instant Digital Access
+                  <Download className="w-4 h-4 text-blue-500" /> {isArabic ? "وصول رقمي فوري" : "Instant Digital Access"}
                 </div>
               )}
               {product.type === "asset" && (
