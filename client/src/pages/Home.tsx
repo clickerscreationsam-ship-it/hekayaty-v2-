@@ -2,9 +2,9 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, BookOpen, PenTool, Info, Layers, LayoutGrid } from "lucide-react";
+import { ArrowRight, Sparkles, BookOpen, PenTool, Info, Layers, LayoutGrid, ShoppingBag } from "lucide-react";
 import { useWriters } from "@/hooks/use-users";
-import { useBestSellerProducts, useSerializedProducts } from "@/hooks/use-products";
+import { useBestSellerProducts, useSerializedProducts, useProducts } from "@/hooks/use-products";
 import { useCollections } from "@/hooks/use-collections";
 import { FeaturedWriter } from "@/components/FeaturedWriter";
 import { ProductCard } from "@/components/ProductCard";
@@ -18,6 +18,7 @@ export default function Home() {
   const { data: bestSellers } = useBestSellerProducts();
   const { data: serializedStories } = useSerializedProducts(4);
   const { data: collections } = useCollections({ isPublished: true });
+  const { data: merchandise } = useProducts({ type: 'merchandise' });
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
 
@@ -127,6 +128,43 @@ export default function Home() {
             {bestSellers && bestSellers.length === 0 && (
               <p className="col-span-4 text-center text-muted-foreground py-10">
                 {t("home.bestSellers.empty")}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Merchandise Section */}
+      <section className="py-24 relative overflow-hidden bg-amber-500/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex justify-between items-end mb-12">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                <ShoppingBag className="w-8 h-8" />
+              </div>
+              <div>
+                <h2 className="text-4xl font-serif font-bold mb-2">{t("home.merchandise.title", "Creator Merchandise")}</h2>
+                <p className="text-muted-foreground">{t("home.merchandise.subtitle", "Wear your favorite stories.")}</p>
+              </div>
+            </div>
+            <Link href="/marketplace?type=merchandise">
+              <button className="text-amber-500 font-medium hover:underline flex items-center gap-2">
+                {t("home.bestSellers.viewAll")} <ArrowRight className={cn("w-4 h-4", i18n.language === 'ar' ? 'rotate-180' : '')} />
+              </button>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {merchandise?.slice(0, 4).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            )) || (
+                Array(4).fill(0).map((_, i) => (
+                  <div key={i} className="h-96 rounded-2xl bg-card/50 animate-pulse" />
+                ))
+              )}
+            {merchandise && merchandise.length === 0 && (
+              <p className="col-span-4 text-center text-muted-foreground py-10">
+                {t("home.merchandise.empty", "No merchandise found.")}
               </p>
             )}
           </div>

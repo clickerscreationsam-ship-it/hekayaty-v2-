@@ -214,6 +214,21 @@
             "viewAll": "View All",
             "empty": "No best sellers yet. Be the first to break the charts!"
         },
+        "serialized": {
+            "title": "Ongoing Series",
+            "subtitle": "Stories updated chapter by chapter. Follow the journey.",
+            "empty": "No ongoing series found."
+        },
+        "merchandise": {
+            "title": "Creator Merchandise",
+            "subtitle": "Wear your favorite stories and support your favorite creators.",
+            "empty": "No merchandise found. Stay tuned for upcoming collections!"
+        },
+        "collections": {
+            "title": "Featured Story Collections",
+            "subtitle": "Curated bundles of stories in connected universes with a special discount.",
+            "empty": "No collections found."
+        },
         "featuredWriters": {
             "title": "Featured Worldbuilders",
             "subtitle": "Discover the voices shaping new realities.",
