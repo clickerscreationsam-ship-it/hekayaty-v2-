@@ -12,29 +12,45 @@ serve(async (req: Request) => {
 
     try {
         const authHeader = req.headers.get('Authorization')
+        console.log('Auth Header present:', !!authHeader)
 
-        // Create admin client for secure operations
-        const supabaseAdmin = createClient(
-            Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        )
+        if (!authHeader) {
+            console.error('No Authorization header provided')
+            return new Response(
+                JSON.stringify({ error: 'Unauthorized: Missing token' }),
+                { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
+        }
 
-        // Verify user is authenticated using the JWT directly
-        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(
-            authHeader?.replace('Bearer ', '') ?? ''
-        )
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+
+        // Create admin client
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+
+        // Verify user with token explicitly
+        const token = authHeader.replace('Bearer ', '')
+        console.log('Token length:', token.length)
+
+        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token)
 
         if (authError || !authUser) {
-            console.error('Auth verification failed:', authError)
+            console.error('Auth verification failed. Error:', authError?.message, 'User:', !!authUser)
             return new Response(
-                JSON.stringify({ error: 'Unauthorized: Invalid session', details: authError }),
+                JSON.stringify({
+                    error: 'Unauthorized: Invalid session',
+                    details: authError?.message || 'No user found in session',
+                    code: 'AUTH_VERIFICATION_FAILED'
+                }),
                 { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
 
         const user = authUser;
+        console.log('✅ User verified successfully:', user.id)
 
         // Parse request body
+        const body = await req.json()
         const {
             items,
             totalAmount,
@@ -44,10 +60,9 @@ serve(async (req: Request) => {
             shippingAddress,
             shippingCost = 0,
             shippingBreakdown = []
-        } = await req.json()
+        } = body
 
-        console.log('Processing checkout for user:', user.id)
-        console.log('Items to process:', items.length)
+        console.log('Processing checkout for user:', user.id, 'items:', items?.length)
 
         // 1. Separate products and collections
         const productIds = items.filter((i: any) => i.productId).map((i: any) => i.productId)

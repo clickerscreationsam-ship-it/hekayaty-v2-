@@ -136,17 +136,20 @@ async function callEdgeFunction(
                         'Authorization': `Bearer ${refreshData.session.access_token}`
                     };
 
-                    const { data: retryData, error: retryError } = await supabase.functions.invoke(functionName, {
+                    const retryResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`, {
                         method,
-                        body: data,
-                        headers: retryHeaders
+                        headers: retryHeaders,
+                        body: data ? JSON.stringify(data) : undefined
                     });
 
-                    if (!retryError) {
+                    if (retryResponse.ok) {
                         console.log("🎊 Retry Success!");
-                        return retryData;
+                        return await retryResponse.json();
+                    } else {
+                        const errorBody = await retryResponse.json().catch(() => ({}));
+                        console.error(`❌ Retry also failed [${retryResponse.status}]:`, errorBody);
+                        throw new Error(errorBody.error || `Edge Function returned a ${retryResponse.status} status code`);
                     }
-                    console.error("❌ Retry also failed:", retryError);
                 }
             }
             throw new Error(error.message || `Failed to call ${functionName}`);
