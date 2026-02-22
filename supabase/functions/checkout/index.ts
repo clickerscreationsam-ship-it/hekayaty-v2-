@@ -292,11 +292,14 @@ serve(async (req: Request) => {
             }
         }
 
-        // 10. Clear cart
-        await supabaseAdmin
-            .from('cart_items')
-            .delete()
-            .eq('user_id', user.id)
+        // 10. Clear ONLY the specific items that were processed in this order
+        for (const item of verifiedItems) {
+            if (item.productId) {
+                await supabaseAdmin.from('cart_items').delete().eq('user_id', user.id).eq('product_id', item.productId)
+            } else if (item.collectionId) {
+                await supabaseAdmin.from('cart_items').delete().eq('user_id', user.id).eq('collection_id', item.collectionId)
+            }
+        }
 
         console.log('Checkout completed successfully with', createdOrders.length, 'orders')
 
