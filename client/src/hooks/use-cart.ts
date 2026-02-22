@@ -98,16 +98,19 @@ async function callEdgeFunction(
     try {
         const { data: { session } } = await supabase.auth.getSession();
 
-        // Prepare headers - Match the EXACT pattern in use-admin.ts
+        // Prepare headers - Match the Supabase standard requirements
         const headers: Record<string, string> = {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
         };
 
         if (session?.access_token) {
             headers['Authorization'] = `Bearer ${session.access_token}`;
+            console.log(`🔑 Token present (starts with: ${session.access_token.substring(0, 10)}...)`);
         }
 
         const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`;
+        console.log(`📡 Fetching: ${url}`);
 
         let response = await fetch(url, {
             method,
@@ -121,7 +124,7 @@ async function callEdgeFunction(
             const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
 
             if (!refreshError && refreshData.session) {
-                console.log("✅ Session refreshed, retrying fetch...");
+                console.log("✅ Session refreshed, retrying fetch with new token...");
 
                 const retryHeaders = {
                     ...headers,
