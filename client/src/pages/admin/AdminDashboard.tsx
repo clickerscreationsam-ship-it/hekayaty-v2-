@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, ExternalLink, AlertTriangle, Users, Lock, Unlock, Loader2, Wallet, Truck, History, PenTool } from "lucide-react";
+import { CheckCircle, XCircle, ExternalLink, AlertTriangle, Users, Lock, Unlock, Loader2, Wallet, Truck, History, PenTool, CreditCard } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
@@ -633,6 +633,7 @@ export default function AdminDashboard() {
                                         <TableHeader className="bg-white/5">
                                             <TableRow className="border-white/10 hover:bg-transparent">
                                                 <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Order ID</TableHead>
+                                                <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Type</TableHead>
                                                 <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">User / Customer</TableHead>
                                                 <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Amount</TableHead>
                                                 <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Method</TableHead>
@@ -646,6 +647,17 @@ export default function AdminDashboard() {
                                             {pendingOrders.map((order: any) => (
                                                 <TableRow key={order.id} className="border-white/5 hover:bg-white/5 transition-colors">
                                                     <TableCell className="py-4 font-mono font-bold text-primary/60">#{order.id}</TableCell>
+                                                    <TableCell className="py-4">
+                                                        {order.shipping_address ? (
+                                                            <Badge className="bg-blue-500/10 text-blue-500 border-blue-500/20 gap-1.5 font-bold text-[10px] uppercase">
+                                                                <Truck className="w-3 h-3" /> Physical
+                                                            </Badge>
+                                                        ) : (
+                                                            <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 gap-1.5 font-bold text-[10px] uppercase">
+                                                                <CreditCard className="w-3 h-3" /> Digital
+                                                            </Badge>
+                                                        )}
+                                                    </TableCell>
                                                     <TableCell className="py-4">
                                                         <span className="font-bold text-foreground text-sm">{order.user?.display_name || order.user_id}</span>
                                                     </TableCell>

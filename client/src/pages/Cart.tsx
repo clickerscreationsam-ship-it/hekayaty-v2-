@@ -44,19 +44,19 @@ export default function Cart() {
     const [reference, setReference] = useState("");
 
     // Filter out invalid items where product or collection might be null (deleted product)
-    const validItems = cartItems?.filter(item => item.product || item.collection) || [];
-    const requiresShipping = validItems.some(item => item.product?.requiresShipping);
+    const validItems = cartItems?.filter((item: any) => item.product || item.collection) || [];
 
-    // Prepare order items early for calculation
-    const orderItems = validItems.map(item => ({
-        productId: item.productId,
-        collectionId: item.collectionId,
-        variantId: item.variantId,
-        price: item.product?.price || item.collection?.price || 0,
-        creatorId: item.product?.writerId || item.collection?.writerId || null
-    }));
+    const digitalItems = validItems.filter((item: any) => !item.product?.requiresShipping && !item.collection);
+    const physicalItems = validItems.filter((item: any) => item.product?.requiresShipping);
+    const collectionItems = validItems.filter((item: any) => !!item.collection);
 
-    const itemsTotal = validItems.reduce((sum, item) => {
+    // Group all digital (stories, assets, collections)
+    const allDigital = [...digitalItems, ...collectionItems];
+    const hasPhysical = physicalItems.length > 0;
+    const hasDigital = allDigital.length > 0;
+    const isMixed = hasPhysical && hasDigital;
+
+    const itemsTotal = validItems.reduce((sum: number, item: any) => {
         const price = item.product?.price || item.collection?.price || 0;
         return sum + price * (item.quantity || 1);
     }, 0);
@@ -65,7 +65,7 @@ export default function Cart() {
 
     // Auto-calculate shipping if user has an address
     useEffect(() => {
-        if (requiresShipping && userAddresses && userAddresses.length > 0 && shippingCost === 0 && !calculateShipping.isPending) {
+        if (hasPhysical && userAddresses && userAddresses.length > 0 && shippingCost === 0 && !calculateShipping.isPending) {
             const latestAddress = userAddresses[0];
 
             // Sync state for checkout dialog
@@ -77,18 +77,16 @@ export default function Cart() {
             });
 
             // Calculate shipping
-            const physicalItems = validItems
-                .filter(item => item.product?.requiresShipping)
-                .map(item => ({
-                    productId: item.productId,
-                    variantId: item.variantId,
-                    price: item.product!.price,
-                    creatorId: item.product!.writerId
-                }));
+            const itemsForShipping = physicalItems.map(item => ({
+                productId: item.productId,
+                variantId: item.variantId,
+                price: item.product!.price,
+                creatorId: item.product!.writerId
+            }));
 
-            if (physicalItems.length > 0) {
+            if (itemsForShipping.length > 0) {
                 calculateShipping.mutate({
-                    items: physicalItems,
+                    items: itemsForShipping,
                     city: latestAddress.city.trim()
                 }, {
                     onSuccess: (data) => {
@@ -98,30 +96,27 @@ export default function Cart() {
                 });
             }
         }
-    }, [requiresShipping, userAddresses, validItems.length]);
+    }, [hasPhysical, userAddresses, validItems.length]);
 
     useEffect(() => {
         if (isCheckoutOpen) {
-            if (requiresShipping) setStep(1);
+            if (hasPhysical) setStep(1);
             else setStep(2);
         }
-    }, [isCheckoutOpen, requiresShipping]);
+    }, [isCheckoutOpen, hasPhysical]);
 
     const handleCalculateShipping = () => {
         if (!shippingDetails.city) return;
 
         // Only calculate shipping for physical items
-        const physicalItems = validItems
-            .filter(item => item.product?.requiresShipping)
-            .map(item => ({
-                productId: item.productId,
-                variantId: item.variantId,
-                price: item.product!.price,
-                creatorId: item.product!.writerId
-            }));
+        const itemsForShipping = physicalItems.map((item: any) => ({
+            productId: item.productId,
+            variantId: item.variantId,
+            price: item.product!.price,
+            creatorId: item.product!.writerId
+        }));
 
-        if (physicalItems.length === 0) {
-            // Should not happen if step logic is correct, but safe fallback
+        if (itemsForShipping.length === 0) {
             setShippingCost(0);
             setShippingBreakdown([]);
             setStep(2);
@@ -129,7 +124,7 @@ export default function Cart() {
         }
 
         calculateShipping.mutate({
-            items: physicalItems,
+            items: itemsForShipping,
             city: shippingDetails.city.trim()
         }, {
             onSuccess: (data) => {
@@ -143,19 +138,28 @@ export default function Cart() {
     const handleCheckoutSubmit = () => {
         if (validItems.length === 0) return;
 
+        const allItems = validItems.map((item: any) => ({
+            productId: item.productId,
+            collectionId: item.collectionId,
+            variantId: item.variantId,
+            quantity: item.quantity,
+            price: item.product?.price || item.collection?.price || 0,
+            creatorId: item.product?.writerId || item.collection?.writerId || null,
+            customizationData: item.customizationData
+        }));
+
         checkout.mutate({
-            items: orderItems,
+            items: allItems,
             totalAmount: grandTotal,
             paymentMethod,
             paymentProofUrl: proofUrl,
             paymentReference: reference,
-            shippingAddress: requiresShipping ? shippingDetails : undefined,
-            shippingCost: requiresShipping ? shippingCost : undefined,
-            shippingBreakdown: requiresShipping ? shippingBreakdown : undefined
+            shippingAddress: hasPhysical ? shippingDetails : undefined,
+            shippingCost: hasPhysical ? shippingCost : undefined,
+            shippingBreakdown: hasPhysical ? shippingBreakdown : undefined
         }, {
             onSuccess: () => {
                 setIsCheckoutOpen(false);
-                // Redirect to a success / orders page
                 setLocation("/dashboard");
             }
         });
@@ -234,62 +238,49 @@ export default function Cart() {
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Cart Items List */}
-                        <div className="lg:col-span-2 space-y-4">
-                            {validItems.map((item) => (
-                                <div key={item.id} className="glass-card p-4 rounded-xl flex gap-4 items-center">
-                                    <div className="w-20 h-28 shrink-0 rounded-lg overflow-hidden bg-muted">
-                                        <img
-                                            src={item.product?.coverUrl || item.collection?.coverUrl || ""}
-                                            alt={item.product?.title || item.collection?.title || ""}
-                                            className="w-full h-full object-cover"
-                                        />
+                        <div className="lg:col-span-2 space-y-8">
+                            {/* Warning for Mixed Cart */}
+                            {isMixed && (
+                                <div className="bg-primary/10 border border-primary/20 p-4 rounded-2xl flex gap-3 text-foreground animate-in fade-in slide-in-from-top-4">
+                                    <div className="bg-primary/20 p-2 rounded-lg h-fit">
+                                        <Truck className="w-5 h-5 text-primary" />
                                     </div>
-
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="font-bold text-lg truncate">{item.product?.title || item.collection?.title}</h3>
-                                        <p className="text-sm text-muted-foreground capitalize">
-                                            {item.product?.type || (item.collection ? "Story Collection" : "")}
-                                        </p>
-                                        <div className="mt-2 text-primary font-bold">
-                                            {item.product?.price || item.collection?.price} EGP
-                                            {item.quantity && item.quantity > 1 && <span className="text-muted-foreground text-xs font-normal"> x {item.quantity}</span>}
-                                        </div>
+                                    <div>
+                                        <p className="font-bold">Mixed Order Notice</p>
+                                        <p className="text-sm opacity-80">Your cart includes both digital and physical items. Digital items will be unlocked instantly after payment, while physical items will be shipped to your address.</p>
                                     </div>
-
-                                    {/* Quantity Adjuster */}
-                                    <div className="flex items-center bg-muted/30 rounded-xl p-1 border border-border/50 shadow-sm">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 rounded-lg hover:bg-background transition-all disabled:opacity-30"
-                                            onClick={() => updateQuantity.mutate({ id: item.id, quantity: Math.max(1, (item.quantity || 1) - 1) })}
-                                            disabled={updateQuantity.isPending || (item.quantity || 1) <= 1}
-                                        >
-                                            -
-                                        </Button>
-                                        <span className="w-8 text-center font-bold text-sm tabular-nums">{item.quantity || 1}</span>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 rounded-lg hover:bg-background transition-all"
-                                            onClick={() => updateQuantity.mutate({ id: item.id, quantity: (item.quantity || 1) + 1 })}
-                                            disabled={updateQuantity.isPending}
-                                        >
-                                            +
-                                        </Button>
-                                    </div>
-
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="text-destructive hover:bg-destructive/10"
-                                        onClick={() => removeFromCart.mutate(item.id)}
-                                        disabled={removeFromCart.isPending}
-                                    >
-                                        <Trash2 className="w-5 h-5" />
-                                    </Button>
                                 </div>
-                            ))}
+                            )}
+
+                            {/* Section: Physical Products */}
+                            {hasPhysical && (
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 px-2 text-muted-foreground">
+                                        <Truck className="w-5 h-5" />
+                                        <h2 className="text-lg font-bold">Physical Products (Requires Shipping)</h2>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {physicalItems.map((item: any) => (
+                                            <CartItemRow key={item.id} item={item} onUpdate={updateQuantity} onRemove={removeFromCart} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Section: Digital Products */}
+                            {hasDigital && (
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 px-2 text-muted-foreground">
+                                        <CreditCard className="w-5 h-5 text-blue-500" />
+                                        <h2 className="text-lg font-bold">Digital Products (Instant Access)</h2>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {allDigital.map((item: any) => (
+                                            <CartItemRow key={item.id} item={item} onUpdate={updateQuantity} onRemove={removeFromCart} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Order Summary */}
@@ -302,7 +293,7 @@ export default function Cart() {
                                         <span>Subtotal</span>
                                         <span>{itemsTotal} EGP</span>
                                     </div>
-                                    {requiresShipping && (
+                                    {hasPhysical && (
                                         <div className="flex justify-between text-muted-foreground">
                                             <span>Shipping</span>
                                             <span>
@@ -322,6 +313,12 @@ export default function Cart() {
                                         <span>Included</span>
                                     </div>
                                     <div className="w-full h-px bg-border" />
+                                    {isMixed && (
+                                        <div className="bg-blue-500/5 p-3 rounded-lg border border-blue-500/10 mb-4">
+                                            <p className="text-[10px] uppercase tracking-wider text-blue-500 font-bold mb-1">Split Order Notice</p>
+                                            <p className="text-xs opacity-70">Payment will be split into two orders for your convenience.</p>
+                                        </div>
+                                    )}
                                     <div className="flex justify-between font-bold text-lg">
                                         <span>Total</span>
                                         <span>{grandTotal} EGP</span>
@@ -411,7 +408,7 @@ export default function Cart() {
                         ) : (
                             <div className="space-y-6 mt-4">
                                 {/* Shipping Summary if applicable */}
-                                {requiresShipping && (
+                                {hasPhysical && (
                                     <div className="bg-muted p-4 rounded-lg border flex justify-between items-center text-sm">
                                         <div className="flex items-center gap-2">
                                             <MapPin className="w-4 h-4 text-muted-foreground" />
@@ -479,7 +476,7 @@ export default function Cart() {
                                     </div>
                                 </div>
                                 <DialogFooter className="mt-6 flex flex-col sm:flex-row gap-2">
-                                    {requiresShipping && (
+                                    {hasPhysical && (
                                         <Button variant="ghost" onClick={() => setStep(1)} className="sm:mr-auto">Back</Button>
                                     )}
                                     <Button variant="ghost" onClick={() => setIsCheckoutOpen(false)}>Cancel</Button>
@@ -496,6 +493,66 @@ export default function Cart() {
                     </DialogContent>
                 </Dialog>
             </div>
+        </div>
+    );
+}
+
+function CartItemRow({ item, onUpdate, onRemove }: any) {
+    return (
+        <div className="glass-card p-4 rounded-xl flex gap-4 items-center border border-white/5 hover:border-white/10 transition-all shadow-sm">
+            <div className="w-20 h-28 shrink-0 rounded-lg overflow-hidden bg-muted/30">
+                <img
+                    src={item.product?.coverUrl || item.collection?.coverUrl || ""}
+                    alt={item.product?.title || item.collection?.title || ""}
+                    className="w-full h-full object-cover"
+                />
+            </div>
+
+            <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-lg truncate mb-1">{item.product?.title || item.collection?.title}</h3>
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground uppercase font-semibold">
+                        {item.product?.type || (item.collection ? "Story Collection" : "item")}
+                    </span>
+                </div>
+                <div className="mt-3 text-primary font-bold text-lg">
+                    {item.product?.price || item.collection?.price} <span className="text-xs font-normal">EGP</span>
+                    {item.quantity && item.quantity > 1 && <span className="text-muted-foreground text-xs font-normal"> x {item.quantity}</span>}
+                </div>
+            </div>
+
+            {/* Quantity Adjuster */}
+            <div className="flex items-center bg-muted/20 rounded-xl p-0.5 border border-border/40">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-lg hover:bg-background/50 transition-all disabled:opacity-20"
+                    onClick={() => onUpdate.mutate({ id: item.id, quantity: Math.max(1, (item.quantity || 1) - 1) })}
+                    disabled={onUpdate.isPending || (item.quantity || 1) <= 1}
+                >
+                    -
+                </Button>
+                <span className="w-6 text-center font-bold text-sm tabular-nums">{item.quantity || 1}</span>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-lg hover:bg-background/50 transition-all"
+                    onClick={() => onUpdate.mutate({ id: item.id, quantity: (item.quantity || 1) + 1 })}
+                    disabled={onUpdate.isPending}
+                >
+                    +
+                </Button>
+            </div>
+
+            <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                onClick={() => onRemove.mutate(item.id)}
+                disabled={onRemove.isPending}
+            >
+                <Trash2 className="w-5 h-5" />
+            </Button>
         </div>
     );
 }

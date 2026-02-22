@@ -4,7 +4,7 @@ import { corsHeaders } from '../_shared/cors.ts'
 
 console.log("Checkout function starting...")
 
-serve(async (req) => {
+serve(async (req: Request) => {
     // Handle CORS
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
@@ -157,7 +157,27 @@ serve(async (req) => {
             }
         }
 
-        // 6. Determine initial status
+        // 6. Split into Physical and Digital groups
+        const physicalItemsList = verifiedItems.filter((item: any) => {
+            if (item.productId) {
+                const product = productMap.get(item.productId) as any
+                return (product.type === 'physical' || product.type === 'merchandise' || product.requires_shipping)
+            }
+            return false
+        })
+        const digitalItemsList = verifiedItems.filter((item: any) => {
+            if (item.productId) {
+                const product = productMap.get(item.productId) as any
+                return !(product.type === 'physical' || product.type === 'merchandise' || product.requires_shipping)
+            }
+            return !!item.collectionId
+        })
+
+        const hasPhysical = physicalItemsList.length > 0
+        const hasDigital = digitalItemsList.length > 0
+        const isMixed = hasPhysical && hasDigital
+
+        // 7. Determine initial status
         const isManualPayment = [
             "instapay",
             "vodafone_cash",
@@ -167,65 +187,104 @@ serve(async (req) => {
         ].includes(paymentMethod)
         const initialStatus = isManualPayment ? "pending" : "paid"
 
-        // 7. Create Order
-        const totalWithShipping = serverCalculatedTotalAmount + shippingCost
+        const createdOrders: any[] = []
 
-        const { data: order, error: orderError } = await supabaseAdmin
-            .from('orders')
-            .insert({
-                user_id: user.id,
-                total_amount: totalWithShipping,
-                platform_fee: totalPlatformFee,
-                creator_earnings: totalCreatorEarnings,
-                status: initialStatus,
-                payment_method: paymentMethod,
-                payment_proof_url: paymentProofUrl,
-                payment_reference: paymentReference,
-                shipping_address: shippingAddress,
-                shipping_cost: shippingCost,
-                is_verified: !isManualPayment
+        // Helper to create an order
+        const createSubOrder = async (subItems: any[], subShippingCost: number = 0, isPhysicalOrder: boolean = false) => {
+            let subTotal = 0
+            let subPlatformFee = 0
+            let subCreatorEarnings = 0
+            const subEarningsByCreator = new Map<string, number>()
+
+            subItems.forEach((item: any) => {
+                const itemTotal = item.price * (item.quantity || 1)
+                subTotal += itemTotal
+
+                const product = item.productId ? productMap.get(item.productId) as any : null
+                const isItemPhysical = product ? (product.type === 'physical' || product.type === 'merchandise' || product.requires_shipping) : false
+
+                const writerRate = Number(ratesMap.get(item.creatorId)) ?? 20
+                const rate = isItemPhysical ? 12 : writerRate
+                const fee = Math.round(itemTotal * (Number(rate) / 100))
+                const earning = itemTotal - fee
+
+                subPlatformFee += fee
+                subCreatorEarnings += earning
+
+                const current = subEarningsByCreator.get(item.creatorId) || 0
+                subEarningsByCreator.set(item.creatorId, current + earning)
             })
-            .select()
-            .single()
 
-        if (orderError) {
-            console.error('Order creation error:', orderError)
-            throw new Error('Failed to create order')
-        }
-
-        // 8. Create Order Items
-        const orderItemsToInsert = verifiedItems.map((item: any) => ({
-            order_id: order.id,
-            product_id: item.productId || null,
-            collection_id: item.collectionId || null,
-            variant_id: item.variantId || null,
-            price: item.price,
-            creator_id: item.creatorId,
-            fulfillment_status: 'pending',
-            license_type: 'standard',
-            customization_data: item.customizationData || {}
-        }))
-
-        const { error: itemsError } = await supabaseAdmin
-            .from('order_items')
-            .insert(orderItemsToInsert)
-
-        if (itemsError) {
-            console.error('Order items error:', itemsError)
-            throw new Error('Failed to create order items')
-        }
-
-        // 9. Atomic Stock Decrementing
-        for (const item of verifiedItems) {
-            if (item.productId) {
-                const product = productMap.get(item.productId) as any
-                if (product && (product.type === 'physical' || product.type === 'merchandise')) {
-                    const { error: stockError } = await supabaseAdmin.rpc('decrement_product_stock', {
-                        p_product_id: item.productId,
-                        p_quantity: item.quantity || 1
-                    })
-                    if (stockError) console.error('Stock decrement failed:', stockError)
+            // Add shipping to creator earnings if it's the physical order
+            if (isPhysicalOrder && shippingBreakdown && Array.isArray(shippingBreakdown)) {
+                for (const ship of shippingBreakdown) {
+                    const current = subEarningsByCreator.get(ship.creatorId) || 0
+                    subEarningsByCreator.set(ship.creatorId, current + (ship.amount || 0))
+                    subCreatorEarnings += (ship.amount || 0)
                 }
+            }
+
+            const { data: order, error: orderError } = await supabaseAdmin
+                .from('orders')
+                .insert({
+                    user_id: user.id,
+                    total_amount: subTotal + subShippingCost,
+                    platform_fee: subPlatformFee,
+                    creator_earnings: subCreatorEarnings,
+                    status: initialStatus,
+                    payment_method: paymentMethod,
+                    payment_proof_url: paymentProofUrl,
+                    payment_reference: paymentReference,
+                    shipping_address: isPhysicalOrder ? shippingAddress : null,
+                    shipping_cost: subShippingCost,
+                    is_verified: !isManualPayment
+                })
+                .select()
+                .single()
+
+            if (orderError) throw orderError
+
+            // Create items for this order
+            const orderItemsToInsert = subItems.map((item: any) => ({
+                order_id: order.id,
+                product_id: item.productId || null,
+                collection_id: item.collectionId || null,
+                variant_id: item.variantId || null,
+                price: item.price,
+                creator_id: item.creatorId,
+                fulfillment_status: isPhysicalOrder ? 'pending' : 'delivered', // Digital is auto-delivered if paid/pending verification
+                license_type: 'standard',
+                customization_data: item.customizationData || {}
+            }))
+
+            const { error: itemsError } = await supabaseAdmin
+                .from('order_items')
+                .insert(orderItemsToInsert)
+
+            if (itemsError) throw itemsError
+
+            return order
+        }
+
+        // Handle Splitting
+        if (hasPhysical) {
+            const pOrder = await createSubOrder(physicalItemsList, shippingCost, true)
+            createdOrders.push(pOrder)
+        }
+
+        if (hasDigital) {
+            const dOrder = await createSubOrder(digitalItemsList, 0, false)
+            createdOrders.push(dOrder)
+        }
+
+        // 9. Atomic Stock Decrementing (Only for physical)
+        for (const item of physicalItemsList) {
+            if (item.productId) {
+                const { error: stockError } = await supabaseAdmin.rpc('decrement_product_stock', {
+                    p_product_id: item.productId,
+                    p_quantity: item.quantity || 1
+                })
+                if (stockError) console.error('Stock decrement failed:', stockError)
             }
         }
 
@@ -235,10 +294,10 @@ serve(async (req) => {
             .delete()
             .eq('user_id', user.id)
 
-        console.log('Checkout completed successfully')
+        console.log('Checkout completed successfully with', createdOrders.length, 'orders')
 
         return new Response(
-            JSON.stringify({ order, success: true }),
+            JSON.stringify({ orders: createdOrders, success: true }),
             {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 status: 201,
