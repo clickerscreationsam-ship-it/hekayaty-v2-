@@ -87,6 +87,7 @@ export function useCart() {
     });
 }
 
+// Utility to call Edge Functions with better error handling & session awareness
 async function callEdgeFunction(
     functionName: string,
     data?: any,
@@ -97,7 +98,7 @@ async function callEdgeFunction(
     try {
         const { data: { session } } = await supabase.auth.getSession();
 
-        // Prepare headers - Match the working pattern in use-admin.ts (No explicit apikey if Authorization is present)
+        // Prepare headers - Match the EXACT pattern in use-admin.ts
         const headers: Record<string, string> = {
             'Content-Type': 'application/json'
         };
@@ -106,64 +107,48 @@ async function callEdgeFunction(
             headers['Authorization'] = `Bearer ${session.access_token}`;
         }
 
-        const { data: responseData, error } = await supabase.functions.invoke(functionName, {
+        const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`;
+
+        let response = await fetch(url, {
             method,
-            body: data,
-            headers
+            headers,
+            body: data ? JSON.stringify(data) : undefined
         });
 
-        if (error) {
-            // Log full error details for debugging
-            console.error(`❌ Edge Function Error [${functionName}]:`, error);
+        // 401 Unauthorized - Attempt one-time session refresh and retry
+        if (response.status === 401) {
+            console.log(`🔄 401 detected for ${functionName}, attempting session refresh...`);
+            const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
 
-            // Only retry on ACTUAL 401 unauthorized errors
-            const status = (error as any).status || (error as any).context?.status;
-            const isUnauthorized =
-                status === 401 ||
-                error.message?.toLowerCase().includes('jwt') ||
-                error.message?.toLowerCase().includes('unauthorized');
+            if (!refreshError && refreshData.session) {
+                console.log("✅ Session refreshed, retrying fetch...");
 
-            if (isUnauthorized) {
-                console.log("🔄 401 detected, attempting session refresh...");
-                const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+                const retryHeaders = {
+                    ...headers,
+                    'Authorization': `Bearer ${refreshData.session.access_token}`
+                };
 
-                if (!refreshError && refreshData.session) {
-                    console.log("✅ Session refreshed, retrying invoke...");
-
-                    const retryHeaders: Record<string, string> = {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${refreshData.session.access_token}`
-                    };
-
-                    const retryResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`, {
-                        method,
-                        headers: retryHeaders,
-                        body: data ? JSON.stringify(data) : undefined
-                    });
-
-                    if (retryResponse.ok) {
-                        console.log("🎊 Retry Success!");
-                        return await retryResponse.json();
-                    } else {
-                        const errorBody = await retryResponse.json().catch(() => ({}));
-                        console.error(`❌ Retry also failed [${retryResponse.status}]:`, errorBody);
-                        throw new Error(errorBody.error || `Edge Function returned a ${retryResponse.status} status code`);
-                    }
-                }
+                response = await fetch(url, {
+                    method,
+                    headers: retryHeaders,
+                    body: data ? JSON.stringify(data) : undefined
+                });
             }
-            throw new Error(error.message || `Failed to call ${functionName}`);
         }
 
-        if (responseData && responseData.error) {
-            console.error(`❌ Edge Function returned logical error [${functionName}]:`, responseData.error);
-            throw new Error(responseData.error);
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({}));
+            console.error(`❌ Edge Function Error [${functionName}] status ${response.status}:`, errorBody);
+            throw new Error(errorBody.error || errorBody.message || `Edge Function returned a ${response.status} status code`);
         }
 
-        console.log(`✅ callEdgeFunction Success [${functionName}]:`, responseData);
-        return responseData;
-    } catch (err: any) {
-        console.error(`❌ callEdgeFunction Exception [${functionName}]:`, err);
-        throw err;
+        const result = await response.json();
+        console.log(`✅ callEdgeFunction Success [${functionName}]:`, result);
+        return result;
+
+    } catch (error: any) {
+        console.error(`❌ callEdgeFunction Exception [${functionName}]:`, error);
+        throw error;
     }
 }
 
