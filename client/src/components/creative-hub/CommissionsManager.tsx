@@ -26,8 +26,8 @@ export function CommissionsManager({ user }: { user: User }) {
             {isArtist && <ArtistAnalytics />}
 
             <div>
-                <h2 className="text-2xl font-bold font-serif">{t("commissions.title") || "My Commissions"}</h2>
-                <p className="text-muted-foreground">{isArtist ? "Manage your incoming design requests." : "Track the progress of your ordered designs."}</p>
+                <h2 className="text-2xl font-bold font-serif">{t("commissions.title")}</h2>
+                <p className="text-muted-foreground">{isArtist ? t("commissions.subtitle_artist") : t("commissions.subtitle_client")}</p>
             </div>
 
             <div className="grid gap-4">
@@ -42,7 +42,7 @@ export function CommissionsManager({ user }: { user: User }) {
                                     <div>
                                         <h3 className="font-bold text-lg">{req.title}</h3>
                                         <p className="text-sm text-muted-foreground">
-                                            {isArtist ? "Client: " : "Artist: "}
+                                            {isArtist ? t("commissions.client_label") : t("commissions.artist_label")}:{" "}
                                             <span className="text-foreground">{isArtist ? req.client?.display_name : req.artist?.display_name}</span>
                                         </p>
                                         <div className="flex gap-4 mt-2">

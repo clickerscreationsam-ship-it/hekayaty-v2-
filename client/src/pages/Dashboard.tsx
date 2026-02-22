@@ -103,7 +103,7 @@ export default function Dashboard() {
           <div>
             <h1 className="text-3xl font-serif font-bold">{user.role === 'reader' ? t("nav.profile") : t("dashboard.title")}</h1>
             <p className="text-muted-foreground">
-              {user.role === 'reader' ? 'Manage your account and preferences.' : t("dashboard.subtitle")}
+              {user.role === 'reader' ? t("dashboard.reader_subtitle") : t("dashboard.subtitle")}
             </p>
           </div>
           <div className="flex gap-2">
@@ -125,7 +125,7 @@ export default function Dashboard() {
             <TabsList className="mb-8 p-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl justify-start h-auto w-full md:w-auto inline-flex min-w-full md:min-w-0 gap-1">
               {user.role === 'reader' && (
                 <TabsTrigger value="library" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
-                  <BookOpen className="w-4 h-4" /> My Library
+                  <BookOpen className="w-4 h-4" /> {t("dashboard.tabs.library")}
                 </TabsTrigger>
               )}
               {user.role !== 'reader' && (
@@ -160,7 +160,7 @@ export default function Dashboard() {
               )}
               {user.role !== 'reader' && (
                 <TabsTrigger value="private_messages" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
-                  <MessageCircle className="w-4 h-4" /> Private Messages
+                  <MessageCircle className="w-4 h-4" /> {t("dashboard.tabs.private_messages")}
                 </TabsTrigger>
               )}
 
@@ -171,7 +171,7 @@ export default function Dashboard() {
               )}
               {(user.role === 'artist' || user.role === 'reader') && (
                 <TabsTrigger value="commissions" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2 relative">
-                  <PenTool className="w-4 h-4" /> {t("dashboard.tabs.commissions") || "Commissions"}
+                  <PenTool className="w-4 h-4" /> {t("dashboard.tabs.commissions")}
                 </TabsTrigger>
               )}
               {user.role !== 'reader' && (
@@ -185,7 +185,7 @@ export default function Dashboard() {
                 </TabsTrigger>
               )}
               <TabsTrigger value="branding" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2 font-bold">
-                <Settings className="w-4 h-4" /> {user.role === 'reader' ? 'Profile Settings' : t("dashboard.tabs.branding")}
+                <Settings className="w-4 h-4" /> {user.role === 'reader' ? t("dashboard.tabs.profile_settings") : t("dashboard.tabs.branding")}
               </TabsTrigger>
             </TabsList>
           </div>

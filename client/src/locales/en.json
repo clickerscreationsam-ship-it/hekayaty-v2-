@@ -48,8 +48,14 @@
             "shipping": "Shipping",
             "branding": "Store Settings",
             "chat": "Store Chat",
-            "admin_messages": "Admin Messages"
+            "admin_messages": "Admin Messages",
+            "portfolio": "Portfolio",
+            "commissions": "Track Your Treasure",
+            "library": "My Library",
+            "private_messages": "Private Messages",
+            "profile_settings": "Profile Settings"
         },
+        "reader_subtitle": "Manage your account and preferences.",
         "welcome_reader": "👋 Welcome to Your Profile!",
         "welcome_reader_desc": "Manage your account settings and personalize your reading experience.",
         "welcome_creator": "✨ Welcome to Your Creator Dashboard!",
@@ -208,6 +214,13 @@
                 "artist": "Artist (Sell Assets)"
             }
         }
+    },
+    "commissions": {
+        "title": "Track Your Treasure",
+        "subtitle_artist": "Manage your incoming design requests.",
+        "subtitle_client": "Track the progress of your ordered designs.",
+        "client_label": "Client",
+        "artist_label": "Artist"
     },
     "home": {
         "bestSellers": {
