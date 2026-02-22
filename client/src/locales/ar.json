@@ -23,7 +23,8 @@
         "success": "تم بنجاح",
         "processing_files": "جاري معالجة الملفات...",
         "read": "قراءة",
-        "download": "تحميل"
+        "download": "تحميل",
+        "all": "الكل"
     },
     "reader": {
         "protected": "عرض محمي"
@@ -547,7 +548,10 @@
         "follow": "متابعة",
         "following": "متابع",
         "noProducts": "لا توجد منتجات متاحة بعد",
-        "about": "نبذة عن"
+        "about": "نبذة عن",
+        "publishedWorks": "الأعمال المنشورة",
+        "allWorks": "جميع الأعمال",
+        "noWorks": "لم يقم هذا الراوي بنشر أي أعمال بعد."
     },
     "admin": {
         "title": "لوحة تحكم المسؤول",

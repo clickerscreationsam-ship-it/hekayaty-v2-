@@ -23,6 +23,7 @@ export default function WriterStore() {
   const [, params] = useRoute("/writer/:username");
   const username = params?.username || "";
 
+  const { t } = useTranslation();
   const { user: currentUser } = useAuth(); // Get logged-in user
   const { data: user, isLoading: userLoading } = useUser(username);
   const { data: products, isLoading: productsLoading } = useProducts({ writerId: user?.id });
@@ -158,7 +159,7 @@ export default function WriterStore() {
             <>
               <h2 className={`text-3xl font-bold mb-8 flex items-center gap-3 ${fontClass}`}>
                 <span className="w-8 h-1 bg-primary rounded-full" style={{ backgroundColor: themeColor }}></span>
-                Published Works
+                {t("writerStore.publishedWorks")}
               </h2>
 
               {/* Filtering Toggle */}
@@ -170,7 +171,7 @@ export default function WriterStore() {
                       size="sm"
                       onClick={() => window.history.replaceState(null, "", window.location.pathname)}
                     >
-                      {t("common.all")}
+                      {t("writerStore.allWorks")}
                     </Button>
                     <Button
                       variant={(params as any).filter === 'books' ? 'default' : 'ghost'}
@@ -222,7 +223,7 @@ export default function WriterStore() {
 
               {(!products || products.length === 0) && (
                 <p className="text-muted-foreground col-span-full py-10 text-center">
-                  This scribe hasn't published any items yet.
+                  {t("writerStore.noWorks")}
                 </p>
               )}
             </>
