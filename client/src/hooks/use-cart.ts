@@ -96,58 +96,39 @@ async function callEdgeFunction(
     console.log(`🚀 callEdgeFunction: Calling ${functionName} [${method}]`, data);
 
     try {
-        const { data: { session } } = await supabase.auth.getSession();
-
-        // Prepare headers - Match the Supabase standard requirements
-        const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
-        };
-
-        if (session?.access_token) {
-            headers['Authorization'] = `Bearer ${session.access_token}`;
-            console.log(`🔑 Token present (starts with: ${session.access_token.substring(0, 10)}...)`);
-        }
-
-        const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`;
-        console.log(`📡 Fetching: ${url}`);
-
-        let response = await fetch(url, {
+        const { data: responseData, error } = await supabase.functions.invoke(functionName, {
             method,
-            headers,
-            body: data ? JSON.stringify(data) : undefined
+            body: data,
         });
 
-        // 401 Unauthorized - Attempt one-time session refresh and retry
-        if (response.status === 401) {
-            console.log(`🔄 401 detected for ${functionName}, attempting session refresh...`);
-            const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        if (error) {
+            console.error(`❌ Edge Function Error [${functionName}]:`, error);
 
-            if (!refreshError && refreshData.session) {
-                console.log("✅ Session refreshed, retrying fetch with new token...");
-
-                const retryHeaders = {
-                    ...headers,
-                    'Authorization': `Bearer ${refreshData.session.access_token}`
-                };
-
-                response = await fetch(url, {
+            // Retry once on 401
+            const status = (error as any).status || (error as any).context?.status;
+            if (status === 401) {
+                console.log("🔄 401 detected, attempting session refresh and retry...");
+                await supabase.auth.refreshSession();
+                const { data: retryData, error: retryError } = await supabase.functions.invoke(functionName, {
                     method,
-                    headers: retryHeaders,
-                    body: data ? JSON.stringify(data) : undefined
+                    body: data,
                 });
+
+                if (!retryError) {
+                    console.log("🎊 Retry Success!");
+                    return retryData;
+                }
+                throw new Error(retryError.message || `Failed to call ${functionName} after retry`);
             }
+            throw new Error(error.message || `Failed to call ${functionName}`);
         }
 
-        if (!response.ok) {
-            const errorBody = await response.json().catch(() => ({}));
-            console.error(`❌ Edge Function Error [${functionName}] status ${response.status}:`, errorBody);
-            throw new Error(errorBody.error || errorBody.message || `Edge Function returned a ${response.status} status code`);
+        if (responseData?.error) {
+            throw new Error(responseData.error);
         }
 
-        const result = await response.json();
-        console.log(`✅ callEdgeFunction Success [${functionName}]:`, result);
-        return result;
+        console.log(`✅ callEdgeFunction Success [${functionName}]:`, responseData);
+        return responseData;
 
     } catch (error: any) {
         console.error(`❌ callEdgeFunction Exception [${functionName}]:`, error);

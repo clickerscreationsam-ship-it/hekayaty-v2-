@@ -2,9 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3'
 import { corsHeaders } from '../_shared/cors.ts'
 
-console.log("--- CHECKOUT FUNCTION EXECUTION START ---")
-
-serve(async (req: Request) => {
+serve(async (req) => {
     // Handle CORS
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
@@ -12,15 +10,7 @@ serve(async (req: Request) => {
 
     try {
         const authHeader = req.headers.get('Authorization')
-        console.log('Auth Header present:', !!authHeader)
-
-        if (!authHeader) {
-            console.error('No Authorization header provided')
-            return new Response(
-                JSON.stringify({ error: 'Unauthorized: Missing token' }),
-                { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-        }
+        if (!authHeader) throw new Error('Unauthorized: Missing token')
 
         const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -28,26 +18,23 @@ serve(async (req: Request) => {
         // Create admin client
         const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
-        // Verify user with token explicitly
-        const token = authHeader.replace('Bearer ', '')
-        console.log('Token length:', token.length)
-
+        // Verify user with token explicitly (proven method in this project)
+        const token = authHeader.replace(/Bearer /i, '')
         const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token)
 
         if (authError || !authUser) {
-            console.error('Auth verification failed. Error:', authError?.message, 'User:', !!authUser)
+            console.error('Auth verification failed:', authError?.message || 'No user found')
             return new Response(
                 JSON.stringify({
                     error: 'Unauthorized: Invalid session',
-                    details: authError?.message || 'No user found in session',
-                    code: 'AUTH_VERIFICATION_FAILED'
+                    details: authError?.message || 'No user found'
                 }),
                 { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
 
         const user = authUser;
-        console.log('✅ User verified successfully:', user.id)
+        console.log('✅ User verified:', user.id)
 
         // Parse request body
         const body = await req.json()
