@@ -141,7 +141,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
                       {t("nav.login")}
                     </Button>
                   </Link>
-                  <Link href="/auth" className="hidden sm:block">
+                  <Link href="/auth?mode=register" className="hidden sm:block">
                     <Button className="h-9 bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg shadow-primary/10 transition-all touch-target px-6">
                       {t("nav.getStarted")}
                     </Button>
@@ -232,7 +232,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
                     {t("nav.login")}
                   </Link>
                   <Link
-                    href="/auth"
+                    href="/auth?mode=register"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Button className="w-full bg-primary hover:bg-primary/90 text-white touch-target">

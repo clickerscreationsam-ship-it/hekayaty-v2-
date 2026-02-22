@@ -37,6 +37,21 @@ export default function AuthPage() {
     const [location, setLocation] = useLocation();
     const { user, loginMutation, registerMutation } = useAuth();
 
+    // Parse query params to set default tab
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get("mode") || "login";
+    const [activeTab, setActiveTab] = useState(mode === "register" ? "register" : "login");
+
+    // Sync state with URL mode if it changes
+    useEffect(() => {
+        const currentMode = new URLSearchParams(window.location.search).get("mode");
+        if (currentMode === "register") {
+            setActiveTab("register");
+        } else if (currentMode === "login") {
+            setActiveTab("login");
+        }
+    }, [window.location.search]);
+
     // Navigate when user becomes available (after login/signup)
     useEffect(() => {
         console.log("🔍 AuthPage useEffect - user:", user);
@@ -90,7 +105,7 @@ export default function AuthPage() {
             {/* Right: Forms */}
             <div className="flex items-center justify-center p-6 pt-24 bg-background">
                 <div className="w-full max-w-md space-y-6">
-                    <Tabs defaultValue="login" className="w-full">
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="grid w-full grid-cols-2 mb-8">
                             <TabsTrigger value="login">Log In</TabsTrigger>
                             <TabsTrigger value="register">Sign Up</TabsTrigger>

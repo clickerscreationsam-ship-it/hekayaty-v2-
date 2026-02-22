@@ -283,7 +283,7 @@ export default function Home() {
             <p className="text-xl text-white font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mb-10">
               {t("home.cta.subtitle")}
             </p>
-            <Link href="/auth">
+            <Link href="/auth?mode=register">
               <button className="px-8 py-4 rounded-xl bg-foreground text-background font-bold text-lg hover:scale-105 transition-transform">
                 {t("home.cta.button")}
               </button>
