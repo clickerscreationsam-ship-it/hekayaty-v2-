@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 
 export interface PrivateChat {
     id: string;
@@ -132,19 +133,7 @@ export function usePrivateChat(chatId: string | null) {
         mutationFn: async (content: string) => {
             if (!user || !chatId) throw new Error("Unauthorized");
 
-            const { error } = await supabase
-                .from('private_chat_messages')
-                .insert({
-                    chat_id: chatId,
-                    sender_id: user.id,
-                    content
-                });
-
-            if (error) throw error;
-
-            // Update chat timestamp
-            await supabase.from('private_chats').update({ updated_at: new Date().toISOString() }).eq('id', chatId);
-
+            await apiRequest("POST", "/api/chat/messages", { chatId, content });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['private-messages', chatId] });
@@ -160,25 +149,9 @@ export function usePrivateChat(chatId: string | null) {
         mutationFn: async (artistId: string) => {
             if (!user) throw new Error("Unauthorized");
 
-            // Check existing
-            const { data: existing } = await supabase
-                .from('private_chats')
-                .select('id')
-                .eq('user_id', user.id)
-                .eq('artist_id', artistId)
-                .single();
-
-            if (existing) return existing.id;
-
-            // Create new
-            const { data: newChat, error } = await supabase
-                .from('private_chats')
-                .insert({ user_id: user.id, artist_id: artistId })
-                .select()
-                .single();
-
-            if (error) throw error;
-            return newChat.id;
+            const res = await apiRequest("POST", "/api/chat/start", { artistId });
+            const data = await res.json();
+            return data.id;
         }
     });
 

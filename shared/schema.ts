@@ -399,6 +399,43 @@ export const designMessages = pgTable("design_messages", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(), // Recipient
+  actorId: text("actor_id"), // Triggerer (optional)
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  type: text("type").notNull(), // commerce, content, social, creator, engagement, store
+  priority: text("priority").notNull().default("low"), // low, medium, high
+  link: text("link"), // Deep link URL
+  isRead: boolean("is_read").default(false),
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const notificationSettings = pgTable("notification_settings", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull().unique(),
+  emailNotifications: boolean("email_notifications").default(true),
+  pushNotifications: boolean("push_notifications").default(true),
+  categories: jsonb("categories").$type<{
+    commerce: boolean;
+    content: boolean;
+    social: boolean;
+    creator: boolean;
+    engagement: boolean;
+    store: boolean;
+  }>().default({
+    commerce: true,
+    content: true,
+    social: true,
+    creator: true,
+    engagement: true,
+    store: true,
+  }),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // === SCHEMAS & TYPES ===
 
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
@@ -425,6 +462,9 @@ export const insertDesignRequestSchema = createInsertSchema(designRequests, {
   deadline: z.string().optional(),
 }).omit({ id: true, createdAt: true, updatedAt: true, clientId: true });
 export const insertDesignMessageSchema = createInsertSchema(designMessages).omit({ id: true, createdAt: true });
+
+export const insertNotificationSchema = createInsertSchema(notifications).omit({ id: true, createdAt: true });
+export const insertNotificationSettingsSchema = createInsertSchema(notificationSettings).omit({ id: true, updatedAt: true });
 
 
 export type User = typeof users.$inferSelect;
@@ -490,6 +530,11 @@ export type CollectionItem = typeof collectionItems.$inferSelect;
 export type InsertCollectionItem = z.infer<typeof insertCollectionItemSchema>;
 export type Purchase = typeof purchases.$inferSelect;
 export type InsertPurchase = z.infer<typeof insertPurchaseSchema>;
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type NotificationSettings = typeof notificationSettings.$inferSelect;
+export type InsertNotificationSettings = z.infer<typeof insertNotificationSettingsSchema>;
 
 // Request Types
 export type CreateProductRequest = InsertProduct & { variants?: InsertVariant[] };

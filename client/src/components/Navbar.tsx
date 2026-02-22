@@ -5,7 +5,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { OrderNotificationDrawer } from "./OrderNotificationDrawer";
+import { NotificationBell } from "./NotificationBell";
 import { useState } from "react";
 import { useAdminPrivateMessages } from "@/hooks/use-admin-system";
 
@@ -82,7 +82,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
             {/* Utility Group */}
             <div className="flex items-center gap-1 sm:gap-2 mr-1 sm:mr-2 pr-1 sm:pr-2 border-r border-white/5">
               <LanguageSwitcher />
-              {user && <OrderNotificationDrawer />}
+              {user && <NotificationBell />}
               {user && (user.role === 'writer' || user.role === 'artist' || user.role === 'admin') && (
                 <Link href={user.role === 'admin' ? "/admin" : "/dashboard?tab=admin_messages"}>
                   <Button variant="ghost" size="icon" className="relative h-9 w-9 text-foreground hover:text-primary transition-colors touch-target">

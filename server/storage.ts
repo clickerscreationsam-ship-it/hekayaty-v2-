@@ -3,7 +3,8 @@ import {
   type Coupon, type InsertCoupon, type Order, type InsertOrder, type OrderItem,
   type CartItem, type InsertCartItem, type Variant, type InsertVariant,
   type Earning, type InsertEarning, type Payout, type InsertPayout,
-  type ShippingRate, type InsertShippingRate, type ShippingAddress, type InsertShippingAddress
+  type ShippingRate, type InsertShippingRate, type ShippingAddress, type InsertShippingAddress,
+  type Notification, type InsertNotification, type NotificationSettings, type InsertNotificationSettings
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -90,6 +91,14 @@ export interface IStorage {
   // Shipping Addresses
   getShippingAddresses(userId: string): Promise<ShippingAddress[]>;
   createShippingAddress(address: InsertShippingAddress): Promise<ShippingAddress>;
+
+  // Notifications
+  getNotifications(userId: string): Promise<Notification[]>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  markNotificationRead(id: number): Promise<void>;
+  markAllNotificationsRead(userId: string): Promise<void>;
+  getNotificationSettings(userId: string): Promise<NotificationSettings>;
+  updateNotificationSettings(userId: string, updates: Partial<NotificationSettings>): Promise<NotificationSettings>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -407,6 +416,117 @@ export class DatabaseStorage implements IStorage {
     const { data, error } = await supabaseAdmin.from('shipping_addresses').insert({ ...address, createdAt: new Date() }).select().single();
     if (error) throw error;
     return data as ShippingAddress;
+  }
+
+  // Notifications
+  async getNotifications(userId: string): Promise<Notification[]> {
+    const { data, error } = await supabaseAdmin
+      .from('notifications')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    if (error) return [];
+    return data.map((n: any) => ({
+      ...n,
+      userId: n.user_id,
+      actorId: n.actor_id,
+      isRead: n.is_read,
+      createdAt: n.created_at
+    })) as Notification[];
+  }
+
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    const { data, error } = await supabaseAdmin
+      .from('notifications')
+      .insert({
+        user_id: notification.userId,
+        actor_id: notification.actorId,
+        title: notification.title,
+        content: notification.content,
+        type: notification.type,
+        priority: notification.priority,
+        link: notification.link,
+        metadata: notification.metadata,
+        is_read: notification.isRead || false,
+        created_at: new Date()
+      })
+      .select()
+      .single();
+    if (error) throw error;
+    return {
+      ...data,
+      userId: data.user_id,
+      actorId: data.actor_id,
+      isRead: data.is_read,
+      createdAt: data.created_at
+    } as Notification;
+  }
+
+  async markNotificationRead(id: number): Promise<void> {
+    await supabaseAdmin.from('notifications').update({ is_read: true }).eq('id', id);
+  }
+
+  async markAllNotificationsRead(userId: string): Promise<void> {
+    await supabaseAdmin.from('notifications').update({ is_read: true }).eq('user_id', userId);
+  }
+
+  async getNotificationSettings(userId: string): Promise<NotificationSettings> {
+    const { data, error } = await supabaseAdmin
+      .from('notification_settings')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !data) {
+      // Create default settings if not exists
+      const { data: defaults, error: createError } = await supabaseAdmin
+        .from('notification_settings')
+        .insert({ user_id: userId })
+        .select()
+        .single();
+      if (createError) throw createError;
+      return {
+        ...defaults,
+        userId: defaults.user_id,
+        emailNotifications: defaults.email_notifications,
+        pushNotifications: defaults.push_notifications,
+        updatedAt: defaults.updated_at
+      } as NotificationSettings;
+    }
+    return {
+      ...data,
+      userId: data.user_id,
+      emailNotifications: data.email_notifications,
+      pushNotifications: data.push_notifications,
+      updatedAt: data.updated_at
+    } as NotificationSettings;
+  }
+
+  async updateNotificationSettings(userId: string, updates: Partial<NotificationSettings>): Promise<NotificationSettings> {
+    const dbUpdates: any = { ...updates };
+    if (updates.emailNotifications !== undefined) dbUpdates.email_notifications = updates.emailNotifications;
+    if (updates.pushNotifications !== undefined) dbUpdates.push_notifications = updates.pushNotifications;
+    dbUpdates.updated_at = new Date();
+
+    // Remove camelCase keys
+    delete dbUpdates.emailNotifications;
+    delete dbUpdates.pushNotifications;
+    delete dbUpdates.userId;
+
+    const { data, error } = await supabaseAdmin
+      .from('notification_settings')
+      .update(dbUpdates)
+      .eq('user_id', userId)
+      .select()
+      .single();
+    if (error) throw error;
+    return {
+      ...data,
+      userId: data.user_id,
+      emailNotifications: data.email_notifications,
+      pushNotifications: data.push_notifications,
+      updatedAt: data.updated_at
+    } as NotificationSettings;
   }
 }
 

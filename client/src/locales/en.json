@@ -9,7 +9,10 @@
         "read": "Read",
         "download": "Download",
         "all": "All",
-        "delete": "Delete"
+        "delete": "Delete",
+        "viewDetails": "View Details",
+        "high": "Urgent",
+        "loading": "Loading..."
     },
     "loading": "Loading...",
     "nav": {
@@ -416,5 +419,30 @@
         "t5_2": "Any attempt to manipulate the system or fraud will lead to immediate legal action.",
         "t6_title": "6. Amendments",
         "t6_1": "We reserve the right to modify this policy and terms at any time, with users informed of significant changes."
+    },
+    "notifications": {
+        "title": "Notifications",
+        "pageTitle": "Notifications Center",
+        "pageSubtitle": "Stay updated with your orders, sales, and community interactions.",
+        "markAllRead": "Mark all read",
+        "viewAll": "View all notifications",
+        "empty": "No notifications yet",
+        "emptyTitle": "Peace and Quiet",
+        "emptyDescription": "You don't have any notifications in this category right now.",
+        "searchPlaceholder": "Search notifications...",
+        "settings": "Settings",
+        "tipsTitle": "Notification Preferences",
+        "configure": "Configure Alerts",
+        "filter": {
+            "all": "All",
+            "unread": "Unread",
+            "commerce": "Commerce",
+            "social": "Social",
+            "creator": "Creator",
+            "store": "Store"
+        },
+        "priority": {
+            "high": "High"
+        }
     }
 }

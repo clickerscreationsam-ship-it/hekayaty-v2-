@@ -24,6 +24,35 @@ export async function registerRoutes(
   // Setup Real Auth
   setupAuth(app);
 
+  // Helper function for creating notifications
+  const notify = async (userId: string, title: string, content: string, type: string, priority: string = 'low', link?: string, metadata: any = {}, actorId?: string) => {
+    try {
+      await storage.createNotification({
+        userId,
+        actorId: actorId || null,
+        title,
+        content,
+        type,
+        priority,
+        link: link || null,
+        metadata,
+        isRead: false
+      });
+
+      // Handle Email Alerts based on user settings
+      const settings = await storage.getNotificationSettings(userId);
+      const isEnabledForCategory = (settings?.categories as any)?.[type] !== false;
+
+      if (settings?.emailNotifications && isEnabledForCategory) {
+        // Integration point for email service (e.g. Resend, SendGrid)
+        // For now logging to console to demonstrate the flow
+        console.log(`[NOTIFY][EMAIL] Alerting user ${userId} about: ${title}`);
+      }
+    } catch (e) {
+      console.error("[NotificationError]", e);
+    }
+  };
+
   // DEV AUTH OVERRIDE: Trust X-User-ID header for prototyping compatibility between Supabase frontend and Express backend
   app.use((req, res, next) => {
     // Skip static files or if already authenticated
@@ -106,7 +135,114 @@ export async function registerRoutes(
     const userId = (req.user as any).id;
     const { creatorId } = req.body;
     await storage.followUser(userId, creatorId);
+
+    // Notify Creator
+    const user = await storage.getUser(userId);
+    await notify(
+      creatorId,
+      "New Follower!",
+      `${user?.displayName || user?.username} started following you.`,
+      'social',
+      'medium',
+      `/profile/${user?.username}`,
+      { followerId: userId },
+      userId
+    );
+
     res.sendStatus(200);
+  });
+
+  // --- PRIVATE CHATS & STORE MESSAGES ---
+  app.post("/api/chat/start", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+    const { artistId } = req.body;
+
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseUrl = process.env.SUPABASE_URL!;
+      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      // 1. Check existing
+      const { data: existing } = await supabase
+        .from('private_chats')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('artist_id', artistId)
+        .single();
+
+      if (existing) return res.json(existing);
+
+      // 2. Create new
+      const { data: newChat, error } = await supabase
+        .from('private_chats')
+        .insert({ user_id: userId, artist_id: artistId })
+        .select()
+        .single();
+
+      if (error) throw error;
+      res.json(newChat);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to start chat" });
+    }
+  });
+
+  app.post("/api/chat/messages", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const senderId = (req.user as any).id;
+    const senderName = (req.user as any).display_name || (req.user as any).username;
+    const { chatId, content } = req.body;
+
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseUrl = process.env.SUPABASE_URL!;
+      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      // 1. Get chat info to find recipient
+      const { data: chat } = await supabase
+        .from('private_chats')
+        .select('*')
+        .eq('id', chatId)
+        .single();
+
+      if (!chat) return res.status(404).json({ message: "Chat not found" });
+
+      const recipientId = senderId === chat.user_id ? chat.artist_id : chat.user_id;
+
+      // 2. Insert message
+      const { data: msg, error } = await supabase
+        .from('private_chat_messages')
+        .insert({
+          chat_id: chatId,
+          sender_id: senderId,
+          content
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // 3. Update chat timestamp
+      await supabase.from('private_chats').update({ updated_at: new Date() }).eq('id', chatId);
+
+      // 4. Notify Recipient
+      await notify(
+        recipientId,
+        "New Store Message",
+        `You have a new message from ${senderName}: "${content.substring(0, 50)}${content.length > 50 ? '...' : ''}"`,
+        'store',
+        'high',
+        `/dashboard?tab=messages&chatId=${chatId}`,
+        { chatId, messageId: msg.id },
+        senderId
+      );
+
+      res.json(msg);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to send message" });
+    }
   });
 
   app.post("/api/social/unfollow", async (req, res) => {
@@ -443,6 +579,31 @@ export async function registerRoutes(
         .delete()
         .eq('user_id', userId);
 
+      // 8. Notifications
+      // To Buyer
+      await notify(
+        userId,
+        "Order Placed",
+        `Your order #${order.id} for ${items.length} item(s) has been placed successfully.`,
+        'commerce',
+        'high',
+        `/orders/${order.id}`,
+        { orderId: order.id }
+      );
+
+      // To Sellers
+      for (const [creatorId, amount] of Array.from(earningsByCreator.entries())) {
+        await notify(
+          creatorId,
+          "New Sale!",
+          `You have a new sale worth EGP ${amount}. Check your creator dashboard.`,
+          'creator',
+          'high',
+          '/dashboard/orders',
+          { orderId: order.id, amount }
+        );
+      }
+
       res.status(201).json(order);
     } catch (error) {
       console.error("Order creation error:", error);
@@ -542,6 +703,31 @@ export async function registerRoutes(
       if (updateError) {
         console.error("Order update error:", updateError);
         return res.status(500).json({ message: "Failed to update order" });
+      }
+
+      // 6. Notifications
+      // To Buyer
+      await notify(
+        order.user_id,
+        "Payment Verified",
+        `Payment for order #${orderId} has been verified. You can now access your digital items.`,
+        'commerce',
+        'high',
+        `/orders/${orderId}`,
+        { orderId }
+      );
+
+      // To Sellers (Payment confirmed)
+      for (const creatorId of Array.from(itemsByCreator.keys())) {
+        await notify(
+          creatorId,
+          "Payment Confirmed",
+          `Payment for order #${orderId} has been confirmed. You will receive your earnings soon.`,
+          'creator',
+          'high',
+          '/dashboard/orders',
+          { orderId }
+        );
       }
 
       res.json(updatedOrder);
@@ -759,6 +945,23 @@ export async function registerRoutes(
     try {
       const input = api.reviews.create.input.parse(req.body);
       const review = await storage.createReview(input);
+
+      // Notify Content Creator
+      const product = await storage.getProduct(input.productId);
+      if (product) {
+        const reviewer = await storage.getUser(input.userId);
+        await notify(
+          product.writerId,
+          "New Review",
+          `${reviewer?.displayName || 'A reader'} left a ${input.rating}-star review on your story "${product.title}".`,
+          'content',
+          'medium',
+          `/story/${product.id}`,
+          { productId: product.id, rating: input.rating },
+          input.userId
+        );
+      }
+
       res.status(201).json(review);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -1306,6 +1509,19 @@ export async function registerRoutes(
         return res.status(500).json({ message: error.message, detail: error.details, code: error.code });
       }
 
+      // Notify Artist
+      const client = await storage.getUser(clientId);
+      await notify(
+        artistId,
+        "New Design Inquiry",
+        `${client?.displayName || 'A client'} sent you a new design inquiry: "${title}"`,
+        'store',
+        'high',
+        `/creative-hub/requests/${data.id}`,
+        { requestId: data.id },
+        clientId
+      );
+
       res.json(data);
     } catch (err: any) {
       console.error("[DesignRequests] Crash:", err);
@@ -1414,6 +1630,30 @@ export async function registerRoutes(
       .single();
 
     if (error) return res.status(500).json({ message: error.message });
+
+    // Notify Other Party of update
+    const notificationRecipient = isArtist ? request.client_id : request.artist_id;
+    const actorName = (req.user as any).display_name || (req.user as any).username;
+
+    let notificationTitle = "Project Updated";
+    let notificationContent = `${actorName} updated the project "${request.title}"`;
+
+    if (status && status !== request.status) {
+      notificationTitle = "Project Status Changed";
+      notificationContent = `${actorName} changed the status of "${request.title}" to ${status}`;
+    }
+
+    await notify(
+      notificationRecipient,
+      notificationTitle,
+      notificationContent,
+      'store',
+      'high',
+      `/creative-hub/requests/${request.id}`,
+      { requestId: request.id, status },
+      userId
+    );
+
     res.json(data);
   });
 
@@ -1457,7 +1697,62 @@ export async function registerRoutes(
     }).select().single();
 
     if (error) return res.status(500).json({ message: error.message });
+
+    // Notify Recipient
+    // Let's just fetch from supabase here since storage might not have it yet
+    const { data: reqData } = await supabase.from('design_requests').select('artist_id, client_id, title').eq('id', requestId).single();
+    if (reqData) {
+      const recipientId = senderId === reqData.artist_id ? reqData.client_id : reqData.artist_id;
+      const senderName = (req.user as any).display_name || (req.user as any).username;
+      await notify(
+        recipientId,
+        "New Message",
+        `You have a new message from ${senderName} regarding "${reqData.title}"`,
+        'store',
+        'medium',
+        `/creative-hub/requests/${requestId}`,
+        { requestId },
+        senderId
+      );
+    }
+
     res.json(data);
+  });
+
+  // === NOTIFICATIONS ===
+
+  app.get("/api/notifications", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+    const notifications = await storage.getNotifications(userId);
+    res.json(notifications);
+  });
+
+  app.patch("/api/notifications/:id/read", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    await storage.markNotificationRead(Number(req.params.id));
+    res.sendStatus(200);
+  });
+
+  app.post("/api/notifications/read-all", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+    await storage.markAllNotificationsRead(userId);
+    res.sendStatus(200);
+  });
+
+  app.get("/api/notification-settings", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+    const settings = await storage.getNotificationSettings(userId);
+    res.json(settings);
+  });
+
+  app.patch("/api/notification-settings", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+    const settings = await storage.updateNotificationSettings(userId, req.body);
+    res.json(settings);
   });
 
   return httpServer;

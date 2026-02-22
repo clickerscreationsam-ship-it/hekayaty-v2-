@@ -33,6 +33,7 @@ const CollectionDetails = lazy(() => import("@/pages/CollectionDetails"));
 const ReadBook = lazy(() => import("@/pages/ReadBook"));
 const Legal = lazy(() => import("@/pages/Legal"));
 const HekayatyGuide = lazy(() => import("@/pages/HekayatyGuide"));
+const NotificationsPage = lazy(() => import("@/pages/NotificationsPage"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 function Router() {
@@ -60,6 +61,7 @@ function Router() {
         <Route path="/read/:id" component={ReadBook} />
         <Route path="/legal" component={Legal} />
         <Route path="/guide" component={HekayatyGuide} />
+        <Route path="/notifications" component={NotificationsPage} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
