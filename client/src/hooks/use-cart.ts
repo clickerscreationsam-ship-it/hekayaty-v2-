@@ -97,9 +97,9 @@ async function callEdgeFunction(
     try {
         const { data: { session } } = await supabase.auth.getSession();
 
-        // Prepare headers
+        // Prepare headers - Match the working pattern in use-admin.ts (No explicit apikey if Authorization is present)
         const headers: Record<string, string> = {
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+            'Content-Type': 'application/json'
         };
 
         if (session?.access_token) {
@@ -115,7 +115,6 @@ async function callEdgeFunction(
         if (error) {
             // Log full error details for debugging
             console.error(`❌ Edge Function Error [${functionName}]:`, error);
-            console.error('Full error:', JSON.stringify(error, null, 2));
 
             // Only retry on ACTUAL 401 unauthorized errors
             const status = (error as any).status || (error as any).context?.status;
@@ -132,7 +131,7 @@ async function callEdgeFunction(
                     console.log("✅ Session refreshed, retrying invoke...");
 
                     const retryHeaders: Record<string, string> = {
-                        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${refreshData.session.access_token}`
                     };
 
