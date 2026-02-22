@@ -84,6 +84,32 @@ function AppContent() {
     }
   }, [i18n.language]);
 
+  // Handle Chunk Load Errors (New Version Updates)
+  useEffect(() => {
+    const handleChunkError = (e: any) => {
+      const message = e.message || (e.reason && e.reason.message);
+      const isChunkError =
+        message?.includes("Failed to fetch dynamically imported module") ||
+        message?.includes("Importing a module script failed") ||
+        message?.includes("Loading chunk");
+
+      if (isChunkError) {
+        console.warn("New version detected or connection interrupted. Refreshing for latest site...");
+        window.location.reload();
+      }
+    };
+
+    window.addEventListener("error", handleChunkError, true);
+    window.addEventListener("unhandledrejection", handleChunkError);
+    window.addEventListener("vite:preloadError", handleChunkError);
+
+    return () => {
+      window.removeEventListener("error", handleChunkError, true);
+      window.removeEventListener("unhandledrejection", handleChunkError);
+      window.removeEventListener("vite:preloadError", handleChunkError);
+    };
+  }, []);
+
   return (
     <>
       <Router />
