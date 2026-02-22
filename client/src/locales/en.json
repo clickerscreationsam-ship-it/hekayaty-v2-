@@ -13,8 +13,9 @@
     },
     "loading": "Loading...",
     "nav": {
-        "marketplace": "Marketplace",
-        "assets": "Art & Assets",
+        "marketplace": "Story Shop",
+        "assets": "Design Assets",
+        "merchandise": "Creator Merch",
         "worldbuilders": "Worldbuilders",
         "writers": "For Writers",
         "admin": "Admin",
@@ -262,16 +263,23 @@
         "assetsSubtitle": "Premium resources to build your world. Book covers, maps, and character art.",
         "searchPlaceholder": "Search by title, author...",
         "assetsSearchPlaceholder": "Search for covers, textures...",
+        "merchandiseSearchPlaceholder": "Search for apparel, gear...",
         "promotionalDesc": "This item is for showcase only and cannot be purchased.",
         "allGenres": "All Genres",
         "allCategories": "All Categories",
         "noStories": "No stories found",
         "noAssets": "No assets found",
+        "noMerchandise": "No merchandise found",
         "tryAdjusting": "Try adjusting your search or filters.",
         "tabs": {
             "stories": "Stories",
-            "assets": "Design Assets"
-        }
+            "assets": "Design Assets",
+            "merchandise": "Merchandise",
+            "collections": "Collections",
+            "serialized": "Ongoing Series"
+        },
+        "merchandiseTitle": "Creator Merchandise",
+        "merchandiseSubtitle": "Support your favorite creators with exclusive apparel, collectibles, and more."
     },
     "writerStore": {
         "sales": "Sales",

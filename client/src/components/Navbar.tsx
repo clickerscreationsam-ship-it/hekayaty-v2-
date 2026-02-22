@@ -23,6 +23,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
 
   const navItems = [
     { label: t("nav.marketplace"), href: "/marketplace", icon: ShoppingBag },
+    { label: t("nav.merchandise"), href: "/merchandise", icon: Store },
     { label: t("nav.assets"), href: "/assets", icon: Palette },
     { label: t("nav.worldbuilders"), href: "/worldbuilders", icon: Users },
     { label: t("nav.guide"), href: "/guide", icon: HelpCircle },

@@ -52,6 +52,7 @@
     "nav": {
         "marketplace": "المتجر",
         "assets": "الفنون والأصول",
+        "merchandise": "منتجات المبدعين",
         "worldbuilders": "بناة العوالم",
         "writers": "للكتاب",
         "admin": "الإدارة",
@@ -543,16 +544,23 @@
         "assetsSubtitle": "موارد ممتازة لبناء عالمك. أغلفة كتب، خرائط، وفنون شخصيات.",
         "searchPlaceholder": "ابحث بالعنوان، المؤلف...",
         "assetsSearchPlaceholder": "ابحث عن الأغلفة، الأنسجة...",
+        "merchandiseSearchPlaceholder": "ابحث عن الملابس، المقتنيات...",
         "promotionalDesc": "هذا المحتوى للعرض فقط ولا يمكن شراؤه.",
         "allGenres": "جميع الأنواع",
         "allCategories": "جميع الفئات",
         "noStories": "لم يتم العثور على قصص",
         "noAssets": "لم يتم العثور على أصول",
+        "noMerchandise": "لم يتم العثور على منتجات",
         "tryAdjusting": "حاول تعديل بحثك أو الفلاتر.",
         "tabs": {
             "stories": "القصص",
-            "assets": "أصول التصميم"
-        }
+            "assets": "أصول التصميم",
+            "merchandise": "المنتجات (ميرش)",
+            "collections": "المجموعات",
+            "serialized": "سلاسل مستمرة"
+        },
+        "merchandiseTitle": "متجر منتجات المبدعين",
+        "merchandiseSubtitle": "ادعم مبدعيك المفضلين من خلال شراء منتجاتهم الحصرية ومقتنياتهم."
     },
     "writerStore": {
         "sales": "المبيعات",

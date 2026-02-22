@@ -45,6 +45,7 @@ function Router() {
         <Route path="/reset-password" component={ResetPassword} />
         <Route path="/marketplace" component={Marketplace} />
         <Route path="/assets" component={Marketplace} />
+        <Route path="/merchandise" component={Marketplace} />
         <Route path="/worldbuilders" component={Writers} />
         <Route path="/writer/:username" component={WriterStore} />
         <Route path="/dashboard" component={Dashboard} />
