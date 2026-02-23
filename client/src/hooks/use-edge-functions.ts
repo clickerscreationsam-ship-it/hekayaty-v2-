@@ -53,11 +53,16 @@ export async function callEdgeFunction(
             headers['Authorization'] = `Bearer ${session.access_token}`;
         }
 
-        const { data: responseData, error } = await supabase.functions.invoke(functionName, {
+        const invokeOptions: any = {
             method,
-            body: data,
             headers
-        });
+        };
+
+        if (data && method !== 'GET') {
+            invokeOptions.body = data;
+        }
+
+        const { data: responseData, error } = await supabase.functions.invoke(functionName, invokeOptions);
 
         if (error) {
             console.error(`❌ Edge Function Error [${functionName}]:`, error);
