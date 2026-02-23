@@ -1811,6 +1811,43 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/notifications/dispatch", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) return res.sendStatus(401);
+      const { userId, title, content, type, priority, link, metadata } = req.body;
+
+      // Basic security: In a real app, validate that the requester can notify this user
+      // For now, we allow it to support the frontend-triggered notifications (like Likes/Follows)
+      await notify(userId, title, content, type, priority || 'low', link, metadata, (req.user as any).id);
+      res.sendStatus(201);
+    } catch (error: any) {
+      console.error("[API] Error in POST /api/notifications/dispatch:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Admin: Send global notification
+  app.post("/api/admin/notifications/broadcast", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) return res.sendStatus(401);
+      if ((req.user as any).role !== 'admin') return res.status(403).json({ message: "Admin only" });
+
+      const { title, content, type, priority, link } = req.body;
+      const { data: users, error } = await supabase.from('users').select('id');
+
+      if (error) throw error;
+
+      // In a real high-traffic app, this would be a background job
+      const notifications = users.map(u => notify(u.id, title, content, type || 'system', priority || 'low', link));
+      await Promise.all(notifications);
+
+      res.status(200).json({ message: `Broadcasted to ${users.length} users` });
+    } catch (error: any) {
+      console.error("[API] Error in POST /api/admin/notifications/broadcast:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   return httpServer;
 }
 

@@ -355,50 +355,77 @@ function MessagingAdmin({ sellers }: { sellers: any[] }) {
                 <CardHeader className="bg-white/5 border-b border-white/5">
                     <CardTitle className="flex items-center gap-2">
                         <Megaphone className="w-5 h-5 text-accent" />
-                        Writers Announcements
+                        Platform Global Broadcast
                     </CardTitle>
-                    <CardDescription>Broadcast messages to ALL writers and artists.</CardDescription>
+                    <CardDescription>Send a real-time notification to EVERY user on the platform.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
                     <div className="space-y-4">
                         <Input
-                            placeholder="Announcement Title"
+                            placeholder="Notification Title (e.g. Platform Update)"
                             className="bg-white/5 border-white/10 text-white"
                             value={annTitle}
                             onChange={(e) => setAnnTitle(e.target.value)}
                         />
                         <Textarea
-                            placeholder="Announcement content..."
-                            className="bg-white/5 border-white/10 text-white min-h-[100px]"
+                            placeholder="Notification content..."
+                            className="bg-white/5 border-white/10 text-white min-h-[80px]"
                             value={annContent}
                             onChange={(e) => setAnnContent(e.target.value)}
                         />
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                id="pin"
-                                checked={isPinned}
-                                onChange={(e) => setIsPinned(e.target.checked)}
-                                className="accent-primary"
+                        <div className="grid grid-cols-2 gap-4">
+                            <select
+                                className="bg-white/5 border border-white/10 rounded-md p-2 text-xs text-white outline-none"
+                                id="priority-select"
+                            >
+                                <option value="low" className="bg-slate-900">Low Priority (Silent)</option>
+                                <option value="medium" className="bg-slate-900">Medium Priority</option>
+                                <option value="high" className="bg-slate-900" selected>High Priority (Toast)</option>
+                            </select>
+                            <Input
+                                placeholder="Deep Link (optional)"
+                                className="bg-white/5 border-white/10 text-white text-xs"
+                                id="link-input"
                             />
-                            <label htmlFor="pin" className="text-sm text-muted-foreground flex items-center gap-1 cursor-pointer">
-                                <Pin className="w-3 h-3" /> Pin this announcement
-                            </label>
                         </div>
                         <Button
                             variant="secondary"
-                            className="w-full gap-2 border border-accent/20"
-                            disabled={!annTitle || !annContent || createAnnouncement.isPending}
-                            onClick={handleCreateAnn}
+                            className="w-full gap-2 border border-primary/50 bg-primary/10 text-primary hover:bg-primary/20"
+                            onClick={async () => {
+                                if (!annTitle || !annContent) return;
+                                const priority = (document.getElementById('priority-select') as HTMLSelectElement).value;
+                                const link = (document.getElementById('link-input') as HTMLInputElement).value;
+
+                                try {
+                                    const res = await fetch('/api/admin/notifications/broadcast', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            title: annTitle,
+                                            content: annContent,
+                                            type: 'system',
+                                            priority,
+                                            link
+                                        })
+                                    });
+                                    if (res.ok) {
+                                        alert("Broadcast sent successfully!");
+                                        setAnnTitle("");
+                                        setAnnContent("");
+                                    }
+                                } catch (e) {
+                                    console.error(e);
+                                }
+                            }}
                         >
-                            <Megaphone className="w-4 h-4" />
-                            {createAnnouncement.isPending ? "Publishing..." : "Broadcast to Writers"}
+                            <Send className="w-4 h-4" />
+                            Broadcast to All Users
                         </Button>
                     </div>
 
                     <div className="mt-8 border-t border-white/5 pt-6">
-                        <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-4">Past Announcements</h4>
-                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-4">Past Announcements (Writers)</h4>
+                        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                             {announcements?.map((ann: any) => (
                                 <div key={ann.id} className="p-4 rounded-xl bg-white/5 border border-white/10 relative group">
                                     <div className="flex justify-between items-start mb-2">

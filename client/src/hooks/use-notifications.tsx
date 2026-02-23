@@ -5,11 +5,14 @@ import { Notification, NotificationSettings } from "@shared/schema";
 import { useEffect } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "./use-toast";
+import { useLocation } from "wouter";
+import { ToastAction } from "@/components/ui/toast";
 
 export function useNotifications() {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const { toast } = useToast();
+    const [, setLocation] = useLocation();
 
     const { data: notifications = [], isLoading } = useQuery<Notification[]>({
         queryKey: ["/api/notifications"],
@@ -21,7 +24,6 @@ export function useNotifications() {
         enabled: !!user,
     });
 
-    // Mark single as read
     const markRead = useMutation({
         mutationFn: async (id: number) => {
             await apiRequest("PATCH", `/api/notifications/${id}/read`);
@@ -31,7 +33,6 @@ export function useNotifications() {
         },
     });
 
-    // Mark all as read
     const markAllRead = useMutation({
         mutationFn: async () => {
             await apiRequest("POST", "/api/notifications/read-all");
@@ -41,7 +42,6 @@ export function useNotifications() {
         },
     });
 
-    // Realtime subscription
     useEffect(() => {
         if (!user) return;
 
@@ -57,15 +57,27 @@ export function useNotifications() {
                 },
                 (payload) => {
                     const newNotif = payload.new as Notification;
-
-                    // Refetch to stay in sync with server state
                     queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
 
-                    // Visual toast for high priority
                     if (newNotif.priority === 'high') {
                         toast({
                             title: newNotif.title,
                             description: newNotif.content,
+                            variant: "premium",
+                            action: newNotif.link ? (
+                                <ToastAction
+                                    altText="View"
+                                    className="h-8 bg-primary text-black hover:bg-primary/90 font-bold px-3 transition-all active:scale-95 border-none"
+                                    onClick={() => {
+                                        if (newNotif.link) setLocation(newNotif.link);
+                                        markRead.mutate(newNotif.id);
+                                    }}
+                                >
+                                    {newNotif.type === 'commerce' ? 'Order' :
+                                        newNotif.type === 'store' ? 'Chat' : 'View'}
+                                </ToastAction>
+                            ) : undefined,
+                            duration: 5000,
                         });
                     }
                 }
@@ -75,7 +87,7 @@ export function useNotifications() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [user, queryClient, toast]);
+    }, [user, queryClient, toast, setLocation, markRead]);
 
     const unreadCount = notifications.filter((n) => !n.isRead).length;
 
