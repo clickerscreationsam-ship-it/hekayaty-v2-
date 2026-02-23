@@ -9,6 +9,32 @@ async function callEdgeFunction(
 ) {
     console.log(`🚀 callEdgeFunction: Calling ${functionName} [${method}]`, data);
 
+    const performRetryWithFetch = async () => {
+        console.log(`🔄 Attempting clean fetch fallback for ${functionName}...`);
+        try {
+            const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`;
+            const fetchOptions: RequestInit = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+                }
+            };
+            if (data && method !== 'GET') {
+                fetchOptions.body = JSON.stringify(data);
+            }
+            const response = await fetch(url, fetchOptions);
+            if (response.ok) {
+                console.log(`✅ Clean fetch fallback success for ${functionName}`);
+                return await response.json();
+            }
+            console.error(`❌ Clean fetch fallback failed (${response.status})`);
+        } catch (e) {
+            console.error(`❌ Exception in clean fetch fallback:`, e);
+        }
+        return null;
+    };
+
     try {
         const { data: { session } } = await supabase.auth.getSession();
 
@@ -33,42 +59,32 @@ async function callEdgeFunction(
             const errorMessage = error.message?.toLowerCase() || "";
             const isUnauthorized = status === 401 || status === 403 ||
                 errorMessage.includes("unauthorized") ||
-                errorMessage.includes("401") ||
-                errorMessage.includes("jwt");
+                errorMessage.includes("jwt") ||
+                errorMessage.includes("invalid session");
 
             if (isUnauthorized) {
-                console.log(`🔄 Unauthorized detected for ${functionName}, retrying with clean fetch fallback...`);
+                console.log(`🔄 401/Unauthorized detected for ${functionName}. Attempting session refresh...`);
 
-                try {
-                    // Fallback to pure fetch to avoid any automatic header injection by Supabase client
-                    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`;
-                    console.log(`📡 Fetching directly from: ${url}`);
+                // Strategy 1: Refresh Session
+                const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
 
-                    const fetchOptions: RequestInit = {
+                if (!refreshError && refreshData.session) {
+                    console.log(`✅ Session refreshed. Retrying ${functionName} with new token...`);
+                    const { data: retryData, error: retryError } = await supabase.functions.invoke(functionName, {
                         method,
+                        body: data,
                         headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+                            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${refreshData.session.access_token}`
                         }
-                    };
-
-                    if (data && method !== 'GET') {
-                        fetchOptions.body = JSON.stringify(data);
-                    }
-
-                    const response = await fetch(url, fetchOptions);
-                    if (response.ok) {
-                        const retryData = await response.json();
-                        console.log(`✅ Clean fetch retry success for ${functionName}`);
-                        return retryData;
-                    } else {
-                        console.error(`❌ Clean fetch retry failed with status ${response.status}`);
-                        const errorText = await response.text();
-                        console.error(`❌ Error body:`, errorText);
-                    }
-                } catch (fetchErr) {
-                    console.error(`❌ Exception during clean fetch retry for ${functionName}:`, fetchErr);
+                    });
+                    if (!retryError) return retryData;
+                    console.error(`❌ Retry with new token failed:`, retryError);
                 }
+
+                // Strategy 2: Clean Fetch Fallback (Last resort for public-accessible functions)
+                const fallbackData = await performRetryWithFetch();
+                if (fallbackData) return fallbackData;
             }
 
             throw new Error(error.message || `Failed to call ${functionName}`);
