@@ -7,20 +7,43 @@ serve(async (req) => {
         return new Response('ok', { headers: corsHeaders })
     }
 
+    console.log(`[get-user-orders] Request received: ${req.method}`)
+
     try {
         const authHeader = req.headers.get('Authorization')
-        if (!authHeader) throw new Error('Unauthorized: Missing token')
+        if (!authHeader) {
+            console.error('[get-user-orders] Missing Authorization header')
+            return new Response(JSON.stringify({ error: 'Unauthorized: Missing token' }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 401
+            })
+        }
 
-        const supabaseAdmin = createClient(
-            Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        )
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 
-        const token = authHeader.replace('Bearer ', '')
+        if (!supabaseUrl || !supabaseServiceKey) {
+            console.error('[get-user-orders] Missing env variables')
+            throw new Error('Server configuration error')
+        }
+
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+
+        // Case-insensitive Bearer check
+        const token = authHeader.replace(/^[Bb]earer\s+/, '')
+        console.log(`[get-user-orders] Verifying token (length: ${token.length})...`)
+
         const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
 
         if (authError || !user) {
-            throw new Error('Unauthorized: Invalid session')
+            console.error('[get-user-orders] Auth error:', authError?.message || 'User not found')
+            return new Response(JSON.stringify({
+                error: 'Unauthorized: Invalid session',
+                details: authError?.message
+            }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 401
+            })
         }
 
         const userId = user.id
@@ -50,7 +73,6 @@ serve(async (req) => {
         // Fetch order items for each order
         const enrichedOrders = await Promise.all(
             orders.map(async (order: any) => {
-                // Get items with product & collection info (no status_history - may not exist)
                 const { data: items, error: itemsError } = await supabaseAdmin
                     .from('order_items')
                     .select(`
@@ -95,7 +117,7 @@ serve(async (req) => {
                     creators?.forEach((c: any) => creatorsMap.set(c.id, c.display_name))
                 }
 
-                // Try to get status history - gracefully skip if table doesn't exist
+                // Try to get status history
                 let statusHistoryMap = new Map<number, any[]>()
                 try {
                     const itemIds = itemsList.map((i: any) => i.id)
@@ -116,8 +138,7 @@ serve(async (req) => {
                         })
                     }
                 } catch (_e) {
-                    // Status history table might not exist - that's fine
-                    console.log('[get-user-orders] order_status_history not available, skipping')
+                    // Status history table might not exist
                 }
 
                 const enrichedItems = itemsList.map((item: any) => {
@@ -176,10 +197,13 @@ serve(async (req) => {
         })
 
     } catch (error: any) {
-        console.error('[get-user-orders] Error:', error)
-        return new Response(JSON.stringify({ error: error.message }), {
+        console.error('[get-user-orders] Critical Error:', error)
+        return new Response(JSON.stringify({
+            error: 'Internal Server Error',
+            message: error.message
+        }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 400
+            status: 500
         })
     }
 })

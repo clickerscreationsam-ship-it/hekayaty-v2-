@@ -17,10 +17,6 @@ export function useUserOrders() {
             const { data, error } = await supabase.functions.invoke('get-user-orders', {
                 method: 'POST',
                 body: {},
-                headers: {
-                    'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${session.access_token}`
-                }
             });
 
             if (error) {
@@ -31,10 +27,6 @@ export function useUserOrders() {
                     const { data: retryData } = await supabase.functions.invoke('get-user-orders', {
                         method: 'POST',
                         body: {},
-                        headers: {
-                            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${refreshed.session.access_token}`
-                        }
                     });
                     if (retryData?.orders) return mapOrders(retryData.orders);
                 }
