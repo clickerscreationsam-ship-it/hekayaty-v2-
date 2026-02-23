@@ -30,12 +30,20 @@ async function callEdgeFunction(
             console.error(`❌ Edge Function Error [${functionName}]:`, error);
 
             const status = (error as any).status || (error as any).context?.status;
-            if (status === 401 || status === 403) {
-                console.log(`🔄 401/403 detected for ${functionName}, retrying with clean fetch fallback...`);
+            const errorMessage = error.message?.toLowerCase() || "";
+            const isUnauthorized = status === 401 || status === 403 ||
+                errorMessage.includes("unauthorized") ||
+                errorMessage.includes("401") ||
+                errorMessage.includes("jwt");
+
+            if (isUnauthorized) {
+                console.log(`🔄 Unauthorized detected for ${functionName}, retrying with clean fetch fallback...`);
 
                 try {
                     // Fallback to pure fetch to avoid any automatic header injection by Supabase client
                     const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`;
+                    console.log(`📡 Fetching directly from: ${url}`);
+
                     const fetchOptions: RequestInit = {
                         method,
                         headers: {
@@ -55,6 +63,8 @@ async function callEdgeFunction(
                         return retryData;
                     } else {
                         console.error(`❌ Clean fetch retry failed with status ${response.status}`);
+                        const errorText = await response.text();
+                        console.error(`❌ Error body:`, errorText);
                     }
                 } catch (fetchErr) {
                     console.error(`❌ Exception during clean fetch retry for ${functionName}:`, fetchErr);
