@@ -35,7 +35,15 @@ export async function callEdgeFunction(
                 console.log(`✅ Clean fetch fallback success for ${functionName}`);
                 return await response.json();
             }
-            console.error(`❌ Clean fetch fallback failed (${response.status}) for ${functionName}`);
+            // Try to extract error body even from basic fetch
+            let bodyError = "";
+            try {
+                const body = await response.json();
+                bodyError = body.error || body.details || "";
+            } catch (e) { }
+
+            console.error(`❌ Clean fetch fallback failed (${response.status}) for ${functionName}: ${bodyError}`);
+            if (bodyError) return { error: bodyError };
         } catch (e) {
             console.error(`❌ Exception in clean fetch fallback:`, e);
         }
@@ -69,10 +77,23 @@ export async function callEdgeFunction(
 
             const status = (error as any).status || (error as any).context?.status;
             const errorMessage = error.message?.toLowerCase() || "";
+
+            // Try to extract body details for better debugging
+            let bodyDetails = "";
+            if ((error as any).context && typeof (error as any).context.clone === 'function') {
+                try {
+                    const clonedRes = (error as any).context.clone();
+                    const body = await clonedRes.json();
+                    bodyDetails = body.error || body.details || "";
+                    console.log(`📦 Error body details:`, bodyDetails);
+                } catch (e) { }
+            }
+
             const isUnauthorized = status === 401 || status === 403 ||
                 errorMessage.includes("unauthorized") ||
                 errorMessage.includes("jwt") ||
-                errorMessage.includes("invalid session");
+                errorMessage.includes("invalid session") ||
+                bodyDetails.toLowerCase().includes("unauthorized");
 
             if (isUnauthorized) {
                 console.log(`🔄 401/Unauthorized detected for ${functionName}. Attempting session refresh...`);
@@ -93,7 +114,7 @@ export async function callEdgeFunction(
                     if (!retryError) return retryData;
                     console.error(`❌ Retry with new token failed:`, retryError);
 
-                    // If retry failed, try to get specific error from body
+                    // Attempt to get specific body error from retry failure
                     if ((retryError as any).context) {
                         try {
                             const body = await (retryError as any).context.json();
@@ -106,19 +127,13 @@ export async function callEdgeFunction(
 
                 // Strategy 2: Clean Fetch Fallback (Last resort)
                 const fallbackData = await performRetryWithFetch();
-                if (fallbackData) return fallbackData;
+                if (fallbackData) {
+                    if (fallbackData.error) throw new Error(fallbackData.error);
+                    return fallbackData;
+                }
             }
 
-            // Extract more details if possible from the error object
-            let finalMessage = error.message;
-            if ((error as any).context && (error as any).context.status) {
-                try {
-                    // Try to get the actual error message from the response if available
-                    // Note: Supabase FunctionsHttpError doesn't always expose the body easily here
-                } catch (e) { }
-            }
-
-            throw new Error(finalMessage || `Failed to call ${functionName}`);
+            throw new Error(bodyDetails || error.message || `Failed to call ${functionName}`);
         }
 
         if (responseData && responseData.error) {

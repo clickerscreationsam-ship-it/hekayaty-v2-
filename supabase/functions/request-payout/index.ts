@@ -12,10 +12,9 @@ serve(async (req: Request) => {
     try {
         const authHeader = req.headers.get('Authorization')
         const supabaseUrl = Deno.env.get('SUPABASE_URL')
-        const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || Deno.env.get('SUPABASE_SERVICE_KEY')
+        const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
         console.log(`🔒 request-payout: Auth check. Header present: ${!!authHeader}`)
-        console.log("🛠️ request-payout: Env check - URL:", !!supabaseUrl, "ServiceKey:", !!serviceKey)
 
         if (!authHeader) {
             console.error("❌ request-payout: Missing Authorization header")
@@ -26,9 +25,9 @@ serve(async (req: Request) => {
         }
 
         if (!supabaseUrl || !serviceKey) {
-            console.error("❌ request-payout: Server configuration error (Missing URL or Key)")
+            console.error("❌ request-payout: Configuration error", { url: !!supabaseUrl, key: !!serviceKey })
             return new Response(
-                JSON.stringify({ error: 'Server configuration error' }),
+                JSON.stringify({ error: 'Server configuration error. Contact admin.' }),
                 { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
@@ -41,8 +40,14 @@ serve(async (req: Request) => {
             }
         })
 
-        // Extract JWT token from Authorization header (case-insensitive)
-        const token = authHeader.replace(/Bearer /i, '');
+        // Clean token extraction
+        const token = authHeader.replace(/Bearer /i, '').trim();
+        if (!token) {
+            return new Response(
+                JSON.stringify({ error: 'Empty token provided' }),
+                { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
+        }
 
         // CRYPTOGRAPHICALLY VERIFY TOKEN
         const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
@@ -52,14 +57,15 @@ serve(async (req: Request) => {
             return new Response(
                 JSON.stringify({
                     error: 'Unauthorized: Invalid session',
-                    details: authError?.message || 'Token verification failed'
+                    details: authError?.message || 'Token verification failed',
+                    hint: 'Your session may have expired. Please try logging out and back in.'
                 }),
                 { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
 
         const userId = authUser.id;
-        console.log(`✅ request-payout: User ${userId} verified cryptographically`);
+        console.log(`✅ request-payout: User ${userId} verified`);
 
         // Check if user is a reader
         const { data: userProfile } = await supabaseAdmin
@@ -78,7 +84,14 @@ serve(async (req: Request) => {
         const body = await req.json()
         const { amount, method = 'vodafone_cash', methodDetails } = body
 
-        // 1. Calculate REAL balance from database (Source of truth)
+        if (!amount || amount <= 0) {
+            return new Response(
+                JSON.stringify({ error: 'Invalid amount' }),
+                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
+        }
+
+        // 1. Calculate REAL balance from database
         const [
             { data: earningsRecords },
             { data: payouts }
@@ -93,7 +106,7 @@ serve(async (req: Request) => {
 
         const availableBalance = totalNetEarnings - totalPaidOut - pendingPayouts;
 
-        console.log(`💰 Balance Check for ${userId}: Net=${totalNetEarnings}, Paid=${totalPaidOut}, Pending=${pendingPayouts}, Available=${availableBalance}`);
+        console.log(`💰 Balance Check for ${userId}: Available=${availableBalance}`);
 
         if (amount > availableBalance) {
             return new Response(
@@ -105,7 +118,7 @@ serve(async (req: Request) => {
             )
         }
 
-        const MIN_PAYOUT = 200 // 200 EGP
+        const MIN_PAYOUT = 200
         if (amount < MIN_PAYOUT) {
             return new Response(
                 JSON.stringify({ error: `Minimum payout is ${MIN_PAYOUT} EGP` }),
@@ -128,7 +141,10 @@ serve(async (req: Request) => {
 
         if (payoutError) {
             console.error('❌ request-payout: Database error:', payoutError)
-            throw new Error(`Failed to create payout request: ${payoutError.message}`)
+            return new Response(
+                JSON.stringify({ error: `Database error: ${payoutError.message}` }),
+                { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
         }
 
         console.log('Payout request created:', payout.id)
