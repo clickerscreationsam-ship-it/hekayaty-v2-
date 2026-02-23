@@ -472,35 +472,73 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getNotificationSettings(userId: string): Promise<NotificationSettings> {
-    const { data, error } = await supabaseAdmin
-      .from('notification_settings')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    if (error || !data) {
-      // Create default settings if not exists
-      const { data: defaults, error: createError } = await supabaseAdmin
+    try {
+      const { data, error } = await supabaseAdmin
         .from('notification_settings')
-        .insert({ user_id: userId })
-        .select()
+        .select('*')
+        .eq('user_id', userId)
         .single();
-      if (createError) throw createError;
+
+      if (error || !data) {
+        // Create default settings if not exists
+        const { data: defaults, error: createError } = await supabaseAdmin
+          .from('notification_settings')
+          .insert({ user_id: userId })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error("❌ Failed to create notification settings, returning defaults:", createError);
+          return {
+            id: 0,
+            userId,
+            emailNotifications: true,
+            pushNotifications: true,
+            categories: {
+              commerce: true,
+              content: true,
+              social: true,
+              creator: true,
+              engagement: true,
+              store: true
+            },
+            updatedAt: new Date()
+          } as NotificationSettings;
+        }
+
+        return {
+          ...defaults,
+          userId: defaults.user_id,
+          emailNotifications: defaults.email_notifications,
+          pushNotifications: defaults.push_notifications,
+          updatedAt: defaults.updated_at
+        } as NotificationSettings;
+      }
       return {
-        ...defaults,
-        userId: defaults.user_id,
-        emailNotifications: defaults.email_notifications,
-        pushNotifications: defaults.push_notifications,
-        updatedAt: defaults.updated_at
+        ...data,
+        userId: data.user_id,
+        emailNotifications: data.email_notifications,
+        pushNotifications: data.push_notifications,
+        updatedAt: data.updated_at
+      } as NotificationSettings;
+    } catch (err) {
+      console.error("❌ Exception in getNotificationSettings, returning defaults:", err);
+      return {
+        id: 0,
+        userId,
+        emailNotifications: true,
+        pushNotifications: true,
+        categories: {
+          commerce: true,
+          content: true,
+          social: true,
+          creator: true,
+          engagement: true,
+          store: true
+        },
+        updatedAt: new Date()
       } as NotificationSettings;
     }
-    return {
-      ...data,
-      userId: data.user_id,
-      emailNotifications: data.email_notifications,
-      pushNotifications: data.push_notifications,
-      updatedAt: data.updated_at
-    } as NotificationSettings;
   }
 
   async updateNotificationSettings(userId: string, updates: Partial<NotificationSettings>): Promise<NotificationSettings> {

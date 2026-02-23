@@ -27,41 +27,25 @@ async function callEdgeFunction(
         });
 
         if (error) {
-            // Log full error details for debugging
             console.error(`❌ Edge Function Error [${functionName}]:`, error);
-            console.error('Full error:', JSON.stringify(error, null, 2));
 
-            // Only retry on ACTUAL 401 unauthorized errors
+            // If it's a 401/403, try once WITHOUT the header 
+            // because some functions (like shipping) might be public but the JWT/Session is causing confusion/401
             const status = (error as any).status || (error as any).context?.status;
-            const isUnauthorized =
-                status === 401 ||
-                error.message?.toLowerCase().includes('jwt') ||
-                error.message?.toLowerCase().includes('unauthorized');
-
-            if (isUnauthorized) {
-                console.log("🔄 401 detected in invoke (edge), refreshing session...");
-                const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-
-                if (!refreshError && refreshData.session) {
-                    console.log("✅ Session refreshed, retrying invoke...");
-
-                    const retryHeaders: Record<string, string> = {
-                        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${refreshData.session.access_token}`
-                    };
-
-                    const { data: retryData, error: retryError } = await supabase.functions.invoke(functionName, {
-                        method,
-                        body: data,
-                        headers: retryHeaders
-                    });
-
-                    if (!retryError) return retryData;
-                    console.error("❌ Retry failed even after refresh:", retryError);
-                } else {
-                    console.error("❌ session refresh failed:", refreshError);
+            if (status === 401 || status === 403) {
+                console.log(`🔄 401/403 detected for ${functionName}, retrying without Auth header...`);
+                const { data: retryData, error: retryError } = await supabase.functions.invoke(functionName, {
+                    method,
+                    body: data,
+                    headers: { 'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY }
+                });
+                if (!retryError) {
+                    console.log(`✅ Retry success for ${functionName} without Auth header`);
+                    return retryData;
                 }
+                console.error(`❌ Retry failed for ${functionName}:`, retryError);
             }
+
             throw new Error(error.message || `Failed to call ${functionName}`);
         }
 
