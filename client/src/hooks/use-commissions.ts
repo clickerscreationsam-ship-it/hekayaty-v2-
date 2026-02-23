@@ -97,10 +97,11 @@ export function useDesignRequests(params: { clientId?: string; artistId?: string
             if (error) throw new Error(error.message);
 
             // Enrich with user names via a single lookup
-            const allUserIds = [...new Set([
+            const rawIds = [
                 ...(rawData || []).map((r: any) => r.client_id),
                 ...(rawData || []).map((r: any) => r.artist_id)
-            ].filter(Boolean))];
+            ].filter(Boolean);
+            const allUserIds = Array.from(new Set(rawIds));
 
             let usersMap: Record<string, { id: string; display_name: string; avatar_url: string | null }> = {};
             if (allUserIds.length > 0) {
