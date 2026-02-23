@@ -2,8 +2,6 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3'
 import { corsHeaders } from '../_shared/cors.ts'
 
-console.log("Request payout function starting...")
-
 serve(async (req: Request) => {
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
@@ -11,93 +9,63 @@ serve(async (req: Request) => {
 
     try {
         const authHeader = req.headers.get('Authorization')
-        const supabaseUrl = Deno.env.get('SUPABASE_URL')
-        const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
-
         if (!authHeader) {
             return new Response(JSON.stringify({ error: 'Missing token' }), { status: 401, headers: corsHeaders })
         }
 
-        // Create admin client
-        const supabaseAdmin = createClient(supabaseUrl || '', serviceKey || '')
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
+        const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+        const supabaseAdmin = createClient(supabaseUrl, serviceKey)
 
-        // Verify user - use strict method first
+        // Strict verification
         const token = authHeader.replace(/Bearer /i, '').trim()
-        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token)
+        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
 
-        let userId = authUser?.id
-
-        if (authError || !userId) {
-            console.error("❌ JWT Verification failed:", authError?.message)
-
-            // EMERGENCY FALLBACK: If getUser fails but token exists, try to trust the token 
-            // ONLY if strictly authenticated via project's own auth.
-            // In Supabase Edge Functions, auth.getUser is the gold standard.
+        if (authError || !user) {
             return new Response(
                 JSON.stringify({
-                    error: 'Unauthorized: Invalid session',
-                    details: authError?.message || 'Token verification failed',
-                    hint: 'Try logging out and back in to refresh your login.'
+                    error: 'Unauthorized',
+                    message: authError?.message || 'Verification failed',
+                    hint: 'Try relogging'
                 }),
                 { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
 
-        console.log(`✅ User ${userId} verified. Preparing payout...`);
-
-        // Check if user is a reader
-        const { data: userProfile } = await supabaseAdmin
-            .from('users')
-            .select('role')
-            .eq('id', userId)
-            .single()
-
-        if (userProfile?.role === 'reader') {
-            return new Response(
-                JSON.stringify({ error: 'Readers cannot request payouts.' }),
-                { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-        }
-
         const body = await req.json()
-        const { amount, method = 'vodafone_cash', methodDetails } = body
+        const { amount, method, methodDetails } = body
+
+        // Check reader restriction
+        const { data: profile } = await supabaseAdmin.from('users').select('role').eq('id', user.id).single()
+        if (profile?.role === 'reader') {
+            return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: corsHeaders })
+        }
 
         // Calculate Balance
         const [
-            { data: earningsRecords },
+            { data: earnings },
             { data: payouts }
         ] = await Promise.all([
-            supabaseAdmin.from('earnings').select('amount').eq('creator_id', userId),
-            supabaseAdmin.from('payouts').select('amount, status').eq('user_id', userId)
+            supabaseAdmin.from('earnings').select('amount').eq('creator_id', user.id),
+            supabaseAdmin.from('payouts').select('amount, status').eq('user_id', user.id)
         ])
 
-        const totalNetEarnings = earningsRecords?.reduce((sum, r) => sum + (r.amount || 0), 0) || 0;
-        const totalPaidOut = payouts?.filter(p => p.status === 'processed').reduce((sum, p) => sum + p.amount, 0) || 0;
-        const pendingPayouts = payouts?.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0) || 0;
+        const totalNet = earnings?.reduce((sum, r) => sum + (r.amount || 0), 0) || 0
+        const totalPaid = payouts?.filter(p => p.status === 'processed').reduce((sum, p) => sum + p.amount, 0) || 0
+        const pending = payouts?.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0) || 0
+        const available = totalNet - totalPaid - pending
 
-        const availableBalance = totalNetEarnings - totalPaidOut - pendingPayouts;
-
-        if (amount > availableBalance) {
-            return new Response(
-                JSON.stringify({ error: 'Insufficient balance', details: `Only ${availableBalance} EGP available.` }),
-                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
+        if (amount > available) {
+            return new Response(JSON.stringify({ error: `Only ${available} available` }), { status: 400, headers: corsHeaders })
         }
 
-        if (amount < 200) {
-            return new Response(
-                JSON.stringify({ error: 'Minimum payout is 200 EGP' }),
-                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-        }
-
-        // Insert Payout
+        // Insert
         const { data: payout, error: payoutError } = await supabaseAdmin
             .from('payouts')
             .insert({
-                user_id: userId,
-                amount: amount,
-                method: method,
+                user_id: user.id,
+                amount,
+                method,
                 method_details: methodDetails,
                 status: 'pending'
             })
@@ -106,16 +74,9 @@ serve(async (req: Request) => {
 
         if (payoutError) throw payoutError
 
-        return new Response(
-            JSON.stringify({ payout, success: true }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 201 }
-        )
+        return new Response(JSON.stringify({ payout, success: true }), { status: 201, headers: corsHeaders })
 
     } catch (error: any) {
-        console.error('Request payout error:', error)
-        return new Response(
-            JSON.stringify({ error: error.message }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-        )
+        return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: corsHeaders })
     }
 })

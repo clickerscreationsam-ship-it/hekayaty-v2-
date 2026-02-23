@@ -41,7 +41,13 @@ export async function callEdgeFunction(
         }
 
         if (!response.ok) {
-            const errorMsg = responseData.error || responseData.details || `Error ${response.status}`;
+            // Surface the most descriptive error possible from the body
+            const errorMsg = responseData.error ||
+                responseData.message ||
+                responseData.error_description ||
+                responseData.details ||
+                `Error ${response.status}`;
+
             throw { message: errorMsg, status: response.status, body: responseData };
         }
 
@@ -61,7 +67,7 @@ export async function callEdgeFunction(
                 try {
                     return await performRequest(refreshData.session.access_token);
                 } catch (retryErr: any) {
-                    const finalMsg = retryErr.body?.details || retryErr.message;
+                    const finalMsg = retryErr.message || "Retry authentication failed";
                     throw new Error(finalMsg);
                 }
             }
@@ -119,7 +125,7 @@ export function useRequestPayoutEdge() {
     const { toast } = useToast();
 
     return useMutation({
-        mutationFn: async (data: { amount: number, method?: string }) => {
+        mutationFn: async (data: { amount: number, method?: string, methodDetails: string }) => {
             return callEdgeFunction('request-payout', data);
         },
         onSuccess: () => {
