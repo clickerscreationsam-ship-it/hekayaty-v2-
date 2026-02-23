@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Portfolio, InsertPortfolio, DesignRequest, InsertDesignRequest, DesignMessage, InsertDesignMessage } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 
 // --- Portfolio Hooks ---
 export function usePortfolios(artistId?: string, category?: string, page: number = 1) {
@@ -59,13 +60,40 @@ export function useDeletePortfolio() {
 
 // --- Commission / Design Request Hooks ---
 export function useDesignRequests(params: { clientId?: string; artistId?: string; status?: string; page?: number }) {
+    const page = params.page || 1;
+    const limit = 10;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
     return useQuery<{ data: DesignRequest[], total: number, page: number }>({
         queryKey: ["/api/design-requests", params],
         queryFn: async () => {
-            const queryParams = new URLSearchParams(params as any).toString();
-            const res = await fetch(`/api/design-requests?${queryParams}`);
-            if (!res.ok) throw new Error("Failed to fetch design requests");
-            return res.json();
+            // Use Supabase directly — the Express server uses Passport session auth
+            // which is NOT available on Vercel (we use Supabase JWT instead)
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("Not authenticated");
+
+            let query = supabase
+                .from('design_requests')
+                .select('*, client:users!client_id(id, display_name, avatar_url), artist:users!artist_id(id, display_name, avatar_url)', { count: 'exact' });
+
+            // Filter: show only requests where user is client or artist
+            if (params.clientId) {
+                query = query.eq('client_id', params.clientId);
+            } else if (params.artistId) {
+                query = query.eq('artist_id', params.artistId);
+            } else {
+                query = query.or(`client_id.eq.${user.id},artist_id.eq.${user.id}`);
+            }
+
+            if (params.status) query = query.eq('status', params.status);
+
+            const { data, error, count } = await query
+                .order('created_at', { ascending: false })
+                .range(from, to);
+
+            if (error) throw new Error(error.message);
+            return { data: data || [], total: count || 0, page };
         }
     });
 }
