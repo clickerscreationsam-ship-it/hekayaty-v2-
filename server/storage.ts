@@ -421,19 +421,34 @@ export class DatabaseStorage implements IStorage {
 
   // Notifications
   async getNotifications(userId: string): Promise<Notification[]> {
-    const { data, error } = await supabaseAdmin
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-    if (error) return [];
-    return data.map((n: any) => ({
-      ...n,
-      userId: n.user_id,
-      actorId: n.actor_id,
-      isRead: n.is_read,
-      createdAt: n.created_at
-    })) as Notification[];
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('notifications')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error || !data || !Array.isArray(data)) {
+        if (error) console.error("❌ Error fetching notifications:", error);
+        return [];
+      }
+
+      return data.map((n: any) => ({
+        ...n,
+        id: n.id,
+        userId: n.user_id || n.userId || userId,
+        actorId: n.actor_id || n.actorId,
+        title: n.title || "",
+        content: n.content || "",
+        type: n.type || "system",
+        priority: n.priority || "low",
+        isRead: n.is_read ?? n.isRead ?? false,
+        createdAt: n.created_at || n.createdAt || new Date()
+      })) as Notification[];
+    } catch (err) {
+      console.error("❌ Exception in getNotifications:", err);
+      return [];
+    }
   }
 
   async createNotification(notification: InsertNotification): Promise<Notification> {
