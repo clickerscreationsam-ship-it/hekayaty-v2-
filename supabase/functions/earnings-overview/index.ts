@@ -12,30 +12,49 @@ serve(async (req: Request) => {
     try {
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) {
+            console.error("❌ Missing Authorization header")
             throw new Error('Unauthorized: Missing token')
         }
 
         const token = authHeader.replace('Bearer ', '');
-        const supabaseAdmin = createClient(
-            Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        )
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
+        console.log("📡 Verifying token...")
         const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
 
         if (authError || !authUser) {
-            throw new Error('Unauthorized: Invalid session');
+            console.error('❌ Auth verification failed:', authError?.message || 'No user found')
+            return new Response(
+                JSON.stringify({ error: 'Unauthorized: Invalid session', details: authError?.message }),
+                { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
         }
 
-        const userId = authUser.id;
+        let userId = authUser.id;
+        console.log('✅ User verified:', userId)
+
+        // Allow admin to override userId if provided in query (for debugging/support)
+        const url = new URL(req.url)
+        const overrideId = url.searchParams.get('userId')
+        if (overrideId && overrideId !== userId) {
+            const { data: adminUser } = await supabaseAdmin.from('users').select('role').eq('id', userId).single()
+            if (adminUser?.role === 'admin') {
+                console.log(`👑 Admin override: Fetching for ${overrideId} instead of ${userId}`)
+                userId = overrideId
+            }
+        }
+
+        console.log(`📊 Fetching data for creator: ${userId}`)
 
         // Fetch everything
         const [
-            { data: earningsRecords },
-            { data: orderItems },
-            { data: payouts },
-            { data: products },
-            { data: user }
+            { data: earningsRecords, error: eError },
+            { data: orderItems, error: oiError },
+            { data: payouts, error: pError },
+            { data: products, error: prError },
+            { data: user, error: uError }
         ] = await Promise.all([
             supabaseAdmin.from('earnings').select('*').eq('creator_id', userId),
             supabaseAdmin.from('order_items').select('id, price, quantity, order_id').eq('creator_id', userId),
@@ -44,8 +63,14 @@ serve(async (req: Request) => {
             supabaseAdmin.from('users').select('id, commission_rate').eq('id', userId).single()
         ])
 
-        const commissionRate = user?.commission_rate || 20; // Default 20% fee
-        const creatorShare = (100 - commissionRate) / 100; // e.g. 0.8
+        if (eError || oiError || pError || prError || uError) {
+            console.error("❌ Database fetch error:", { eError, oiError, pError, prError, uError })
+        }
+
+        const commissionRate = user?.commission_rate || 20;
+        const creatorShare = (100 - commissionRate) / 100;
+
+        console.log(`📈 Commission Rate: ${commissionRate}%, Share: ${creatorShare}`)
 
         // 1. Calculate Gross from Orders
         const orderIds = orderItems?.map(i => i.order_id).filter(Boolean) || [];
@@ -57,15 +82,19 @@ serve(async (req: Request) => {
         const transGross = orderItems?.filter(i => paidOrderIds.has(i.order_id)).reduce((sum, i) => sum + ((i.price || 0) * (i.quantity || 1)), 0) || 0;
         const transUnits = orderItems?.filter(i => paidOrderIds.has(i.order_id)).reduce((sum, i) => sum + (i.quantity || 1), 0) || 0;
 
+        console.log(`📦 Transaction data: Gross=${transGross}, Units=${transUnits}`)
+
         // 2. Calculate Gross from Legacy Products
         const legacyUnits = products?.reduce((sum, p) => sum + (p.sales_count || 0), 0) || 0;
         const legacyGross = products?.reduce((sum, p) => sum + (p.price * (p.sales_count || 0)), 0) || 0;
+
+        console.log(`📜 Legacy data: Gross=${legacyGross}, Units=${legacyUnits}`)
 
         // 3. FINAL AGGREGATION
         const finalGross = Math.max(transGross, legacyGross);
         const finalUnits = Math.max(transUnits, legacyUnits);
 
-        // Calculate Expected Net based on current commission settings
+        // Calculate Expected Net
         const finalNet = Math.round(finalGross * creatorShare);
         const totalCommission = finalGross - finalNet;
 
@@ -74,23 +103,34 @@ serve(async (req: Request) => {
         const pendingPayouts = payouts?.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0) || 0;
         const availableBalance = finalNet - totalPaidOut - pendingPayouts;
 
-        return new Response(JSON.stringify({
-            totalEarnings: finalNet, // Keep this as totalNet
+        const responseData = {
+            totalEarnings: finalNet,
             totalGross: finalGross,
             totalUnitsSold: finalUnits,
             totalCommission,
             totalPaidOut,
             pendingPayouts,
             availableBalance: Math.max(0, availableBalance),
-            recentEarnings: [],
-            payoutHistory: payouts || []
-        }), {
+            recentEarnings: earningsRecords?.slice(0, 10) || [],
+            payoutHistory: payouts || [],
+            debug: {
+                userId,
+                paidOrdersCount: paidOrderIds.size,
+                itemsFound: orderItems?.length || 0,
+                earningsRecordsFound: earningsRecords?.length || 0
+            }
+        };
+
+        console.log("✅ Success returning earnings overview")
+
+        return new Response(JSON.stringify(responseData), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
         });
 
     } catch (error: any) {
-        return new Response(JSON.stringify({ error: error.message }), {
+        console.error('❌ Earnings overview error:', error)
+        return new Response(JSON.stringify({ error: error.message, stack: error.stack }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 500,
         });

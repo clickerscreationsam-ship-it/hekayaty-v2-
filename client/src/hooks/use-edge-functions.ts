@@ -12,13 +12,20 @@ export async function callEdgeFunction(
     const performRetryWithFetch = async () => {
         console.log(`🔄 Attempting clean fetch fallback for ${functionName}...`);
         try {
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
             const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`;
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json',
+                'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+            };
+
+            if (currentSession?.access_token) {
+                headers['Authorization'] = `Bearer ${currentSession.access_token}`;
+            }
+
             const fetchOptions: RequestInit = {
                 method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
-                }
+                headers
             };
             if (data && method !== 'GET') {
                 fetchOptions.body = JSON.stringify(data);
@@ -28,7 +35,7 @@ export async function callEdgeFunction(
                 console.log(`✅ Clean fetch fallback success for ${functionName}`);
                 return await response.json();
             }
-            console.error(`❌ Clean fetch fallback failed (${response.status})`);
+            console.error(`❌ Clean fetch fallback failed (${response.status}) for ${functionName}`);
         } catch (e) {
             console.error(`❌ Exception in clean fetch fallback:`, e);
         }
