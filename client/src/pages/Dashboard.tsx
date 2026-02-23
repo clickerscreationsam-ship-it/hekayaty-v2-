@@ -48,7 +48,7 @@ export default function Dashboard() {
   const [isPayoutOpen, setIsPayoutOpen] = useState(false);
   const [location] = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
-  const initialTab = searchParams.get('tab') || 'overview';
+  const initialTab = searchParams.get('tab') || (user?.role === 'reader' ? 'library' : 'overview');
   const [activeTab, setActiveTab] = useState(initialTab);
 
   useEffect(() => {
@@ -174,6 +174,11 @@ export default function Dashboard() {
                   <PenTool className="w-4 h-4" /> {t("dashboard.tabs.commissions")}
                 </TabsTrigger>
               )}
+              {user.role === 'reader' && (
+                <TabsTrigger value="my_orders" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
+                  <History className="w-4 h-4" /> My Orders
+                </TabsTrigger>
+              )}
               {user.role !== 'reader' && (
                 <TabsTrigger value="admin_messages" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2 relative">
                   <Megaphone className="w-4 h-4" /> {t("dashboard.tabs.admin_messages")}
@@ -191,41 +196,41 @@ export default function Dashboard() {
           </div>
 
 
-          <TabsContent value="overview">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-              <StatCard
-                icon={Package}
-                label={t("dashboard.stats.totalProducts")}
-                value={products?.length || 0}
-                color="text-blue-500"
-                bg="bg-blue-500/10"
-              />
-              <StatCard
-                icon={ShoppingBag}
-                label={t("dashboard.stats.totalUnitsSold")}
-                value={totalItemsSold}
-                color="text-purple-500"
-                bg="bg-purple-500/10"
-              />
-              <StatCard
-                icon={DollarSign}
-                label={t("dashboard.stats.grossSales")}
-                value={`${totalGrossRevenue} ${t("common.egp")}`}
-                color="text-green-500"
-                bg="bg-green-500/10"
-              />
-              <StatCard
-                icon={Wallet}
-                label={t("dashboard.stats.netEarnings")}
-                value={`${netEarnings} ${t("common.egp")}`}
-                color="text-emerald-600"
-                bg="bg-emerald-500/10"
-              />
-            </div>
+          {user.role !== 'reader' && (
+            <TabsContent value="overview">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                <StatCard
+                  icon={Package}
+                  label={t("dashboard.stats.totalProducts")}
+                  value={products?.length || 0}
+                  color="text-blue-500"
+                  bg="bg-blue-500/10"
+                />
+                <StatCard
+                  icon={ShoppingBag}
+                  label={t("dashboard.stats.totalUnitsSold")}
+                  value={totalItemsSold}
+                  color="text-purple-500"
+                  bg="bg-purple-500/10"
+                />
+                <StatCard
+                  icon={DollarSign}
+                  label={t("dashboard.stats.grossSales")}
+                  value={`${totalGrossRevenue} ${t("common.egp")}`}
+                  color="text-green-500"
+                  bg="bg-green-500/10"
+                />
+                <StatCard
+                  icon={Wallet}
+                  label={t("dashboard.stats.netEarnings")}
+                  value={`${netEarnings} ${t("common.egp")}`}
+                  color="text-emerald-600"
+                  bg="bg-emerald-500/10"
+                />
+              </div>
 
-            {/* Earnings Section for Creators */}
-            {user.role !== 'reader' && (
+              {/* Earnings Section for Creators */}
               <div className="glass-card rounded-2xl p-8 border border-border mb-8">
                 <div className="flex items-center gap-3 mb-6">
                   <Wallet className="w-6 h-6 text-primary" />
@@ -261,8 +266,8 @@ export default function Dashboard() {
                   </p>
                 </div>
               </div>
-            )}
-          </TabsContent>
+            </TabsContent>
+          )}
 
           <TabsContent value="portfolio">
             <div className="glass-card rounded-2xl p-8 border border-border">
@@ -381,6 +386,7 @@ export default function Dashboard() {
             </div>
           </TabsContent>
           <ReaderLibraryContent user={user} />
+          <ReaderOrdersContent />
 
           <TabsContent value="products">
             <div className="glass-card rounded-2xl p-6 border border-border">
@@ -1398,6 +1404,93 @@ function ReaderLibraryContent({ user }: { user: any }) {
     </TabsContent>
   );
 }
+function ReaderOrdersContent() {
+  const { t } = useTranslation();
+  const { data: orders, isLoading } = useUserOrders();
+
+  if (isLoading) {
+    return <div className="p-12 text-center text-muted-foreground animate-pulse">Loading orders...</div>;
+  }
+
+  return (
+    <TabsContent value="my_orders">
+      <div className="glass-card rounded-2xl p-0 border border-white/10 overflow-hidden shadow-2xl">
+        <div className="p-6 bg-white/5 border-b border-white/5 flex items-center gap-2">
+          <History className="w-5 h-5 text-primary" />
+          <h3 className="text-xl font-bold text-gradient">My Order History</h3>
+        </div>
+
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-white/5">
+              <TableRow className="border-white/10 hover:bg-transparent">
+                <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Order info</TableHead>
+                <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Status</TableHead>
+                <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Total</TableHead>
+                <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4 text-right">Items</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {orders?.map((order: any) => (
+                <TableRow key={order.id} className="border-white/5 hover:bg-white/5 transition-colors">
+                  <TableCell className="py-6">
+                    <div className="flex flex-col">
+                      <span className="font-mono font-bold text-primary text-sm">#{order.id}</span>
+                      <span className="text-xs text-muted-foreground mt-1">{formatDate(order.createdAt)}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-6">
+                    <Badge
+                      variant={order.isVerified ? 'default' : 'secondary'}
+                      className={cn(
+                        "font-bold uppercase tracking-tighter text-[10px]",
+                        order.isVerified ? 'bg-green-500/20 text-green-500 border border-green-500/20' : 'bg-amber-500/20 text-amber-500 border border-amber-500/20'
+                      )}
+                    >
+                      {order.isVerified ? 'Verified' : 'Pending Verification'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-6 font-black text-primary">
+                    {order.totalAmount} <span className="text-[10px]">EGP</span>
+                  </TableCell>
+                  <TableCell className="py-6">
+                    <div className="flex -space-x-2 justify-end">
+                      {order.order_items?.map((item: any, i: number) => (
+                        <div key={item.id} className="relative group" style={{ zIndex: 10 - i }}>
+                          <img
+                            src={item.product?.coverUrl}
+                            alt={item.product?.title}
+                            className="w-10 h-10 rounded-full border-2 border-background object-cover grayscale group-hover:grayscale-0 transition-all duration-300 shadow-xl"
+                          />
+                          <div className="absolute bottom-full right-0 mb-2 invisible group-hover:visible bg-black/90 text-[10px] text-white p-2 rounded whitespace-nowrap z-50">
+                            {item.product?.title} (x{item.quantity})
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+
+              {(!orders || orders.length === 0) && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-20 text-muted-foreground">
+                    <ShoppingBag className="w-12 h-12 mx-auto mb-4 opacity-10" />
+                    <p className="font-medium text-lg">No orders found</p>
+                    <Link href="/marketplace">
+                      <Button variant="link" className="mt-2 text-primary">Go to store</Button>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </TabsContent>
+  );
+}
+
 function DownloadButton({ fileUrl }: { fileUrl: string }) {
   const { t } = useTranslation();
   const download = useDownloadFile();
