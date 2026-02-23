@@ -38,7 +38,7 @@ serve(async (req: Request) => {
             { data: user }
         ] = await Promise.all([
             supabaseAdmin.from('earnings').select('*').eq('creator_id', userId),
-            supabaseAdmin.from('order_items').select('id, price, order_id').eq('creator_id', userId),
+            supabaseAdmin.from('order_items').select('id, price, quantity, order_id').eq('creator_id', userId),
             supabaseAdmin.from('payouts').select('*').eq('user_id', userId).order('requested_at', { ascending: false }),
             supabaseAdmin.from('products').select('id, price, sales_count').eq('writer_id', userId),
             supabaseAdmin.from('users').select('id, commission_rate').eq('id', userId).single()
@@ -54,8 +54,8 @@ serve(async (req: Request) => {
             : { data: [] };
 
         const paidOrderIds = new Set(orders?.filter(o => o.status === 'paid').map(o => o.id) || []);
-        const transGross = orderItems?.filter(i => paidOrderIds.has(i.order_id)).reduce((sum, i) => sum + (i.price || 0), 0) || 0;
-        const transUnits = orderItems?.filter(i => paidOrderIds.has(i.order_id)).length || 0;
+        const transGross = orderItems?.filter(i => paidOrderIds.has(i.order_id)).reduce((sum, i) => sum + ((i.price || 0) * (i.quantity || 1)), 0) || 0;
+        const transUnits = orderItems?.filter(i => paidOrderIds.has(i.order_id)).reduce((sum, i) => sum + (i.quantity || 1), 0) || 0;
 
         // 2. Calculate Gross from Legacy Products
         const legacyUnits = products?.reduce((sum, p) => sum + (p.sales_count || 0), 0) || 0;

@@ -92,9 +92,12 @@ serve(async (req) => {
 
             earningsByCreator.set(writerId, (earningsByCreator.get(writerId) || 0) + earning)
 
-            // Increment sales count for products
+            // Increment sales count for products (by quantity, not just 1)
             if (item.product_id) {
-                await supabaseAdmin.rpc('increment_sales_count', { product_id: item.product_id })
+                const qty = Number(item.quantity) || 1
+                for (let i = 0; i < qty; i++) {
+                    await supabaseAdmin.rpc('increment_sales_count', { product_id: item.product_id })
+                }
             }
         }
 

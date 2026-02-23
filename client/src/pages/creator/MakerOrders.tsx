@@ -159,7 +159,7 @@ export default function MakerOrders() {
                                                     <div className="p-1 bg-green-500/10 rounded text-green-500">
                                                         <DollarSign className="w-3.5 h-3.5" />
                                                     </div>
-                                                    <span className="font-black text-primary">{order.price} EGP</span>
+                                                    <span className="font-black text-primary">{(order.price || 0) * (order.quantity || 1)} EGP</span>
                                                 </div>
                                                 <div className="flex items-center gap-2.5 text-muted-foreground/80">
                                                     <div className="p-1 bg-amber-500/10 rounded text-amber-500">
