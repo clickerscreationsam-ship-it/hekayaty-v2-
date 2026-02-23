@@ -255,6 +255,7 @@ serve(async (req: Request) => {
                 collection_id: item.collectionId || null,
                 variant_id: item.variantId || null,
                 price: item.price,
+                quantity: item.quantity || 1,
                 creator_id: item.creatorId,
                 fulfillment_status: isPhysicalOrder ? 'pending' : 'delivered', // Digital is auto-delivered if paid/pending verification
                 license_type: 'standard',

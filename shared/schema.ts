@@ -260,6 +260,7 @@ export const orderItems = pgTable("order_items", {
   collectionId: uuid("collection_id"),
   variantId: integer("variant_id"),
   price: integer("price").notNull(),
+  quantity: integer("quantity").notNull().default(1),
   licenseType: text("license_type"),
   creatorId: text("creator_id").notNull(),
   // Physical/Tracking Fields

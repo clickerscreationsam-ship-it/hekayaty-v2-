@@ -84,9 +84,11 @@ serve(async (req) => {
 
             // Use the writer's specific commission rate or default to 20%
             const platformRate = ratesMap.get(writerId) ?? 20
+            const quantity = Number(item.quantity) || 1
+            const totalPrice = Number(item.price) * quantity
 
-            const fee = Math.round(item.price * (platformRate / 100))
-            const earning = item.price - fee
+            const fee = Math.round(totalPrice * (platformRate / 100))
+            const earning = totalPrice - fee
 
             earningsByCreator.set(writerId, (earningsByCreator.get(writerId) || 0) + earning)
 

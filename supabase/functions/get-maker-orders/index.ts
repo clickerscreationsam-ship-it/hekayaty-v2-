@@ -58,6 +58,7 @@ serve(async (req) => {
                 preparing_at,
                 estimated_delivery_days,
                 creator_id,
+                quantity,
                 customization_data,
                 product:products(id, title, cover_url),
                 order:orders(id, user_id, created_at, shipping_address, status, is_verified)
@@ -98,6 +99,7 @@ serve(async (req) => {
             productTitle: item.product?.title || 'Unknown Product',
             productCoverUrl: item.product?.cover_url || '',
             price: item.price,
+            quantity: item.quantity || 1,
             fulfillmentStatus: item.fulfillment_status,
             trackingNumber: item.tracking_number,
             customizationData: item.customization_data,

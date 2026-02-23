@@ -64,6 +64,7 @@ serve(async (req) => {
                         productCoverUrl: isCollection ? (item.collection?.cover_image_url || '') : (item.product?.cover_url || ''),
                         productType: isCollection ? 'collection' : (item.product?.type || 'unknown'),
                         price: item.price,
+                        quantity: item.quantity || 1,
                         fulfillmentStatus: item.fulfillment_status,
                         trackingNumber: item.tracking_number,
                         customizationData: item.customization_data,

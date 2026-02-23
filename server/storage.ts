@@ -60,7 +60,7 @@ export interface IStorage {
   clearCart(userId: string): Promise<void>;
 
   // Orders & Earnings
-  createOrder(order: InsertOrder, items: { productId?: number; collectionId?: string; variantId?: number; price: number; creatorId: string }[]): Promise<Order>;
+  createOrder(order: InsertOrder, items: { productId?: number; collectionId?: string; variantId?: number; price: number; quantity: number; creatorId: string }[]): Promise<Order>;
   verifyOrder(orderId: number, adminId: string): Promise<Order>;
   listPendingOrders(): Promise<Order[]>;
   getOrder(id: number): Promise<Order | undefined>;
@@ -278,7 +278,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Orders
-  async createOrder(order: InsertOrder, items: { productId?: number; collectionId?: string; variantId?: number; price: number; creatorId: string }[]): Promise<Order> {
+  async createOrder(order: InsertOrder, items: { productId?: number; collectionId?: string; variantId?: number; price: number; quantity: number; creatorId: string }[]): Promise<Order> {
     const { data: ord, error: ordErr } = await supabaseAdmin.from('orders').insert({
       ...order,
       createdAt: new Date()
@@ -291,6 +291,7 @@ export class DatabaseStorage implements IStorage {
       collection_id: item.collectionId,
       variant_id: item.variantId,
       price: item.price,
+      quantity: item.quantity || 1,
       creator_id: item.creatorId,
       fulfillment_status: 'pending'
     }));

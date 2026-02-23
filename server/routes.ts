@@ -458,9 +458,11 @@ export async function registerRoutes(
           .single();
 
         const rate = creator?.commission_rate || 20;
+        const quantity = item.quantity || 1;
+        const totalPrice = item.price * quantity;
 
-        const fee = Math.round(item.price * (rate / 100));
-        const earning = item.price - fee;
+        const fee = Math.round(totalPrice * (rate / 100));
+        const earning = totalPrice - fee;
 
         totalPlatformFee += fee;
         totalCreatorEarnings += earning;
@@ -514,6 +516,7 @@ export async function registerRoutes(
         product_id: item.productId,
         variant_id: item.variantId || null,
         price: item.price,
+        quantity: item.quantity || 1,
         license_type: "standard",
         creator_id: item.creatorId
       }));
@@ -652,8 +655,9 @@ export async function registerRoutes(
       const itemsByCreator = new Map<string, number>();
       orderItems.forEach((item: any) => {
         const creatorId = item.product?.writer_id || item.creator_id;
+        const quantity = item.quantity || 1;
         const current = itemsByCreator.get(creatorId) || 0;
-        itemsByCreator.set(creatorId, current + item.price);
+        itemsByCreator.set(creatorId, current + (item.price * quantity));
       });
 
       // 4. Create earnings for each creator
@@ -1206,8 +1210,10 @@ export async function registerRoutes(
         const isPhysical = product.type === 'physical';
         const writerRate = ratesMap.get(product.writer_id) ?? 20;
         const rate = isPhysical ? 12 : writerRate;
-        const fee = Math.round(item.price * (rate / 100));
-        const earning = item.price - fee;
+        const quantity = item.quantity || 1;
+        const totalPrice = item.price * quantity;
+        const fee = Math.round(totalPrice * (rate / 100));
+        const earning = totalPrice - fee;
 
         const current = earningsByCreator.get(product.writer_id) || 0;
         earningsByCreator.set(product.writer_id, current + earning);
