@@ -73,9 +73,11 @@ export function useDesignRequests(params: { clientId?: string; artistId?: string
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error("Not authenticated");
 
+            // Fetch design_requests WITHOUT FK joins (having 2 FKs to same table
+            // causes PostgREST 400 with the users!client_id syntax)
             let query = supabase
                 .from('design_requests')
-                .select('*, client:users!client_id(id, display_name, avatar_url), artist:users!artist_id(id, display_name, avatar_url)', { count: 'exact' });
+                .select('*', { count: 'exact' });
 
             // Filter: show only requests where user is client or artist
             if (params.clientId) {
@@ -88,12 +90,34 @@ export function useDesignRequests(params: { clientId?: string; artistId?: string
 
             if (params.status) query = query.eq('status', params.status);
 
-            const { data, error, count } = await query
+            const { data: rawData, error, count } = await query
                 .order('created_at', { ascending: false })
                 .range(from, to);
 
             if (error) throw new Error(error.message);
-            return { data: data || [], total: count || 0, page };
+
+            // Enrich with user names via a single lookup
+            const allUserIds = [...new Set([
+                ...(rawData || []).map((r: any) => r.client_id),
+                ...(rawData || []).map((r: any) => r.artist_id)
+            ].filter(Boolean))];
+
+            let usersMap: Record<string, { id: string; display_name: string; avatar_url: string | null }> = {};
+            if (allUserIds.length > 0) {
+                const { data: usersData } = await supabase
+                    .from('users')
+                    .select('id, display_name, avatar_url')
+                    .in('id', allUserIds);
+                (usersData || []).forEach((u: any) => { usersMap[u.id] = u; });
+            }
+
+            const data = (rawData || []).map((r: any) => ({
+                ...r,
+                client: usersMap[r.client_id] || null,
+                artist: usersMap[r.artist_id] || null,
+            }));
+
+            return { data, total: count || 0, page };
         }
     });
 }
