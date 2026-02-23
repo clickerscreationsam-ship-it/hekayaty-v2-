@@ -167,6 +167,28 @@ export function CommissionThread({ requestId, user }: { requestId: string, user:
                 </div>
             </DialogHeader>
 
+            <div className="px-6 py-4 bg-primary/5 border-b border-white/5 space-y-3">
+                <div className="flex items-center justify-between">
+                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60">Project Invoice Summary</h4>
+                    <span className="text-[10px] font-mono opacity-40">#{request.id}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                        <p className="text-[10px] text-muted-foreground uppercase font-medium">Agreement Budget</p>
+                        <p className="text-lg font-black text-primary">{request.budget} <span className="text-[10px] font-normal opacity-50">EGP</span></p>
+                    </div>
+                    <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                        <p className="text-[10px] text-muted-foreground uppercase font-medium">Estimated Arrival</p>
+                        <p className="text-sm font-bold">{request.status === 'completed' ? 'Delivered' : 'Dynamic Tracking'}</p>
+                    </div>
+                </div>
+                {request.status !== 'inquiry' && request.status !== 'pending' && (
+                    <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-[10px] font-bold text-green-500 uppercase flex items-center gap-2">
+                        <CheckCircle2 className="w-3 h-3" /> Agreement Secured via Hekayaty Escrow
+                    </div>
+                )}
+            </div>
+
             <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-muted/20 custom-scrollbar">
                 {request.messages?.map((m: any) => (
                     <div key={m.id} className={cn("flex gap-3 max-w-[80%]", m.senderId === user.id ? "ml-auto flex-row-reverse" : "")}>

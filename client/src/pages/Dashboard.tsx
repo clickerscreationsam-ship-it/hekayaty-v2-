@@ -33,6 +33,7 @@ import { useAdminPrivateMessages, useSendAdminPrivateMessage, useMarkMessageRead
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PortfolioManager } from "@/components/creative-hub/PortfolioManager";
 import { CommissionsManager } from "@/components/creative-hub/CommissionsManager";
+import { useDesignRequests } from "@/hooks/use-commissions";
 import { PrivateChatManager } from "@/components/creative-hub/PrivateChatManager";
 
 import dashboardBg from "@/assets/9814ae82-9631-4241-a961-7aec31f9aa4d_09-11-19.png";
@@ -174,11 +175,6 @@ export default function Dashboard() {
                   <PenTool className="w-4 h-4" /> {t("dashboard.tabs.commissions")}
                 </TabsTrigger>
               )}
-              {user.role === 'reader' && (
-                <TabsTrigger value="my_orders" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2">
-                  <History className="w-4 h-4" /> My Orders
-                </TabsTrigger>
-              )}
               {user.role !== 'reader' && (
                 <TabsTrigger value="admin_messages" className="rounded-lg px-6 py-2 flex-shrink-0 gap-2 relative">
                   <Megaphone className="w-4 h-4" /> {t("dashboard.tabs.admin_messages")}
@@ -275,11 +271,15 @@ export default function Dashboard() {
             </div>
           </TabsContent>
 
-          <TabsContent value="commissions">
-            <div className="glass-card rounded-2xl p-8 border border-border">
+          {user.role === 'reader' ? (
+            <TabsContent value="commissions" className="space-y-8">
+              <ReaderUnifiedActivity user={user} />
+            </TabsContent>
+          ) : (
+            <TabsContent value="commissions">
               <CommissionsManager user={user} />
-            </div>
-          </TabsContent>
+            </TabsContent>
+          )}
 
           <TabsContent value="orders">
             <div className="glass-card rounded-2xl p-1 border border-border">
@@ -386,7 +386,6 @@ export default function Dashboard() {
             </div>
           </TabsContent>
           <ReaderLibraryContent user={user} />
-          <ReaderOrdersContent />
 
           <TabsContent value="products">
             <div className="glass-card rounded-2xl p-6 border border-border">
@@ -797,7 +796,6 @@ function BrandingForm({ user }: { user: any }) {
             <CloudinaryUpload
               label="Store Logo / Avatar"
               aspectRatio="square"
-              defaultImage={user.avatarUrl}
               folder="hekayaty_avatars"
               onUpload={(url) => {
                 setValue("avatarUrl", url);
@@ -1307,7 +1305,7 @@ function AdminMessagingTab() {
                       <h3 className="font-bold text-lg text-gradient">{ann.title}</h3>
                     </div>
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{ann.content}</p>
-                    <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center text-[10px] opacity-40 uppercase tracking-widest font-bold">
+                    <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center text-[10px] opacity-40 uppercase tracking-widest">
                       <span>By Creator Relations Team</span>
                       <span>{formatDate(ann.createdAt)}</span>
                     </div>
@@ -1404,173 +1402,180 @@ function ReaderLibraryContent({ user }: { user: any }) {
     </TabsContent>
   );
 }
-function ReaderOrdersContent() {
-  const { data: orders, isLoading, error } = useUserOrders();
 
-  const getFulfillmentColor = (status: string) => {
-    switch (status) {
-      case 'accepted': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'preparing': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'shipped': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-      case 'delivered': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'rejected': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      default: return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-    }
-  };
+function ReaderUnifiedActivity({ user }: { user: any }) {
+  const { t } = useTranslation();
+  const { data: orders, isLoading: loadingOrders } = useUserOrders();
+  const { data: commissionsResp, isLoading: loadingComms } = useDesignRequests({ clientId: user.id });
 
-  const getFulfillmentLabel = (status: string) => {
-    switch (status) {
-      case 'accepted': return '✅ Accepted by Maker';
-      case 'preparing': return '🔧 Being Prepared';
-      case 'shipped': return '🚚 Shipped';
-      case 'delivered': return '📦 Delivered';
-      case 'rejected': return '❌ Rejected';
-      default: return '⏳ Awaiting Acceptance';
-    }
-  };
-
-  if (isLoading) {
+  if (loadingOrders || loadingComms) {
     return (
-      <TabsContent value="my_orders">
-        <div className="p-20 text-center text-muted-foreground animate-pulse flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p>Loading your orders...</p>
-        </div>
-      </TabsContent>
+      <div className="p-20 text-center text-muted-foreground animate-pulse flex flex-col items-center gap-4">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p>Loading your activity...</p>
+      </div>
     );
   }
 
+  const commissions = commissionsResp?.data || [];
+  const hasActivity = (orders && orders.length > 0) || commissions.length > 0;
+
   return (
-    <TabsContent value="my_orders">
-      <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
-        {/* Header */}
-        <div className="p-6 bg-white/5 border-b border-white/5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-              <History className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-gradient">My Orders</h3>
-              <p className="text-xs text-muted-foreground">{orders?.length || 0} orders total</p>
-            </div>
+    <div className="space-y-12">
+      {/* 1. STORE ORDERS SECTION */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-3 px-2">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+            <ShoppingBag className="w-6 h-6 text-primary" />
           </div>
-          <Link href="/marketplace">
-            <Button variant="outline" size="sm" className="gap-2 border-primary/20 hover:bg-primary/10 text-xs">
-              <ShoppingBag className="w-3 h-3" /> Shop More
-            </Button>
-          </Link>
+          <div>
+            <h3 className="text-2xl font-bold font-serif">Store Orders</h3>
+            <p className="text-sm text-muted-foreground">Track your physical and digital purchases</p>
+          </div>
         </div>
 
-        {/* Empty state */}
-        {(!orders || orders.length === 0) && (
-          <div className="p-20 text-center text-muted-foreground">
-            <ShoppingBag className="w-12 h-12 mx-auto mb-4 opacity-10" />
-            <p className="font-medium text-lg mb-1">No orders yet</p>
-            <p className="text-sm opacity-60 mb-4">Your orders will appear here once you make a purchase</p>
-            <Link href="/marketplace">
-              <Button variant="outline" className="border-primary/20 hover:bg-primary/10 text-primary">Browse Store</Button>
-            </Link>
-          </div>
-        )}
-
-        {/* Orders list */}
-        <div className="divide-y divide-white/5">
-          {orders?.map((order: any) => (
-            <div key={order.id} className="p-6 hover:bg-white/3 transition-colors">
-              {/* Order header row */}
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <div className="flex items-center gap-3">
-                  <span className="font-mono font-bold text-primary text-sm bg-primary/10 px-2 py-1 rounded">
-                    #{order.id}
-                  </span>
-                  <span className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</span>
+        <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-2xl divide-y divide-white/5">
+          {(!orders || orders.length === 0) ? (
+            <div className="p-12 text-center text-muted-foreground bg-white/2">
+              <p>No store orders yet.</p>
+            </div>
+          ) : (
+            orders.map((order: any) => (
+              <div key={order.id} className="p-6 hover:bg-white/3 transition-colors">
+                {/* Order Header */}
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono font-bold text-primary text-sm bg-primary/10 px-3 py-1 rounded">
+                      ORDER #{order.id}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Badge className={cn(
+                      "font-bold uppercase tracking-wider text-[10px] border px-3 py-1",
+                      order.isVerified ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                    )}>
+                      {order.isVerified ? '✅ Payment Verified' : '⏳ Awaiting Approval'}
+                    </Badge>
+                    <span className="font-black text-xl text-primary">
+                      {order.totalAmount} <span className="text-xs font-normal opacity-60">EGP</span>
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  {/* Payment verification status */}
-                  <Badge className={cn(
-                    "font-bold uppercase tracking-wider text-[10px] border",
-                    order.isVerified
-                      ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                      : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                  )}>
-                    {order.isVerified ? '✅ Payment Verified' : '⏳ Awaiting Admin Approval'}
-                  </Badge>
-                  <span className="font-black text-primary text-sm">
-                    {order.totalAmount} <span className="text-[10px] font-normal opacity-60">EGP</span>
-                  </span>
-                </div>
-              </div>
 
-              {/* Status message */}
-              {!order.isVerified && (
-                <div className="mb-4 px-4 py-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-400/80">
-                  💡 Your payment is being reviewed by our team. This usually takes 1–24 hours. Once approved, the maker will be notified to start preparing your order.
-                </div>
-              )}
-
-              {/* Items */}
-              <div className="space-y-3">
-                {order.order_items?.map((item: any) => (
-                  <div key={item.id} className="flex items-center gap-4 p-3 rounded-xl bg-white/3 border border-white/5">
-                    {/* Cover image */}
-                    {item.product?.coverUrl ? (
-                      <img
-                        src={item.product.coverUrl}
-                        alt={item.product.title}
-                        className="w-12 h-12 rounded-lg object-cover border border-white/10 flex-shrink-0"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
-                        <Package className="w-5 h-5 opacity-30" />
-                      </div>
-                    )}
-
-                    {/* Item info */}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm truncate">{item.product?.title || 'Product'}</p>
-                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className="text-xs text-muted-foreground">x{item.quantity}</span>
-                        <span className="text-xs text-muted-foreground">•</span>
-                        <span className="text-xs text-primary font-bold">{item.price} EGP</span>
-                        {item.makerName && (
-                          <>
-                            <span className="text-xs text-muted-foreground">•</span>
-                            <span className="text-xs text-muted-foreground">by {item.makerName}</span>
-                          </>
+                {/* Items & "Bill" View */}
+                <div className="grid gap-6">
+                  {order.order_items?.map((item: any) => (
+                    <div key={item.id} className="flex flex-col md:flex-row gap-6 p-4 rounded-2xl bg-white/2 border border-white/5 relative group">
+                      {/* Product Thumbnail */}
+                      <div className="w-20 h-28 shrink-0">
+                        {item.product?.coverUrl ? (
+                          <img src={item.product.coverUrl} className="w-full h-full object-cover rounded-lg shadow-lg" />
+                        ) : (
+                          <div className="w-full h-full rounded-lg bg-white/5 flex items-center justify-center"><Package className="opacity-20" /></div>
                         )}
                       </div>
 
-                      {/* Estimated delivery if accepted */}
-                      {item.estimatedDeliveryDays && (
-                        <p className="text-xs text-blue-400 mt-1">
-                          🚚 Estimated delivery: {item.estimatedDeliveryDays} days from acceptance
-                        </p>
-                      )}
+                      {/* Item Details */}
+                      <div className="flex-1 space-y-2">
+                        <div className="flex justify-between items-start">
+                          <h4 className="font-bold text-lg">{item.product?.title || 'Product'}</h4>
+                          <Badge variant="outline" className={cn("text-[10px] font-bold", getFulfillmentColor(item.fulfillmentStatus))}>
+                            {getFulfillmentLabel(item.fulfillmentStatus)}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                          <span>Qty: {item.quantity}</span>
+                          <span>•</span>
+                          <span className="text-primary font-bold">{item.price} EGP / unit</span>
+                          {item.makerName && (
+                            <span className="flex items-center gap-1"><UserCog className="w-3 h-3" /> Maker: {item.makerName}</span>
+                          )}
+                        </div>
 
-                      {/* Tracking number if shipped */}
-                      {item.trackingNumber && (
-                        <p className="text-xs text-purple-400 mt-1">
-                          📦 Tracking: {item.trackingNumber}
-                        </p>
-                      )}
+                        {/* THE "BILL" / ACCEPTANCE BOX - Requested by user */}
+                        {item.fulfillmentStatus !== 'pending' && (
+                          <div className="mt-4 p-4 rounded-xl bg-green-500/5 border border-green-500/20 space-y-2 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-2 opacity-5"><CheckCircle2 className="w-12 h-12" /></div>
+                            <h5 className="text-xs font-bold uppercase text-green-500 tracking-widest">Official Order Bill & Status</h5>
+                            <div className="grid grid-cols-2 gap-4 pt-2">
+                              <div>
+                                <p className="text-[10px] text-muted-foreground font-bold uppercase">Accepted Date</p>
+                                <p className="text-sm font-semibold">{item.acceptedAt ? formatDate(item.acceptedAt) : 'Recently'}</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] text-muted-foreground font-bold uppercase">Arrival Estimation</p>
+                                <p className="text-sm font-bold text-primary">
+                                  {item.estimatedDeliveryDays ? `${item.estimatedDeliveryDays} Working Days` : 'TBD'}
+                                </p>
+                              </div>
+                            </div>
+                            {item.trackingNumber && (
+                              <div className="pt-2 border-t border-green-500/10">
+                                <p className="text-[10px] text-muted-foreground font-bold uppercase">Carrier Tracking</p>
+                                <p className="text-sm font-mono text-purple-400 font-bold">{item.trackingNumber}</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {item.fulfillmentStatus === 'pending' && !order.isVerified && (
+                          <p className="text-xs text-amber-400 italic mt-2">
+                            Awaiting admin verification of your payment proof...
+                          </p>
+                        )}
+                        {item.fulfillmentStatus === 'pending' && order.isVerified && (
+                          <p className="text-xs text-blue-400 italic mt-2 animate-pulse">
+                            Payment verified! Awaiting maker to accept and set delivery date...
+                          </p>
+                        )}
+                      </div>
                     </div>
-
-                    {/* Fulfillment status badge */}
-                    <Badge className={cn(
-                      "font-bold text-[10px] border flex-shrink-0",
-                      getFulfillmentColor(item.fulfillmentStatus || 'pending')
-                    )}>
-                      {getFulfillmentLabel(item.fulfillmentStatus || 'pending')}
-                    </Badge>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
-      </div>
-    </TabsContent>
+      </section>
+
+      {/* 2. DESIGN REQUESTS (COMMISSIONS) SECTION */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-3 px-2">
+          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+            <PenTool className="w-6 h-6 text-accent" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-bold font-serif">Design Treasure Requests</h3>
+            <p className="text-sm text-muted-foreground">Custom design projects and commissions</p>
+          </div>
+        </div>
+        <CommissionsManager user={user} />
+      </section>
+    </div>
   );
+}
+
+function getFulfillmentColor(status: string) {
+  switch (status) {
+    case 'accepted': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+    case 'preparing': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+    case 'shipped': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+    case 'delivered': return 'bg-green-500/20 text-green-400 border-green-500/30';
+    case 'rejected': return 'bg-red-500/20 text-red-400 border-red-500/30';
+    default: return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+  }
+}
+
+function getFulfillmentLabel(status: string) {
+  switch (status) {
+    case 'accepted': return 'Accepted';
+    case 'preparing': return 'Preparing';
+    case 'shipped': return 'Shipped';
+    case 'delivered': return 'Delivered';
+    case 'rejected': return 'Rejected';
+    default: return 'Pending Review';
+  }
 }
 
 function DownloadButton({ fileUrl }: { fileUrl: string }) {

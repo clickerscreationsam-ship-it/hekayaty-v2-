@@ -11,9 +11,11 @@ serve(async (req: Request) => {
 
     try {
         const authHeader = req.headers.get('Authorization')
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')
+        const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || Deno.env.get('SUPABASE_SERVICE_KEY')
 
-        console.log(`🔒 request-payout: Auth check. Header present: ${!!authHeader}, Length: ${authHeader?.length}`)
-        console.log("🛠️ request-payout: Env check - URL:", !!Deno.env.get('SUPABASE_URL'), "Anon:", !!Deno.env.get('SUPABASE_ANON_KEY'))
+        console.log(`🔒 request-payout: Auth check. Header present: ${!!authHeader}`)
+        console.log("🛠️ request-payout: Env check - URL:", !!supabaseUrl, "ServiceKey:", !!serviceKey)
 
         if (!authHeader) {
             console.error("❌ request-payout: Missing Authorization header")
@@ -23,22 +25,35 @@ serve(async (req: Request) => {
             )
         }
 
-        // Create service role client
-        const supabaseAdmin = createClient(
-            Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        )
+        if (!supabaseUrl || !serviceKey) {
+            console.error("❌ request-payout: Server configuration error (Missing URL or Key)")
+            return new Response(
+                JSON.stringify({ error: 'Server configuration error' }),
+                { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
+        }
 
-        // Extract JWT token from Authorization header
-        const token = authHeader.replace('Bearer ', '');
+        // Create service role client
+        const supabaseAdmin = createClient(supabaseUrl, serviceKey, {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false,
+            }
+        })
+
+        // Extract JWT token from Authorization header (case-insensitive)
+        const token = authHeader.replace(/Bearer /i, '');
 
         // CRYPTOGRAPHICALLY VERIFY TOKEN
         const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
 
         if (authError || !authUser) {
-            console.error("❌ request-payout: JWT Verification failed", authError);
+            console.error("❌ request-payout: JWT Verification failed", authError?.message);
             return new Response(
-                JSON.stringify({ error: 'Unauthorized: Invalid session' }),
+                JSON.stringify({
+                    error: 'Unauthorized: Invalid session',
+                    details: authError?.message || 'Token verification failed'
+                }),
                 { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }

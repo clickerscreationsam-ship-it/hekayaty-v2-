@@ -92,14 +92,33 @@ export async function callEdgeFunction(
                     });
                     if (!retryError) return retryData;
                     console.error(`❌ Retry with new token failed:`, retryError);
+
+                    // If retry failed, try to get specific error from body
+                    if ((retryError as any).context) {
+                        try {
+                            const body = await (retryError as any).context.json();
+                            if (body.error || body.details) {
+                                throw new Error(`${body.error}${body.details ? `: ${body.details}` : ''}`);
+                            }
+                        } catch (e) { }
+                    }
                 }
 
-                // Strategy 2: Clean Fetch Fallback (Last resort for public-accessible functions)
+                // Strategy 2: Clean Fetch Fallback (Last resort)
                 const fallbackData = await performRetryWithFetch();
                 if (fallbackData) return fallbackData;
             }
 
-            throw new Error(error.message || `Failed to call ${functionName}`);
+            // Extract more details if possible from the error object
+            let finalMessage = error.message;
+            if ((error as any).context && (error as any).context.status) {
+                try {
+                    // Try to get the actual error message from the response if available
+                    // Note: Supabase FunctionsHttpError doesn't always expose the body easily here
+                } catch (e) { }
+            }
+
+            throw new Error(finalMessage || `Failed to call ${functionName}`);
         }
 
         if (responseData && responseData.error) {
