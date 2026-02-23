@@ -10,7 +10,7 @@ serve(async (req: Request) => {
     try {
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) {
-            return new Response(JSON.stringify({ error: 'Missing token' }), { status: 401, headers: corsHeaders })
+            return new Response(JSON.stringify({ error: 'Unauthorized: Missing token' }), { status: 401, headers: corsHeaders })
         }
 
         const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
@@ -22,24 +22,15 @@ serve(async (req: Request) => {
         const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
 
         if (authError || !user) {
+            console.error("❌ Auth Error:", authError?.message);
             return new Response(
-                JSON.stringify({
-                    error: 'Unauthorized',
-                    message: authError?.message || 'Verification failed',
-                    hint: 'Try relogging'
-                }),
+                JSON.stringify({ error: 'Unauthorized', details: authError?.message }),
                 { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
 
         const body = await req.json()
         const { amount, method, methodDetails } = body
-
-        // Check reader restriction
-        const { data: profile } = await supabaseAdmin.from('users').select('role').eq('id', user.id).single()
-        if (profile?.role === 'reader') {
-            return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: corsHeaders })
-        }
 
         // Calculate Balance
         const [
@@ -56,7 +47,7 @@ serve(async (req: Request) => {
         const available = totalNet - totalPaid - pending
 
         if (amount > available) {
-            return new Response(JSON.stringify({ error: `Only ${available} available` }), { status: 400, headers: corsHeaders })
+            return new Response(JSON.stringify({ error: `Insufficient balance: Only ${available} available` }), { status: 400, headers: corsHeaders })
         }
 
         // Insert
@@ -74,9 +65,11 @@ serve(async (req: Request) => {
 
         if (payoutError) throw payoutError
 
+        console.log('✅ Payout success:', payout.id);
         return new Response(JSON.stringify({ payout, success: true }), { status: 201, headers: corsHeaders })
 
     } catch (error: any) {
+        console.error('❌ Payout Error:', error);
         return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: corsHeaders })
     }
 })

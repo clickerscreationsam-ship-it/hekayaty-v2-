@@ -9,71 +9,27 @@ export async function callEdgeFunction(
 ) {
     console.log(`🚀 callEdgeFunction: ${functionName} [${method}]`, data);
 
-    const performRequest = async (token?: string) => {
-        const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`;
-        const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
-        };
+    try {
+        const { data: responseData, error } = await supabase.functions.invoke(functionName, {
+            method,
+            body: method === 'GET' ? undefined : data,
+        });
 
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        } else {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.access_token) {
-                headers['Authorization'] = `Bearer ${session.access_token}`;
+        if (error) {
+            console.error(`❌ Edge Function Error [${functionName}]:`, error);
+
+            // Try to extract body if it's a 401 to see the real reason
+            if (error.status === 401 || (error as any).context?.status === 401) {
+                console.warn(`🔄 401 detected for ${functionName}. You might need to refresh or logout/login.`);
             }
-        }
 
-        const options: RequestInit = { method, headers };
-        if (data && method !== 'GET') {
-            options.body = JSON.stringify(data);
-        }
-
-        const response = await fetch(url, options);
-        const responseText = await response.text();
-
-        let responseData: any;
-        try {
-            responseData = JSON.parse(responseText);
-        } catch (e) {
-            responseData = { error: responseText || `Status ${response.status}` };
-        }
-
-        if (!response.ok) {
-            // Surface the most descriptive error possible from the body
-            const errorMsg = responseData.error ||
-                responseData.message ||
-                responseData.error_description ||
-                responseData.details ||
-                `Error ${response.status}`;
-
-            throw { message: errorMsg, status: response.status, body: responseData };
+            throw new Error(error.message || `Failed to call ${functionName}`);
         }
 
         return responseData;
-    };
-
-    try {
-        return await performRequest();
     } catch (err: any) {
-        // Handle 401/403 with a refresh attempt
-        if (err.status === 401 || err.status === 403) {
-            console.warn(`🔄 401 detected for ${functionName}. Refreshing session...`);
-            const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-
-            if (!refreshError && refreshData.session) {
-                console.log(`✅ Session refreshed. Retrying ${functionName}...`);
-                try {
-                    return await performRequest(refreshData.session.access_token);
-                } catch (retryErr: any) {
-                    const finalMsg = retryErr.message || "Retry authentication failed";
-                    throw new Error(finalMsg);
-                }
-            }
-        }
-
-        throw new Error(err.message || `Failed to call ${functionName}`);
+        console.error(`❌ callEdgeFunction Exception [${functionName}]:`, err);
+        throw err;
     }
 }
 
