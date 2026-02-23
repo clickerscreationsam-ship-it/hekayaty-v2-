@@ -14,58 +14,36 @@ serve(async (req: Request) => {
         const supabaseUrl = Deno.env.get('SUPABASE_URL')
         const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
-        console.log(`🔒 request-payout: Auth check. Header present: ${!!authHeader}`)
-
         if (!authHeader) {
-            console.error("❌ request-payout: Missing Authorization header")
-            return new Response(
-                JSON.stringify({ error: 'Missing authorization header' }),
-                { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
+            return new Response(JSON.stringify({ error: 'Missing token' }), { status: 401, headers: corsHeaders })
         }
 
-        if (!supabaseUrl || !serviceKey) {
-            console.error("❌ request-payout: Configuration error", { url: !!supabaseUrl, key: !!serviceKey })
-            return new Response(
-                JSON.stringify({ error: 'Server configuration error. Contact admin.' }),
-                { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-        }
+        // Create admin client
+        const supabaseAdmin = createClient(supabaseUrl || '', serviceKey || '')
 
-        // Create service role client
-        const supabaseAdmin = createClient(supabaseUrl, serviceKey, {
-            auth: {
-                persistSession: false,
-                autoRefreshToken: false,
-            }
-        })
+        // Verify user - use strict method first
+        const token = authHeader.replace(/Bearer /i, '').trim()
+        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token)
 
-        // Clean token extraction
-        const token = authHeader.replace(/Bearer /i, '').trim();
-        if (!token) {
-            return new Response(
-                JSON.stringify({ error: 'Empty token provided' }),
-                { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-        }
+        let userId = authUser?.id
 
-        // CRYPTOGRAPHICALLY VERIFY TOKEN
-        const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
+        if (authError || !userId) {
+            console.error("❌ JWT Verification failed:", authError?.message)
 
-        if (authError || !authUser) {
-            console.error("❌ request-payout: JWT Verification failed", authError?.message);
+            // EMERGENCY FALLBACK: If getUser fails but token exists, try to trust the token 
+            // ONLY if strictly authenticated via project's own auth.
+            // In Supabase Edge Functions, auth.getUser is the gold standard.
             return new Response(
                 JSON.stringify({
                     error: 'Unauthorized: Invalid session',
                     details: authError?.message || 'Token verification failed',
-                    hint: 'Your session may have expired. Please try logging out and back in.'
+                    hint: 'Try logging out and back in to refresh your login.'
                 }),
                 { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
 
-        const userId = authUser.id;
-        console.log(`✅ request-payout: User ${userId} verified`);
+        console.log(`✅ User ${userId} verified. Preparing payout...`);
 
         // Check if user is a reader
         const { data: userProfile } = await supabaseAdmin
@@ -76,7 +54,7 @@ serve(async (req: Request) => {
 
         if (userProfile?.role === 'reader') {
             return new Response(
-                JSON.stringify({ error: 'Readers cannot request payouts. Only creators are eligible.' }),
+                JSON.stringify({ error: 'Readers cannot request payouts.' }),
                 { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
@@ -84,14 +62,7 @@ serve(async (req: Request) => {
         const body = await req.json()
         const { amount, method = 'vodafone_cash', methodDetails } = body
 
-        if (!amount || amount <= 0) {
-            return new Response(
-                JSON.stringify({ error: 'Invalid amount' }),
-                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-        }
-
-        // 1. Calculate REAL balance from database
+        // Calculate Balance
         const [
             { data: earningsRecords },
             { data: payouts }
@@ -106,27 +77,21 @@ serve(async (req: Request) => {
 
         const availableBalance = totalNetEarnings - totalPaidOut - pendingPayouts;
 
-        console.log(`💰 Balance Check for ${userId}: Available=${availableBalance}`);
-
         if (amount > availableBalance) {
             return new Response(
-                JSON.stringify({
-                    error: 'Insufficient balance',
-                    details: `You requested ${amount} EGP but only have ${availableBalance} EGP available.`
-                }),
+                JSON.stringify({ error: 'Insufficient balance', details: `Only ${availableBalance} EGP available.` }),
                 { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
 
-        const MIN_PAYOUT = 200
-        if (amount < MIN_PAYOUT) {
+        if (amount < 200) {
             return new Response(
-                JSON.stringify({ error: `Minimum payout is ${MIN_PAYOUT} EGP` }),
+                JSON.stringify({ error: 'Minimum payout is 200 EGP' }),
                 { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
 
-        // Create payout request
+        // Insert Payout
         const { data: payout, error: payoutError } = await supabaseAdmin
             .from('payouts')
             .insert({
@@ -139,32 +104,18 @@ serve(async (req: Request) => {
             .select()
             .single()
 
-        if (payoutError) {
-            console.error('❌ request-payout: Database error:', payoutError)
-            return new Response(
-                JSON.stringify({ error: `Database error: ${payoutError.message}` }),
-                { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-        }
-
-        console.log('Payout request created:', payout.id)
+        if (payoutError) throw payoutError
 
         return new Response(
             JSON.stringify({ payout, success: true }),
-            {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 201,
-            }
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 201 }
         )
 
     } catch (error: any) {
         console.error('Request payout error:', error)
         return new Response(
             JSON.stringify({ error: error.message }),
-            {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 500,
-            }
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
         )
     }
 })
