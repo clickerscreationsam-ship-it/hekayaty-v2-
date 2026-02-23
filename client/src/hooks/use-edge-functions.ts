@@ -29,21 +29,36 @@ async function callEdgeFunction(
         if (error) {
             console.error(`❌ Edge Function Error [${functionName}]:`, error);
 
-            // If it's a 401/403, try once WITHOUT the header 
-            // because some functions (like shipping) might be public but the JWT/Session is causing confusion/401
             const status = (error as any).status || (error as any).context?.status;
             if (status === 401 || status === 403) {
-                console.log(`🔄 401/403 detected for ${functionName}, retrying without Auth header...`);
-                const { data: retryData, error: retryError } = await supabase.functions.invoke(functionName, {
-                    method,
-                    body: data,
-                    headers: { 'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY }
-                });
-                if (!retryError) {
-                    console.log(`✅ Retry success for ${functionName} without Auth header`);
-                    return retryData;
+                console.log(`🔄 401/403 detected for ${functionName}, retrying with clean fetch fallback...`);
+
+                try {
+                    // Fallback to pure fetch to avoid any automatic header injection by Supabase client
+                    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`;
+                    const fetchOptions: RequestInit = {
+                        method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+                        }
+                    };
+
+                    if (data && method !== 'GET') {
+                        fetchOptions.body = JSON.stringify(data);
+                    }
+
+                    const response = await fetch(url, fetchOptions);
+                    if (response.ok) {
+                        const retryData = await response.json();
+                        console.log(`✅ Clean fetch retry success for ${functionName}`);
+                        return retryData;
+                    } else {
+                        console.error(`❌ Clean fetch retry failed with status ${response.status}`);
+                    }
+                } catch (fetchErr) {
+                    console.error(`❌ Exception during clean fetch retry for ${functionName}:`, fetchErr);
                 }
-                console.error(`❌ Retry failed for ${functionName}:`, retryError);
             }
 
             throw new Error(error.message || `Failed to call ${functionName}`);
