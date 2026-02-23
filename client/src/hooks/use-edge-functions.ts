@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 
-async function callEdgeFunction(
+export async function callEdgeFunction(
     functionName: string,
     data?: any,
     method: 'GET' | 'POST' | 'PATCH' | 'DELETE' = 'POST'

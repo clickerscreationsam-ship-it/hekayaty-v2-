@@ -1414,35 +1414,43 @@ export async function registerRoutes(
 
   // Design Requests
   app.get("/api/design-requests", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const userId = (req.user as any).id;
-    const { artistId, clientId, status, page = 1, limit = 10 } = req.query;
-    const from = (Number(page) - 1) * Number(limit);
-    const to = from + Number(limit) - 1;
+    try {
+      if (!req.isAuthenticated()) return res.sendStatus(401);
+      const userId = (req.user as any).id;
+      const { artistId, clientId, status, page = 1, limit = 10 } = req.query;
+      const from = (Number(page) - 1) * Number(limit);
+      const to = from + Number(limit) - 1;
 
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabaseUrl = process.env.SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseUrl = process.env.SUPABASE_URL!;
+      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
 
-    let query = supabase.from('design_requests').select('*, client:users!client_id(display_name, avatar_url), artist:users!artist_id(display_name, avatar_url)', { count: 'exact' });
+      let query = supabase.from('design_requests').select('*, client:users!client_id(display_name, avatar_url), artist:users!artist_id(display_name, avatar_url)', { count: 'exact' });
 
-    // Security: Only participants or admin can see
-    const isAdmin = (req.user as any).role === 'admin';
-    if (!isAdmin) {
-      query = query.or(`client_id.eq.${userId},artist_id.eq.${userId}`);
+      // Security: Only participants or admin can see
+      const isAdmin = (req.user as any).role === 'admin';
+      if (!isAdmin) {
+        query = query.or(`client_id.eq.${userId},artist_id.eq.${userId}`);
+      }
+
+      if (artistId) query = query.eq('artist_id', artistId);
+      if (clientId) query = query.eq('client_id', clientId);
+      if (status) query = query.eq('status', status);
+
+      const { data, error, count } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) {
+        console.error("[API] Supabase error in GET /api/design-requests:", error);
+        return res.status(500).json({ message: error.message });
+      }
+      res.json({ data, total: count, page: Number(page) });
+    } catch (err: any) {
+      console.error("[API] Exception in GET /api/design-requests:", err);
+      res.status(500).json({ message: err.message || "An unexpected error occurred" });
     }
-
-    if (artistId) query = query.eq('artist_id', artistId);
-    if (clientId) query = query.eq('client_id', clientId);
-    if (status) query = query.eq('status', status);
-
-    const { data, error, count } = await query
-      .order('created_at', { ascending: false })
-      .range(from, to);
-
-    if (error) return res.status(500).json({ message: error.message });
-    res.json({ data, total: count, page: Number(page) });
   });
 
   app.get("/api/design-requests/:id", async (req, res) => {
@@ -1728,37 +1736,62 @@ export async function registerRoutes(
   // === NOTIFICATIONS ===
 
   app.get("/api/notifications", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const userId = (req.user as any).id;
-    const notifications = await storage.getNotifications(userId);
-    res.json(notifications);
+    try {
+      if (!req.isAuthenticated()) return res.sendStatus(401);
+      const userId = (req.user as any).id;
+      const notifications = await storage.getNotifications(userId);
+      res.json(notifications);
+    } catch (error: any) {
+      console.error("[API] Error in GET /api/notifications:", error);
+      res.status(500).json({ error: error.message });
+    }
   });
 
   app.patch("/api/notifications/:id/read", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    await storage.markNotificationRead(Number(req.params.id));
-    res.sendStatus(200);
+    try {
+      if (!req.isAuthenticated()) return res.sendStatus(401);
+      await storage.markNotificationRead(Number(req.params.id));
+      res.sendStatus(200);
+    } catch (error: any) {
+      console.error("[API] Error in PATCH /api/notifications/:id/read:", error);
+      res.status(500).json({ error: error.message });
+    }
   });
 
   app.post("/api/notifications/read-all", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const userId = (req.user as any).id;
-    await storage.markAllNotificationsRead(userId);
-    res.sendStatus(200);
+    try {
+      if (!req.isAuthenticated()) return res.sendStatus(401);
+      const userId = (req.user as any).id;
+      await storage.markAllNotificationsRead(userId);
+      res.sendStatus(200);
+    } catch (error: any) {
+      console.error("[API] Error in POST /api/notifications/read-all:", error);
+      res.status(500).json({ error: error.message });
+    }
   });
 
   app.get("/api/notification-settings", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const userId = (req.user as any).id;
-    const settings = await storage.getNotificationSettings(userId);
-    res.json(settings);
+    try {
+      if (!req.isAuthenticated()) return res.sendStatus(401);
+      const userId = (req.user as any).id;
+      const settings = await storage.getNotificationSettings(userId);
+      res.json(settings);
+    } catch (error: any) {
+      console.error("[API] Error in GET /api/notification-settings:", error);
+      res.status(500).json({ error: error.message });
+    }
   });
 
   app.patch("/api/notification-settings", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const userId = (req.user as any).id;
-    const settings = await storage.updateNotificationSettings(userId, req.body);
-    res.json(settings);
+    try {
+      if (!req.isAuthenticated()) return res.sendStatus(401);
+      const userId = (req.user as any).id;
+      const settings = await storage.updateNotificationSettings(userId, req.body);
+      res.json(settings);
+    } catch (error: any) {
+      console.error("[API] Error in PATCH /api/notification-settings:", error);
+      res.status(500).json({ error: error.message });
+    }
   });
 
   return httpServer;

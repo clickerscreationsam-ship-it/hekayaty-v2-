@@ -1,76 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-
+import { callEdgeFunction } from "./use-edge-functions";
 
 // Get pending orders via Edge Function
 export function usePendingOrders() {
     return useQuery({
         queryKey: ['pending-orders'],
         queryFn: async () => {
-            try {
-                console.log("🔍 usePendingOrders: Starting...");
-
-                // Force refresh session to ensure valid JWT for Gateway
-                console.log("🔍 usePendingOrders: Attempting refreshSession...");
-                const { data: { session }, error: refreshError } = await supabase.auth.refreshSession();
-                if (refreshError) console.warn("⚠️ Session refresh warning:", refreshError);
-                console.log("🔍 usePendingOrders: Session after refresh:", session?.user?.id);
-
-                let userId = session?.user?.id;
-
-                if (!userId) {
-                    // Fallback attempt
-                    console.log("🔍 usePendingOrders: No userId from refresh, trying getSession...");
-                    const { data: sessionData } = await supabase.auth.getSession();
-                    userId = sessionData.session?.user?.id;
-                    console.log("🔍 usePendingOrders: UserId from getSession:", userId);
-                }
-
-                if (!userId) {
-                    console.warn("⚠️ usePendingOrders: No session found, trying getUser()...");
-                    const { data: userData } = await supabase.auth.getUser();
-                    userId = userData.user?.id;
-                    console.log("🔍 usePendingOrders: UserId from getUser:", userId);
-                }
-
-                console.log("✅ usePendingOrders: Final userId:", userId);
-                const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-pending-orders`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${session?.access_token}`,
-                    },
-                    body: JSON.stringify({ status: 'pending' })
-                });
-
-                console.log("📡 usePendingOrders: Response status:", response.status);
-
-                if (!response.ok) {
-                    const errText = await response.text();
-                    console.error("❌ usePendingOrders Error Response:", errText);
-                    throw new Error(`Edge Function failed: ${response.status} ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                console.log("📦 usePendingOrders: Received data:", data);
-
-                if (data && data.debug_info && data.data) {
-                    console.log("🐛 Debug Info:", data.debug_info);
-                    return data.data;
-                }
-
-                console.log("✅ usePendingOrders: Returning data array, length:", data?.length);
-                return data;
-            } catch (error: any) {
-                console.error("💥 usePendingOrders: FATAL ERROR:", error);
-                console.error("💥 Error details:", {
-                    message: error.message,
-                    stack: error.stack,
-                    name: error.name
-                });
-                throw error; // Re-throw so React Query knows it failed
-            }
+            return callEdgeFunction('get-pending-orders', { status: 'pending' });
         },
         initialData: [],
         staleTime: 0,
@@ -87,27 +24,7 @@ export function useVerifyPayment() {
 
     return useMutation({
         mutationFn: async (orderId: number) => {
-            // Get current user ID
-            const { data: { session } } = await supabase.auth.getSession();
-            const userId = session?.user?.id;
-
-            const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-payment`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token}`,
-                },
-                body: JSON.stringify({ orderId })
-            });
-
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`Verification failed: ${response.status}`);
-            }
-
-            const data = await response.json();
-            if (data?.error) throw new Error(data.error);
-            return data;
+            return callEdgeFunction('verify-payment', { orderId });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['pending-orders'] });
@@ -126,7 +43,6 @@ export function useVerifyPayment() {
     });
 }
 
-
 // Reject Order
 export function useRejectOrder() {
     const queryClient = useQueryClient();
@@ -134,26 +50,7 @@ export function useRejectOrder() {
 
     return useMutation({
         mutationFn: async (orderId: number) => {
-            // Get current user ID
-            const { data: { session } } = await supabase.auth.getSession();
-            const userId = session?.user?.id;
-
-            const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/reject-order`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token}`,
-                },
-                body: JSON.stringify({ orderId })
-            });
-
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`Reject failed: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return data;
+            return callEdgeFunction('reject-order', { orderId });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['pending-orders'] });
@@ -170,47 +67,7 @@ export function useAdminSellers() {
     return useQuery({
         queryKey: ['admin-sellers'],
         queryFn: async () => {
-            // Force refresh session to ensure valid JWT for Gateway
-            const { data: { session }, error: refreshError } = await supabase.auth.refreshSession();
-            if (refreshError) console.warn("Session refresh warning:", refreshError);
-
-            let userId = session?.user?.id;
-
-            if (!userId) {
-                // Fallback attempt
-                const { data: sessionData } = await supabase.auth.getSession();
-                userId = sessionData.session?.user?.id;
-            }
-
-            if (!userId) {
-                console.warn("useAdminSellers: No session found, trying getUser()...");
-                const { data: userData } = await supabase.auth.getUser();
-                userId = userData.user?.id;
-            }
-
-            const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-sellers`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token}`,
-                },
-                body: JSON.stringify({})
-            });
-
-            if (!response.ok) {
-                const errText = await response.text();
-                console.error("useAdminSellers Error Response:", errText);
-                throw new Error(`Edge Function failed: ${response.status} ${response.statusText}`);
-            }
-
-            const data = await response.json();
-
-            if (data && data.debug_info && data.data) {
-                console.log("Debug Info:", data.debug_info);
-                return data.data;
-            }
-
-            return data;
+            return callEdgeFunction('get-sellers', {});
         },
         staleTime: 0,
         gcTime: 0,
@@ -226,11 +83,7 @@ export function useFreezeSeller() {
 
     return useMutation({
         mutationFn: async ({ userId, isActive }: { userId: string, isActive: boolean }) => {
-            const { data, error } = await supabase.functions.invoke('freeze-seller', {
-                body: { userId, isActive }
-            });
-            if (error) throw new Error(error.message || "Freeze failed");
-            return data;
+            return callEdgeFunction('freeze-seller', { userId, isActive });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-sellers'] });
@@ -247,20 +100,7 @@ export function useAdminPayouts() {
     return useQuery({
         queryKey: ['admin-payouts'],
         queryFn: async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            const userId = session?.user?.id;
-
-            const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-all-payouts`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token}`,
-                },
-                body: JSON.stringify({})
-            });
-
-            if (!response.ok) throw new Error("Failed to fetch payouts");
-            return response.json();
+            return callEdgeFunction('get-all-payouts', {});
         }
     });
 }
@@ -272,20 +112,7 @@ export function useApprovePayout() {
 
     return useMutation({
         mutationFn: async ({ payoutId, status }: { payoutId: number, status: 'processed' | 'rejected' }) => {
-            const { data: { session } } = await supabase.auth.getSession();
-            const userId = session?.user?.id;
-
-            const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/approve-payout`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token}`,
-                },
-                body: JSON.stringify({ payoutId, status })
-            });
-
-            if (!response.ok) throw new Error("Update failed");
-            return response.json();
+            return callEdgeFunction('approve-payout', { payoutId, status });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-payouts'] });
@@ -302,20 +129,7 @@ export function useAdminPayoutHistory() {
     return useQuery({
         queryKey: ['admin-payout-history'],
         queryFn: async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            const userId = session?.user?.id;
-
-            const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-all-payouts`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token}`,
-                },
-                body: JSON.stringify({ status: 'all' })
-            });
-
-            if (!response.ok) throw new Error("Failed to fetch payout history");
-            const data = await response.json();
+            const data = await callEdgeFunction('get-all-payouts', { status: 'all' });
             return data.filter((p: any) => p.status !== 'pending');
         }
     });
@@ -326,20 +140,7 @@ export function useAdminOrderHistory() {
     return useQuery({
         queryKey: ['admin-order-history'],
         queryFn: async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            const userId = session?.user?.id;
-
-            const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-pending-orders`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token}`,
-                },
-                body: JSON.stringify({ status: 'all' })
-            });
-
-            if (!response.ok) throw new Error("Failed to fetch order history");
-            const data = await response.json();
+            const data = await callEdgeFunction('get-pending-orders', { status: 'all' });
             return data.filter((o: any) => o.status !== 'pending');
         }
     });
