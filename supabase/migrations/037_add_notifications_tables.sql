@@ -6,8 +6,8 @@
 -- 1. Notifications Table
 CREATE TABLE IF NOT EXISTS public.notifications (
     id SERIAL PRIMARY KEY,
-    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-    actor_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
+    user_id TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    actor_id TEXT REFERENCES public.users(id) ON DELETE SET NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     type TEXT NOT NULL, -- commerce, content, social, creator, engagement, store
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS public.notifications (
 -- 2. Notification Settings Table
 CREATE TABLE IF NOT EXISTS public.notification_settings (
     id SERIAL PRIMARY KEY,
-    user_id UUID NOT NULL UNIQUE REFERENCES public.users(id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL UNIQUE REFERENCES public.users(id) ON DELETE CASCADE,
     email_notifications BOOLEAN DEFAULT true,
     push_notifications BOOLEAN DEFAULT true,
     categories JSONB DEFAULT '{
@@ -49,26 +49,26 @@ DROP POLICY IF EXISTS "Users can view their own notifications" ON public.notific
 CREATE POLICY "Users can view their own notifications" 
 ON public.notifications FOR SELECT 
 TO authenticated 
-USING (user_id = auth.uid());
+USING (user_id = auth.uid()::text);
 
 DROP POLICY IF EXISTS "Users can update their own notifications" ON public.notifications;
-CREATE POLICY "Users can update their own notifications" 
+CREATE POLICY "Users can update own notifications" 
 ON public.notifications FOR UPDATE 
 TO authenticated 
-USING (user_id = auth.uid());
+USING (user_id = auth.uid()::text);
 
 -- Notification Settings Policies
 DROP POLICY IF EXISTS "Users can view their own settings" ON public.notification_settings;
 CREATE POLICY "Users can view their own settings" 
 ON public.notification_settings FOR SELECT 
 TO authenticated 
-USING (user_id = auth.uid());
+USING (user_id = auth.uid()::text);
 
 DROP POLICY IF EXISTS "Users can update their own settings" ON public.notification_settings;
 CREATE POLICY "Users can update their own settings" 
 ON public.notification_settings FOR UPDATE 
 TO authenticated 
-USING (user_id = auth.uid());
+USING (user_id = auth.uid()::text);
 
 -- 5. Automatically create settings on user creation (Optional but recommended)
 -- For now, the application logic handles the creation if not exists.

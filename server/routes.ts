@@ -1737,13 +1737,22 @@ export async function registerRoutes(
 
   app.get("/api/notifications", async (req, res) => {
     try {
-      if (!req.isAuthenticated()) return res.sendStatus(401);
+      if (!req.isAuthenticated()) {
+        console.warn("[API] GET /api/notifications - Unauthorized");
+        return res.sendStatus(401);
+      }
       const userId = (req.user as any).id;
+      console.log(`[API] Fetching notifications for user: ${userId}`);
       const notifications = await storage.getNotifications(userId);
+      console.log(`[API] Found ${notifications.length} notifications`);
       res.json(notifications);
     } catch (error: any) {
       console.error("[API] Error in GET /api/notifications:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({
+        message: "Internal Server Error",
+        error: error.message,
+        userId: (req.user as any)?.id
+      });
     }
   });
 
@@ -1772,13 +1781,21 @@ export async function registerRoutes(
 
   app.get("/api/notification-settings", async (req, res) => {
     try {
-      if (!req.isAuthenticated()) return res.sendStatus(401);
+      if (!req.isAuthenticated()) {
+        console.warn("[API] GET /api/notification-settings - Unauthorized");
+        return res.sendStatus(401);
+      }
       const userId = (req.user as any).id;
+      console.log(`[API] Fetching notification settings for user: ${userId}`);
       const settings = await storage.getNotificationSettings(userId);
       res.json(settings);
     } catch (error: any) {
       console.error("[API] Error in GET /api/notification-settings:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({
+        message: "Internal Server Error",
+        error: error.message,
+        userId: (req.user as any)?.id
+      });
     }
   });
 
