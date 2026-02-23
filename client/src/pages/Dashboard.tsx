@@ -1405,86 +1405,168 @@ function ReaderLibraryContent({ user }: { user: any }) {
   );
 }
 function ReaderOrdersContent() {
-  const { t } = useTranslation();
-  const { data: orders, isLoading } = useUserOrders();
+  const { data: orders, isLoading, error } = useUserOrders();
+
+  const getFulfillmentColor = (status: string) => {
+    switch (status) {
+      case 'accepted': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'preparing': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'shipped': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+      case 'delivered': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'rejected': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      default: return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+    }
+  };
+
+  const getFulfillmentLabel = (status: string) => {
+    switch (status) {
+      case 'accepted': return '✅ Accepted by Maker';
+      case 'preparing': return '🔧 Being Prepared';
+      case 'shipped': return '🚚 Shipped';
+      case 'delivered': return '📦 Delivered';
+      case 'rejected': return '❌ Rejected';
+      default: return '⏳ Awaiting Acceptance';
+    }
+  };
 
   if (isLoading) {
-    return <div className="p-12 text-center text-muted-foreground animate-pulse">Loading orders...</div>;
+    return (
+      <TabsContent value="my_orders">
+        <div className="p-20 text-center text-muted-foreground animate-pulse flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p>Loading your orders...</p>
+        </div>
+      </TabsContent>
+    );
   }
 
   return (
     <TabsContent value="my_orders">
-      <div className="glass-card rounded-2xl p-0 border border-white/10 overflow-hidden shadow-2xl">
-        <div className="p-6 bg-white/5 border-b border-white/5 flex items-center gap-2">
-          <History className="w-5 h-5 text-primary" />
-          <h3 className="text-xl font-bold text-gradient">My Order History</h3>
+      <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+        {/* Header */}
+        <div className="p-6 bg-white/5 border-b border-white/5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+              <History className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gradient">My Orders</h3>
+              <p className="text-xs text-muted-foreground">{orders?.length || 0} orders total</p>
+            </div>
+          </div>
+          <Link href="/marketplace">
+            <Button variant="outline" size="sm" className="gap-2 border-primary/20 hover:bg-primary/10 text-xs">
+              <ShoppingBag className="w-3 h-3" /> Shop More
+            </Button>
+          </Link>
         </div>
 
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader className="bg-white/5">
-              <TableRow className="border-white/10 hover:bg-transparent">
-                <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Order info</TableHead>
-                <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Status</TableHead>
-                <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4">Total</TableHead>
-                <TableHead className="text-primary/70 font-bold uppercase text-xs tracking-wider py-4 text-right">Items</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders?.map((order: any) => (
-                <TableRow key={order.id} className="border-white/5 hover:bg-white/5 transition-colors">
-                  <TableCell className="py-6">
-                    <div className="flex flex-col">
-                      <span className="font-mono font-bold text-primary text-sm">#{order.id}</span>
-                      <span className="text-xs text-muted-foreground mt-1">{formatDate(order.createdAt)}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-6">
-                    <Badge
-                      variant={order.isVerified ? 'default' : 'secondary'}
-                      className={cn(
-                        "font-bold uppercase tracking-tighter text-[10px]",
-                        order.isVerified ? 'bg-green-500/20 text-green-500 border border-green-500/20' : 'bg-amber-500/20 text-amber-500 border border-amber-500/20'
-                      )}
-                    >
-                      {order.isVerified ? 'Verified' : 'Pending Verification'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="py-6 font-black text-primary">
-                    {order.totalAmount} <span className="text-[10px]">EGP</span>
-                  </TableCell>
-                  <TableCell className="py-6">
-                    <div className="flex -space-x-2 justify-end">
-                      {order.order_items?.map((item: any, i: number) => (
-                        <div key={item.id} className="relative group" style={{ zIndex: 10 - i }}>
-                          <img
-                            src={item.product?.coverUrl}
-                            alt={item.product?.title}
-                            className="w-10 h-10 rounded-full border-2 border-background object-cover grayscale group-hover:grayscale-0 transition-all duration-300 shadow-xl"
-                          />
-                          <div className="absolute bottom-full right-0 mb-2 invisible group-hover:visible bg-black/90 text-[10px] text-white p-2 rounded whitespace-nowrap z-50">
-                            {item.product?.title} (x{item.quantity})
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+        {/* Empty state */}
+        {(!orders || orders.length === 0) && (
+          <div className="p-20 text-center text-muted-foreground">
+            <ShoppingBag className="w-12 h-12 mx-auto mb-4 opacity-10" />
+            <p className="font-medium text-lg mb-1">No orders yet</p>
+            <p className="text-sm opacity-60 mb-4">Your orders will appear here once you make a purchase</p>
+            <Link href="/marketplace">
+              <Button variant="outline" className="border-primary/20 hover:bg-primary/10 text-primary">Browse Store</Button>
+            </Link>
+          </div>
+        )}
 
-              {(!orders || orders.length === 0) && (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center py-20 text-muted-foreground">
-                    <ShoppingBag className="w-12 h-12 mx-auto mb-4 opacity-10" />
-                    <p className="font-medium text-lg">No orders found</p>
-                    <Link href="/marketplace">
-                      <Button variant="link" className="mt-2 text-primary">Go to store</Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
+        {/* Orders list */}
+        <div className="divide-y divide-white/5">
+          {orders?.map((order: any) => (
+            <div key={order.id} className="p-6 hover:bg-white/3 transition-colors">
+              {/* Order header row */}
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono font-bold text-primary text-sm bg-primary/10 px-2 py-1 rounded">
+                    #{order.id}
+                  </span>
+                  <span className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {/* Payment verification status */}
+                  <Badge className={cn(
+                    "font-bold uppercase tracking-wider text-[10px] border",
+                    order.isVerified
+                      ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                      : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                  )}>
+                    {order.isVerified ? '✅ Payment Verified' : '⏳ Awaiting Admin Approval'}
+                  </Badge>
+                  <span className="font-black text-primary text-sm">
+                    {order.totalAmount} <span className="text-[10px] font-normal opacity-60">EGP</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Status message */}
+              {!order.isVerified && (
+                <div className="mb-4 px-4 py-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-400/80">
+                  💡 Your payment is being reviewed by our team. This usually takes 1–24 hours. Once approved, the maker will be notified to start preparing your order.
+                </div>
               )}
-            </TableBody>
-          </Table>
+
+              {/* Items */}
+              <div className="space-y-3">
+                {order.order_items?.map((item: any) => (
+                  <div key={item.id} className="flex items-center gap-4 p-3 rounded-xl bg-white/3 border border-white/5">
+                    {/* Cover image */}
+                    {item.product?.coverUrl ? (
+                      <img
+                        src={item.product.coverUrl}
+                        alt={item.product.title}
+                        className="w-12 h-12 rounded-lg object-cover border border-white/10 flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+                        <Package className="w-5 h-5 opacity-30" />
+                      </div>
+                    )}
+
+                    {/* Item info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm truncate">{item.product?.title || 'Product'}</p>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span className="text-xs text-muted-foreground">x{item.quantity}</span>
+                        <span className="text-xs text-muted-foreground">•</span>
+                        <span className="text-xs text-primary font-bold">{item.price} EGP</span>
+                        {item.makerName && (
+                          <>
+                            <span className="text-xs text-muted-foreground">•</span>
+                            <span className="text-xs text-muted-foreground">by {item.makerName}</span>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Estimated delivery if accepted */}
+                      {item.estimatedDeliveryDays && (
+                        <p className="text-xs text-blue-400 mt-1">
+                          🚚 Estimated delivery: {item.estimatedDeliveryDays} days from acceptance
+                        </p>
+                      )}
+
+                      {/* Tracking number if shipped */}
+                      {item.trackingNumber && (
+                        <p className="text-xs text-purple-400 mt-1">
+                          📦 Tracking: {item.trackingNumber}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Fulfillment status badge */}
+                    <Badge className={cn(
+                      "font-bold text-[10px] border flex-shrink-0",
+                      getFulfillmentColor(item.fulfillmentStatus || 'pending')
+                    )}>
+                      {getFulfillmentLabel(item.fulfillmentStatus || 'pending')}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </TabsContent>

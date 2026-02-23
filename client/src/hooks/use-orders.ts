@@ -1,60 +1,97 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
-// Helper to fetch user orders with strict typing
+/**
+ * Fetches the current user's orders via the get-user-orders Edge Function.
+ * We use the Edge Function (service role) instead of querying Supabase directly
+ * because the orders.user_id column is TEXT while auth.uid() returns UUID —
+ * the RLS type mismatch causes direct queries to silently return empty results.
+ */
 export function useUserOrders() {
     return useQuery({
         queryKey: ["/api/orders/user"],
         queryFn: async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return [];
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return [];
 
-            const { data, error } = await supabase
-                .from('orders')
-                .select(`
-          *,
-          order_items (
-            *,
-            product:products (*)
-          )
-        `)
-                .eq('user_id', user.id)
-                // Show all orders (pending, paid, verified) — not just 'paid'
-                // Makers can see verified orders; readers should see ALL their orders
-                .order('created_at', { ascending: false });
+            const { data, error } = await supabase.functions.invoke('get-user-orders', {
+                method: 'POST',
+                body: {},
+                headers: {
+                    'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${session.access_token}`
+                }
+            });
 
-            if (error) throw error;
+            if (error) {
+                console.error('[useUserOrders] Edge function error:', error);
+                // Attempt session refresh and retry once
+                const { data: refreshed } = await supabase.auth.refreshSession();
+                if (refreshed.session) {
+                    const { data: retryData } = await supabase.functions.invoke('get-user-orders', {
+                        method: 'POST',
+                        body: {},
+                        headers: {
+                            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${refreshed.session.access_token}`
+                        }
+                    });
+                    if (retryData?.orders) return mapOrders(retryData.orders);
+                }
+                return [];
+            }
 
-            // Map to camelCase
-            return data.map(order => ({
-                id: order.id,
-                userId: order.user_id,
-                totalAmount: order.total_amount,
-                status: order.status,
-                paymentMethod: order.payment_method,
-                paymentProofUrl: order.payment_proof_url,
-                paymentReference: order.payment_reference,
-                isVerified: order.is_verified,
-                shippingAddress: order.shipping_address,
-                shippingCost: order.shipping_cost,
-                createdAt: order.created_at,
-                order_items: (order.order_items || []).map((item: any) => ({
-                    id: item.id,
-                    orderId: item.order_id,
-                    productId: item.product_id,
-                    quantity: item.quantity,
-                    price: item.price,
-                    fulfillmentStatus: item.fulfillment_status,
-                    product: item.product ? {
-                        id: item.product.id,
-                        title: item.product.title,
-                        coverUrl: item.product.cover_url,
-                        type: item.product.type,
-                        genre: item.product.genre,
-                        description: item.product.description
-                    } : null
-                }))
-            }));
-        }
+            if (data?.error) {
+                console.error('[useUserOrders] Logical error:', data.error);
+                return [];
+            }
+
+            return mapOrders(data?.orders || []);
+        },
+        staleTime: 0,
+        gcTime: 0,
+        refetchOnMount: 'always'
     });
+}
+
+/**
+ * Maps the edge function response format to the shape used by Dashboard components.
+ * Edge function returns: { orderId, orderDate, totalAmount, items: [{orderItemId, productTitle, ...}] }
+ * Dashboard expects:     { id, createdAt, totalAmount, isVerified, order_items: [{product: {title, coverUrl}}] }
+ */
+function mapOrders(orders: any[]) {
+    return orders.map(order => ({
+        id: order.orderId,
+        userId: null,
+        totalAmount: order.totalAmount,
+        status: order.status,
+        paymentMethod: order.paymentMethod,
+        paymentProofUrl: null,
+        paymentReference: null,
+        isVerified: order.isVerified,
+        shippingAddress: order.shippingAddress,
+        shippingCost: order.shippingCost,
+        createdAt: order.orderDate,
+        order_items: (order.items || []).map((item: any) => ({
+            id: item.orderItemId,
+            orderId: order.orderId,
+            productId: item.makerId,
+            quantity: item.quantity,
+            price: item.price,
+            fulfillmentStatus: item.fulfillmentStatus,
+            trackingNumber: item.trackingNumber,
+            estimatedDeliveryDays: item.estimatedDeliveryDays,
+            makerName: item.makerName,
+            shippedAt: item.shippedAt,
+            acceptedAt: item.acceptedAt,
+            product: {
+                id: null,
+                title: item.productTitle,
+                coverUrl: item.productCoverUrl,
+                type: item.productType,
+                genre: null,
+                description: null
+            }
+        }))
+    }));
 }
