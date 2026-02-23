@@ -1324,12 +1324,17 @@ function ReaderLibraryContent({ user }: { user: any }) {
   const { t } = useTranslation();
   const { data: orders, isLoading } = useUserOrders();
 
-  const purchasedItems = orders?.flatMap(order => order.order_items?.map((item: any) => ({
-    ...item.product,
-    addedAt: order.createdAt
-  })) || []) || [];
+  const purchasedItems = orders?.filter(o => o.isVerified).flatMap(order => order.order_items?.map((item: any) => {
+    const product = item.product;
+    const uniqueKey = product.type === 'collection' ? `col_${product.collectionId}` : `prod_${product.id}`;
+    return {
+      ...product,
+      uniqueKey,
+      addedAt: order.createdAt
+    };
+  }) || []) || [];
 
-  const uniqueItems = Array.from(new Map(purchasedItems.map((item: any) => [item.id, item])).values());
+  const uniqueItems = Array.from(new Map(purchasedItems.map((item: any) => [item.uniqueKey, item])).values());
 
   if (isLoading) {
     return <div className="p-12 text-center text-muted-foreground animate-pulse">Loading library...</div>;
@@ -1371,7 +1376,7 @@ function ReaderLibraryContent({ user }: { user: any }) {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {uniqueItems.map((item: any) => (
-              <div key={item.id} className="group relative bg-background/50 rounded-xl overflow-hidden border border-border hover:shadow-lg transition-all duration-300">
+              <div key={item.uniqueKey} className="group relative bg-background/50 rounded-xl overflow-hidden border border-border hover:shadow-lg transition-all duration-300">
                 <div className="aspect-[2/3] overflow-hidden bg-muted">
                   <img
                     src={item.coverUrl}
@@ -1383,6 +1388,12 @@ function ReaderLibraryContent({ user }: { user: any }) {
                       <Link href={`/read/${item.id}`}>
                         <Button className="rounded-full bg-white text-black hover:bg-white/90 font-bold">
                           <BookOpen className="w-4 h-4 mr-2" /> {t("common.read")}
+                        </Button>
+                      </Link>
+                    ) : item.type === 'collection' ? (
+                      <Link href={`/collection/${item.collectionId}`}>
+                        <Button className="rounded-full bg-white text-black hover:bg-white/90 font-bold">
+                          <BookOpen className="w-4 h-4 mr-2" /> {t("common.view")}
                         </Button>
                       </Link>
                     ) : (

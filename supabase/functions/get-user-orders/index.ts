@@ -139,6 +139,8 @@ serve(async (req) => {
                         estimatedDeliveryDays: item.estimated_delivery_days || null,
                         makerName: creatorsMap.get(item.creator_id) || 'Unknown Maker',
                         makerId: item.creator_id || null,
+                        productId: item.product_id || null,
+                        collectionId: item.collection_id || null,
                         shippedAt: item.shipped_at || null,
                         deliveredAt: item.delivered_at || null,
                         acceptedAt: item.accepted_at || null,

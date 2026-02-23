@@ -85,7 +85,8 @@ function mapOrders(orders: any[]) {
             shippedAt: item.shippedAt,
             acceptedAt: item.acceptedAt,
             product: {
-                id: null,
+                id: item.productId,
+                collectionId: item.collectionId,
                 title: item.productTitle,
                 coverUrl: item.productCoverUrl,
                 type: item.productType,
