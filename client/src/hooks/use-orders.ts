@@ -1,44 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { callEdgeFunction } from "./use-edge-functions";
 
-/**
- * Fetches the current user's orders via the get-user-orders Edge Function.
- * We use the Edge Function (service role) instead of querying Supabase directly
- * because the orders.user_id column is TEXT while auth.uid() returns UUID —
- * the RLS type mismatch causes direct queries to silently return empty results.
- */
 export function useUserOrders() {
     return useQuery({
         queryKey: ["/api/orders/user"],
         queryFn: async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) return [];
-
-            const { data, error } = await supabase.functions.invoke('get-user-orders', {
-                method: 'POST',
-                body: {},
-            });
-
-            if (error) {
-                console.error('[useUserOrders] Edge function error:', error);
-                // Attempt session refresh and retry once
-                const { data: refreshed } = await supabase.auth.refreshSession();
-                if (refreshed.session) {
-                    const { data: retryData } = await supabase.functions.invoke('get-user-orders', {
-                        method: 'POST',
-                        body: {},
-                    });
-                    if (retryData?.orders) return mapOrders(retryData.orders);
-                }
+            try {
+                const data = await callEdgeFunction('get-user-orders', {});
+                return mapOrders(data?.orders || []);
+            } catch (error) {
+                console.error('[useUserOrders] Error fetching orders:', error);
                 return [];
             }
-
-            if (data?.error) {
-                console.error('[useUserOrders] Logical error:', data.error);
-                return [];
-            }
-
-            return mapOrders(data?.orders || []);
         },
         staleTime: 0,
         gcTime: 0,
@@ -52,6 +26,8 @@ export function useUserOrders() {
  * Dashboard expects:     { id, createdAt, totalAmount, isVerified, order_items: [{product: {title, coverUrl}}] }
  */
 function mapOrders(orders: any[]) {
+    if (!Array.isArray(orders)) return [];
+
     return orders.map(order => ({
         id: order.orderId,
         userId: null,
@@ -67,7 +43,7 @@ function mapOrders(orders: any[]) {
         order_items: (order.items || []).map((item: any) => ({
             id: item.orderItemId,
             orderId: order.orderId,
-            productId: item.makerId,
+            productId: item.productId,
             quantity: item.quantity,
             price: item.price,
             fulfillmentStatus: item.fulfillmentStatus,
@@ -79,9 +55,9 @@ function mapOrders(orders: any[]) {
             product: {
                 id: item.productId,
                 collectionId: item.collectionId,
-                title: item.productTitle,
-                coverUrl: item.productCoverUrl,
-                type: item.productType,
+                title: item.productTitle || 'Unknown Product',
+                coverUrl: item.productCoverUrl || '',
+                type: item.productType || 'unknown',
                 genre: null,
                 description: null
             }

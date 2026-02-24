@@ -19,21 +19,15 @@ serve(async (req) => {
             })
         }
 
+        // We use the user's OWN token to verify them first
         const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
-        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
 
-        if (!supabaseUrl || !supabaseServiceKey) {
-            console.error('[get-user-orders] Missing env variables')
-            throw new Error('Server configuration error')
-        }
+        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+            global: { headers: { Authorization: authHeader } }
+        })
 
-        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
-
-        // Case-insensitive Bearer check
-        const token = authHeader.replace(/^[Bb]earer\s+/, '')
-        console.log(`[get-user-orders] Verifying token (length: ${token.length})...`)
-
-        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+        const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
 
         if (authError || !user) {
             console.error('[get-user-orders] Auth error:', authError?.message || 'User not found')
@@ -45,6 +39,11 @@ serve(async (req) => {
                 status: 401
             })
         }
+
+        // Now we use the ADMIN client to query the database, but we use the userId we just verified
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+
 
         const userId = user.id
         console.log(`[get-user-orders] Fetching orders for user: ${userId}`)
