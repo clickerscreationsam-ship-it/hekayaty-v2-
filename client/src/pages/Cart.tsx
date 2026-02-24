@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Navbar } from "@/components/Navbar";
 import { useCart, useRemoveFromCart, useCheckout, useCalculateShipping, useUpdateCartQuantity } from "@/hooks/use-cart";
 import { useShippingAddresses } from "@/hooks/use-shipping";
 import { Button } from "@/components/ui/button";
@@ -10,33 +9,32 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
+import { useTranslation } from "react-i18next";
+import { Navbar } from "@/components/Navbar";
 
 type CheckoutGroup = "physical" | "digital";
 
 export default function Cart() {
+    const { t } = useTranslation();
     const { data: cartItems, isLoading } = useCart();
     const removeFromCart = useRemoveFromCart();
     const updateQuantity = useUpdateCartQuantity();
     const checkout = useCheckout();
     const [, setLocation] = useLocation();
 
-    // Which group is the dialog for?
     const [checkoutGroup, setCheckoutGroup] = useState<CheckoutGroup | null>(null);
-    const [step, setStep] = useState(1); // 1: Shipping (physical only), 2: Payment
+    const [step, setStep] = useState(1);
 
-    // Shipping State
     const calculateShipping = useCalculateShipping();
     const { data: userAddresses } = useShippingAddresses();
     const [shippingDetails, setShippingDetails] = useState({ fullName: "", phoneNumber: "", city: "", addressLine: "" });
     const [shippingCost, setShippingCost] = useState(0);
     const [shippingBreakdown, setShippingBreakdown] = useState<any[]>([]);
 
-    // Payment State
     const [paymentMethod, setPaymentMethod] = useState("instapay");
     const [proofUrl, setProofUrl] = useState<string | null>(null);
     const [reference, setReference] = useState("");
 
-    // ─── Item Classification ───────────────────────────────────────────────
     const validItems = cartItems?.filter((item: any) => item.product || item.collection) || [];
     const physicalItems = validItems.filter((item: any) => item.product?.requiresShipping);
     const digitalItems = validItems.filter((item: any) => !item.product?.requiresShipping && !item.collection);
@@ -45,7 +43,6 @@ export default function Cart() {
     const hasPhysical = physicalItems.length > 0;
     const hasDigital = allDigital.length > 0;
 
-    // ─── Totals ────────────────────────────────────────────────────────────
     const physicalSubtotal = physicalItems.reduce((s: number, i: any) => s + (i.product?.price || 0) * (i.quantity || 1), 0);
     const digitalSubtotal = allDigital.reduce((s: number, i: any) => s + (i.product?.price || i.collection?.price || 0) * (i.quantity || 1), 0);
 
@@ -54,7 +51,6 @@ export default function Cart() {
     const activeShippingCost = checkoutGroup === "physical" ? shippingCost : 0;
     const activeTotal = activeSubtotal + activeShippingCost;
 
-    // ─── Auto-fill shipping from saved address ─────────────────────────────
     useEffect(() => {
         if (hasPhysical && userAddresses && userAddresses.length > 0 && shippingCost === 0 && !calculateShipping.isPending) {
             const latest = userAddresses[0];
@@ -68,7 +64,6 @@ export default function Cart() {
         }
     }, [hasPhysical, userAddresses, validItems.length]);
 
-    // ─── Open dialog helper ────────────────────────────────────────────────
     const openCheckout = (group: CheckoutGroup) => {
         setCheckoutGroup(group);
         setStep(group === "physical" ? 1 : 2);
@@ -77,7 +72,6 @@ export default function Cart() {
     };
     const closeCheckout = () => setCheckoutGroup(null);
 
-    // ─── Shipping calc ─────────────────────────────────────────────────────
     const handleCalculateShipping = () => {
         if (!shippingDetails.city) return;
         const itemsForShipping = physicalItems.map((i: any) => ({ productId: i.productId, variantId: i.variantId, price: i.product!.price, creatorId: i.product!.writerId }));
@@ -86,10 +80,8 @@ export default function Cart() {
         });
     };
 
-    // ─── Submit checkout for active group ──────────────────────────────────
     const handleCheckoutSubmit = () => {
         if (activeItems.length === 0) return;
-
         const itemsPayload = activeItems.map((item: any) => ({
             productId: item.productId,
             collectionId: item.collectionId,
@@ -99,7 +91,6 @@ export default function Cart() {
             creatorId: item.product?.writerId || item.collection?.writerId || null,
             customizationData: item.customizationData
         }));
-
         checkout.mutate({
             items: itemsPayload,
             totalAmount: activeTotal,
@@ -110,20 +101,16 @@ export default function Cart() {
             shippingCost: checkoutGroup === "physical" ? shippingCost : undefined,
             shippingBreakdown: checkoutGroup === "physical" ? shippingBreakdown : undefined
         }, {
-            onSuccess: () => {
-                closeCheckout();
-                setLocation("/dashboard");
-            }
+            onSuccess: () => { closeCheckout(); setLocation("/dashboard"); }
         });
     };
 
-    // ─── Payment method info ───────────────────────────────────────────────
     const paymentInstructions: Record<string, any> = {
-        instapay: { title: "InstaPay Transfer", details: "Transfer to number: 01272404623", icon: Smartphone, color: "text-purple-600", disabled: false },
-        vodafone_cash: { title: "Vodafone Cash (Soon / قريباً)", details: "Service integration in progress.", icon: Smartphone, color: "text-red-600", disabled: true },
-        orange_cash: { title: "Orange Cash (Soon / قريباً)", details: "Service integration in progress.", icon: Smartphone, color: "text-orange-600", disabled: true },
-        etisalat_cash: { title: "Etisalat Cash (Soon / قريباً)", details: "Service integration in progress.", icon: Smartphone, color: "text-green-600", disabled: true },
-        bank_transfer: { title: "Bank Transfer (Soon / قريباً)", details: "Direct bank transfer will be available soon.", icon: Banknote, color: "text-blue-600", disabled: true }
+        instapay: { title: t('checkout.payment.instapay'), details: "Transfer to: 01272404623", icon: Smartphone, color: "text-purple-600", disabled: false },
+        vodafone_cash: { title: `Vodafone Cash (${t('common.soon')})`, details: t('common.integrationInProgress'), icon: Smartphone, color: "text-red-600", disabled: true },
+        orange_cash: { title: `Orange Cash (${t('common.soon')})`, details: t('common.integrationInProgress'), icon: Smartphone, color: "text-orange-600", disabled: true },
+        etisalat_cash: { title: `Etisalat Cash (${t('common.soon')})`, details: t('common.integrationInProgress'), icon: Smartphone, color: "text-green-600", disabled: true },
+        bank_transfer: { title: `${t('checkout.payment.card')} (${t('common.soon')})`, details: t('common.comingSoon'), icon: Banknote, color: "text-blue-600", disabled: true }
     };
     const selectedMethodInfo = paymentInstructions[paymentMethod];
 
@@ -142,65 +129,61 @@ export default function Cart() {
             <div className="max-w-5xl mx-auto px-4 pt-32">
                 <h1 className="text-4xl font-serif font-bold mb-8 flex items-center gap-3">
                     <ShoppingBag className="w-8 h-8 text-primary" />
-                    Your Cart
+                    {t('cart.yourCart', t('cart.title'))}
                 </h1>
 
                 {validItems.length === 0 ? (
                     <div className="glass-card p-12 text-center rounded-2xl">
                         <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                        <h2 className="text-2xl font-bold mb-2">Your cart is empty</h2>
-                        <p className="text-muted-foreground mb-8">Looks like you haven't added any stories yet.</p>
+                        <h2 className="text-2xl font-bold mb-2">{t('cart.empty')}</h2>
+                        <p className="text-muted-foreground mb-8">{t('cart.emptyMessage', t('cart.emptySubtitle'))}</p>
                         <Link href="/marketplace">
-                            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white">Browse Stories</Button>
+                            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white">{t('cart.browseStories', t('cart.browseTitles'))}</Button>
                         </Link>
                     </div>
                 ) : (
                     <div className="space-y-10">
 
-                        {/* ─── PHYSICAL SECTION ─────────────────────────────────── */}
+                        {/* PHYSICAL SECTION */}
                         {hasPhysical && (
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                {/* Items */}
                                 <div className="lg:col-span-2 space-y-3">
                                     <div className="flex items-center gap-2 px-1 mb-4">
                                         <div className="p-2 bg-amber-500/10 rounded-lg">
                                             <Truck className="w-5 h-5 text-amber-500" />
                                         </div>
                                         <div>
-                                            <h2 className="text-lg font-bold">Physical Products</h2>
-                                            <p className="text-xs text-muted-foreground">Requires shipping address</p>
+                                            <h2 className="text-lg font-bold">{t('cart.physicalProducts')}</h2>
+                                            <p className="text-xs text-muted-foreground">{t('cart.requiresShipping')}</p>
                                         </div>
                                     </div>
                                     {physicalItems.map((item: any) => (
                                         <CartItemRow key={item.id} item={item} onUpdate={updateQuantity} onRemove={removeFromCart} />
                                     ))}
                                 </div>
-
-                                {/* Summary */}
                                 <div>
                                     <div className="glass-card p-5 rounded-xl sticky top-24 border border-amber-500/10">
                                         <h3 className="font-bold text-base mb-1 flex items-center gap-2">
                                             <Package className="w-4 h-4 text-amber-500" />
-                                            Physical Order Summary
+                                            {t('cart.physicalSummary')}
                                         </h3>
                                         <div className="space-y-3 mt-4 text-sm">
                                             <div className="flex justify-between text-muted-foreground">
-                                                <span>Subtotal</span>
-                                                <span>{physicalSubtotal} EGP</span>
+                                                <span>{t('cart.subtotal')}</span>
+                                                <span>{physicalSubtotal} {t('common.egp')}</span>
                                             </div>
                                             <div className="flex justify-between text-muted-foreground">
-                                                <span>Shipping</span>
+                                                <span>{t('cart.shipping')}</span>
                                                 <span>
                                                     {calculateShipping.isPending
-                                                        ? <span className="flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" /> Calculating...</span>
-                                                        : shippingCost > 0 ? `${shippingCost} EGP` : 'Calculated at checkout'
-                                                    }
+                                                        ? <span className="flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" />{t('cart.calculatingShipping')}</span>
+                                                        : shippingCost > 0 ? `${shippingCost} ${t('common.egp')}` : t('cart.calculatedAtCheckout')}
                                                 </span>
                                             </div>
                                             <div className="w-full h-px bg-border" />
                                             <div className="flex justify-between font-bold text-base">
-                                                <span>Total</span>
-                                                <span>{physicalSubtotal + shippingCost} EGP</span>
+                                                <span>{t('cart.total')}</span>
+                                                <span>{physicalSubtotal + shippingCost} {t('common.egp')}</span>
                                             </div>
                                         </div>
                                         <Button
@@ -208,65 +191,62 @@ export default function Cart() {
                                             onClick={() => openCheckout("physical")}
                                         >
                                             <Truck className="w-4 h-4 mr-2" />
-                                            Checkout Physical Items
+                                            {t('cart.checkoutPhysical')}
                                         </Button>
-                                        <p className="text-[10px] text-center text-muted-foreground mt-3">Includes shipping + platform fee</p>
+                                        <p className="text-[10px] text-center text-muted-foreground mt-3">{t('cart.includesShipping')}</p>
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        {/* Divider for mixed cart */}
+                        {/* Divider */}
                         {hasPhysical && hasDigital && (
                             <div className="relative">
                                 <div className="absolute inset-0 flex items-center">
                                     <div className="w-full border-t border-border/50" />
                                 </div>
                                 <div className="relative flex justify-center">
-                                    <span className="bg-background px-4 text-xs text-muted-foreground uppercase tracking-widest">Mixed Cart – Two Separate Payments</span>
+                                    <span className="bg-background px-4 text-xs text-muted-foreground uppercase tracking-widest">{t('cart.mixedCart')}</span>
                                 </div>
                             </div>
                         )}
 
-                        {/* ─── DIGITAL SECTION ──────────────────────────────────── */}
+                        {/* DIGITAL SECTION */}
                         {hasDigital && (
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                {/* Items */}
                                 <div className="lg:col-span-2 space-y-3">
                                     <div className="flex items-center gap-2 px-1 mb-4">
                                         <div className="p-2 bg-blue-500/10 rounded-lg">
                                             <Download className="w-5 h-5 text-blue-500" />
                                         </div>
                                         <div>
-                                            <h2 className="text-lg font-bold">Digital Products</h2>
-                                            <p className="text-xs text-muted-foreground">Instant access after payment</p>
+                                            <h2 className="text-lg font-bold">{t('cart.digitalProducts')}</h2>
+                                            <p className="text-xs text-muted-foreground">{t('cart.instantAccess')}</p>
                                         </div>
                                     </div>
                                     {allDigital.map((item: any) => (
                                         <CartItemRow key={item.id} item={item} onUpdate={updateQuantity} onRemove={removeFromCart} />
                                     ))}
                                 </div>
-
-                                {/* Summary */}
                                 <div>
                                     <div className="glass-card p-5 rounded-xl sticky top-24 border border-blue-500/10">
                                         <h3 className="font-bold text-base mb-1 flex items-center gap-2">
                                             <CreditCard className="w-4 h-4 text-blue-500" />
-                                            Digital Order Summary
+                                            {t('cart.digitalSummary')}
                                         </h3>
                                         <div className="space-y-3 mt-4 text-sm">
                                             <div className="flex justify-between text-muted-foreground">
-                                                <span>Subtotal</span>
-                                                <span>{digitalSubtotal} EGP</span>
+                                                <span>{t('cart.subtotal')}</span>
+                                                <span>{digitalSubtotal} {t('common.egp')}</span>
                                             </div>
                                             <div className="flex justify-between text-muted-foreground">
-                                                <span>Shipping</span>
-                                                <span>None – Digital</span>
+                                                <span>{t('cart.shipping')}</span>
+                                                <span>{t('cart.shipping')} – {t('cart.digitalProducts')}</span>
                                             </div>
                                             <div className="w-full h-px bg-border" />
                                             <div className="flex justify-between font-bold text-base">
-                                                <span>Total</span>
-                                                <span>{digitalSubtotal} EGP</span>
+                                                <span>{t('cart.total')}</span>
+                                                <span>{digitalSubtotal} {t('common.egp')}</span>
                                             </div>
                                         </div>
                                         <Button
@@ -274,9 +254,9 @@ export default function Cart() {
                                             onClick={() => openCheckout("digital")}
                                         >
                                             <Download className="w-4 h-4 mr-2" />
-                                            Checkout Digital Items
+                                            {t('cart.checkoutDigital')}
                                         </Button>
-                                        <p className="text-[10px] text-center text-muted-foreground mt-3">Includes platform fee</p>
+                                        <p className="text-[10px] text-center text-muted-foreground mt-3">{t('cart.includesFee')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -284,83 +264,80 @@ export default function Cart() {
                     </div>
                 )}
 
-                {/* ─── CHECKOUT DIALOG ──────────────────────────────────────────── */}
+                {/* CHECKOUT DIALOG */}
                 <Dialog open={!!checkoutGroup} onOpenChange={(open) => !open && closeCheckout()}>
                     <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-serif">
-                                {step === 1 ? "Shipping Details" : "Secure Checkout"}
+                                {step === 1 ? t('checkout.shippingDetails', t('checkout.shipping.title')) : t('checkout.secureCheckout', t('cart.checkout'))}
                             </DialogTitle>
                             <DialogDescription>
                                 {step === 1
-                                    ? "Where should we send your physical items?"
+                                    ? t('checkout.whereToSend')
                                     : checkoutGroup === "physical"
-                                        ? "Complete your physical order payment."
-                                        : "Complete your digital order payment – instant access!"}
+                                        ? t('checkout.completePhysical')
+                                        : t('checkout.completeDigital')}
                             </DialogDescription>
                         </DialogHeader>
 
-                        {/* ─── Step 1: Shipping (physical only) ─────────── */}
+                        {/* Step 1: Shipping */}
                         {step === 1 && checkoutGroup === "physical" && (
                             <div className="space-y-4 mt-4">
                                 <div className="bg-amber-500/10 p-4 rounded-lg flex gap-3 text-amber-600 border border-amber-500/20">
                                     <Truck className="w-5 h-5 shrink-0" />
-                                    <p className="text-sm">Please provide a delivery address for your physical items.</p>
+                                    <p className="text-sm">{t('checkout.deliveryNote')}</p>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Full Name</Label>
-                                    <Input value={shippingDetails.fullName} onChange={(e) => setShippingDetails({ ...shippingDetails, fullName: e.target.value })} placeholder="Receiver Name" />
+                                    <Label>{t('checkout.fullName', t('checkout.shipping.fullName'))}</Label>
+                                    <Input value={shippingDetails.fullName} onChange={(e) => setShippingDetails({ ...shippingDetails, fullName: e.target.value })} placeholder={t('checkout.receiverName')} />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Phone Number</Label>
+                                    <Label>{t('checkout.phoneNumber', t('checkout.shipping.phone'))}</Label>
                                     <Input value={shippingDetails.phoneNumber} onChange={(e) => setShippingDetails({ ...shippingDetails, phoneNumber: e.target.value })} placeholder="01xxxxxxxxx" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label>City / Governorate</Label>
-                                        <Input value={shippingDetails.city} onChange={(e) => setShippingDetails({ ...shippingDetails, city: e.target.value })} placeholder="e.g. Cairo" />
+                                        <Label>{t('checkout.cityGovernorat', t('checkout.shipping.city'))}</Label>
+                                        <Input value={shippingDetails.city} onChange={(e) => setShippingDetails({ ...shippingDetails, city: e.target.value })} placeholder={t('checkout.cityPlaceholder')} />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Detailed Address</Label>
-                                        <Input value={shippingDetails.addressLine} onChange={(e) => setShippingDetails({ ...shippingDetails, addressLine: e.target.value })} placeholder="Street, Building, Apt..." />
+                                        <Label>{t('checkout.detailedAddress', t('checkout.shipping.address'))}</Label>
+                                        <Input value={shippingDetails.addressLine} onChange={(e) => setShippingDetails({ ...shippingDetails, addressLine: e.target.value })} placeholder={t('checkout.addressPlaceholder')} />
                                     </div>
                                 </div>
                                 <DialogFooter className="mt-6">
-                                    <Button variant="ghost" onClick={closeCheckout}>Cancel</Button>
+                                    <Button variant="ghost" onClick={closeCheckout}>{t('common.cancel')}</Button>
                                     <Button
                                         onClick={handleCalculateShipping}
                                         disabled={!shippingDetails.city || !shippingDetails.addressLine || calculateShipping.isPending}
                                         className="bg-primary text-white"
                                     >
-                                        {calculateShipping.isPending ? "Calculating..." : "Next: Payment"}
+                                        {calculateShipping.isPending ? t('checkout.calculating') : t('checkout.nextPayment')}
                                     </Button>
                                 </DialogFooter>
                             </div>
                         )}
 
-                        {/* ─── Step 2: Payment ───────────────────────────── */}
+                        {/* Step 2: Payment */}
                         {step === 2 && (
                             <div className="space-y-6 mt-4">
-                                {/* Shipping summary for physical */}
                                 {checkoutGroup === "physical" && (
                                     <div className="bg-muted p-4 rounded-lg border flex justify-between items-center text-sm">
                                         <div className="flex items-center gap-2">
                                             <MapPin className="w-4 h-4 text-muted-foreground" />
-                                            <span>Shipping to <span className="font-semibold">{shippingDetails.city}</span></span>
+                                            <span>{t('checkout.shippingTo')} <span className="font-semibold">{shippingDetails.city}</span></span>
                                         </div>
-                                        <span className="font-bold">{shippingCost} EGP</span>
+                                        <span className="font-bold">{shippingCost} {t('common.egp')}</span>
                                     </div>
                                 )}
 
-                                {/* Order type badge */}
                                 <div className={`text-center py-2 px-4 rounded-full text-xs font-bold tracking-widest uppercase inline-flex items-center gap-2 mx-auto ${checkoutGroup === "physical" ? "bg-amber-500/10 text-amber-600" : "bg-blue-500/10 text-blue-600"}`}>
                                     {checkoutGroup === "physical" ? <Package className="w-3 h-3" /> : <Download className="w-3 h-3" />}
-                                    {checkoutGroup === "physical" ? "Physical Order" : "Digital Order"}
+                                    {checkoutGroup === "physical" ? t('checkout.physicalOrder') : t('checkout.digitalOrder')}
                                 </div>
 
-                                {/* Method selection */}
                                 <div className="space-y-3">
-                                    <Label className="text-base font-semibold">1. Select Payment Method</Label>
+                                    <Label className="text-base font-semibold">{t('checkout.selectMethod')}</Label>
                                     <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="grid grid-cols-1 gap-3">
                                         {Object.entries(paymentInstructions).map(([key, info]) => (
                                             <div
@@ -377,29 +354,27 @@ export default function Cart() {
                                     </RadioGroup>
                                 </div>
 
-                                {/* Payment instructions */}
                                 <div className="bg-muted p-4 rounded-lg border border-primary/20">
                                     <h4 className="font-semibold mb-2 flex items-center gap-2">
                                         <Smartphone className="w-4 h-4 text-primary" />
-                                        Payment Instructions
+                                        {t('checkout.paymentInstructions')}
                                     </h4>
-                                    <p className="text-sm font-medium mb-1">Transfer <strong>{activeTotal} EGP</strong> to:</p>
+                                    <p className="text-sm font-medium mb-1">{t('checkout.transferAmount', { amount: activeTotal })}</p>
                                     <p className="text-lg font-mono bg-background p-2 rounded border select-all text-center">
                                         {selectedMethodInfo.details}
                                     </p>
-                                    <p className="text-xs text-muted-foreground mt-2">* Please ensure you transfer the exact amount.</p>
+                                    <p className="text-xs text-muted-foreground mt-2">{t('checkout.exactAmount')}</p>
                                 </div>
 
-                                {/* Verification */}
                                 <div className="space-y-3">
-                                    <Label className="text-base font-semibold">2. Verify Payment</Label>
+                                    <Label className="text-base font-semibold">{t('checkout.verifyPayment')}</Label>
                                     <div className="space-y-2">
-                                        <Label className="text-sm">Transaction Reference / ID</Label>
-                                        <Input placeholder="e.g. 2349823423" value={reference} onChange={(e) => setReference(e.target.value)} />
+                                        <Label className="text-sm">{t('checkout.transactionRef')}</Label>
+                                        <Input placeholder={t('checkout.refPlaceholder')} value={reference} onChange={(e) => setReference(e.target.value)} />
                                     </div>
                                     <div className="space-y-2">
                                         <CloudinaryUpload
-                                            label="Upload Payment Screenshot (Optional but recommended)"
+                                            label={t('checkout.uploadScreenshot')}
                                             folder="hekayaty_payments"
                                             onUpload={(url) => setProofUrl(url)}
                                             aspectRatio="video"
@@ -409,15 +384,15 @@ export default function Cart() {
 
                                 <DialogFooter className="mt-6 flex flex-col sm:flex-row gap-2">
                                     {checkoutGroup === "physical" && (
-                                        <Button variant="ghost" onClick={() => setStep(1)} className="sm:mr-auto">Back</Button>
+                                        <Button variant="ghost" onClick={() => setStep(1)} className="sm:mr-auto">{t('common.back')}</Button>
                                     )}
-                                    <Button variant="ghost" onClick={closeCheckout}>Cancel</Button>
+                                    <Button variant="ghost" onClick={closeCheckout}>{t('common.cancel')}</Button>
                                     <Button
                                         onClick={handleCheckoutSubmit}
                                         disabled={checkout.isPending || !reference}
                                         className="bg-primary hover:bg-primary/90 min-w-[140px]"
                                     >
-                                        {checkout.isPending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</> : "Confirm Payment"}
+                                        {checkout.isPending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('checkout.processing')}</> : t('checkout.confirmPayment')}
                                     </Button>
                                 </DialogFooter>
                             </div>
@@ -430,6 +405,7 @@ export default function Cart() {
 }
 
 function CartItemRow({ item, onUpdate, onRemove }: any) {
+    const { t } = useTranslation();
     return (
         <div className="glass-card p-4 rounded-xl flex gap-4 items-center border border-white/5 hover:border-white/10 transition-all shadow-sm">
             <div className="w-20 h-28 shrink-0 rounded-lg overflow-hidden bg-muted/30">
@@ -444,16 +420,15 @@ function CartItemRow({ item, onUpdate, onRemove }: any) {
                 <h3 className="font-bold text-lg truncate mb-1">{item.product?.title || item.collection?.title}</h3>
                 <div className="flex items-center gap-2">
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground uppercase font-semibold">
-                        {item.product?.type || (item.collection ? "Story Collection" : "item")}
+                        {item.product?.type ? t(`dashboard.products.types.${item.product.type}`) : (item.collection ? t('home.collections.badge') : t('cart.items'))}
                     </span>
                 </div>
                 <div className="mt-3 text-primary font-bold text-lg">
-                    {item.product?.price || item.collection?.price} <span className="text-xs font-normal">EGP</span>
+                    {item.product?.price || item.collection?.price} <span className="text-xs font-normal">{t('common.egp')}</span>
                     {item.quantity && item.quantity > 1 && <span className="text-muted-foreground text-xs font-normal"> × {item.quantity}</span>}
                 </div>
             </div>
 
-            {/* Quantity Adjuster */}
             <div className="flex items-center bg-muted/20 rounded-xl p-0.5 border border-border/40">
                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-background/50 transition-all disabled:opacity-20"
                     onClick={() => onUpdate.mutate({ id: item.id, quantity: Math.max(1, (item.quantity || 1) - 1) })}

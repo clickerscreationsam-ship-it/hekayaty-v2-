@@ -143,8 +143,8 @@ export default function Home() {
                 <ShoppingBag className="w-8 h-8" />
               </div>
               <div>
-                <h2 className="text-4xl font-serif font-bold mb-2">{t("home.merchandise.title", "Creator Merchandise")}</h2>
-                <p className="text-muted-foreground">{t("home.merchandise.subtitle", "Wear your favorite stories.")}</p>
+                <h2 className="text-4xl font-serif font-bold mb-2">{t("home.merchandise.title")}</h2>
+                <p className="text-muted-foreground">{t("home.merchandise.subtitle")}</p>
               </div>
             </div>
             <Link href="/marketplace?type=merchandise">
@@ -164,7 +164,7 @@ export default function Home() {
               )}
             {merchandise && merchandise.length === 0 && (
               <p className="col-span-4 text-center text-muted-foreground py-10">
-                {t("home.merchandise.empty", "No merchandise found.")}
+                {t("home.merchandise.empty")}
               </p>
             )}
           </div>
@@ -180,8 +180,8 @@ export default function Home() {
                 <Layers className="w-8 h-8" />
               </div>
               <div>
-                <h2 className="text-4xl font-serif font-bold mb-2">{t("home.serialized.title", "Ongoing Series")}</h2>
-                <p className="text-muted-foreground">{t("home.serialized.subtitle", "Stories updated chapter by chapter. Follow the journey.")}</p>
+                <h2 className="text-4xl font-serif font-bold mb-2">{t("home.serialized.title")}</h2>
+                <p className="text-muted-foreground">{t("home.serialized.subtitle")}</p>
               </div>
             </div>
             <Link href="/marketplace?isSerialized=true">
@@ -201,7 +201,7 @@ export default function Home() {
               )}
             {serializedStories && serializedStories.length === 0 && (
               <p className="col-span-4 text-center text-muted-foreground py-10">
-                {t("home.serialized.empty", "No ongoing series found.")}
+                {t("home.serialized.empty")}
               </p>
             )}
           </div>
@@ -237,7 +237,7 @@ export default function Home() {
               )}
             {collections && collections.length === 0 && (
               <p className="col-span-4 text-center text-muted-foreground py-10">
-                {t("home.collections.empty", "No collections found.")}
+                {t("home.collections.empty")}
               </p>
             )}
           </div>

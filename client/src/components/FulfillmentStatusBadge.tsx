@@ -1,10 +1,13 @@
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
 
 interface FulfillmentStatusBadgeProps {
     status: string;
 }
 
 export function FulfillmentStatusBadge({ status }: FulfillmentStatusBadgeProps) {
+    const { t } = useTranslation();
+
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'pending':
@@ -26,9 +29,13 @@ export function FulfillmentStatusBadge({ status }: FulfillmentStatusBadgeProps) 
         }
     };
 
+    // Map status to translation key, fall back to capitalised status name
+    const statusKey = `orderTracking.statuses.${status}`;
+    const label = t(statusKey, status.charAt(0).toUpperCase() + status.slice(1));
+
     return (
         <Badge className={`${getStatusColor(status)} text-white`}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {label}
         </Badge>
     );
 }

@@ -19,7 +19,7 @@
         "marketplace": "Story Shop",
         "assets": "Design Assets",
         "merchandise": "Creator Merch",
-        "worldbuilders": "Worldbuilders",
+        "worldbuilders": "World Builders",
         "writers": "For Writers",
         "admin": "Admin",
         "myStore": "My Store",
@@ -31,6 +31,89 @@
         "cart": "Cart",
         "studio": "Writer Studio",
         "guide": "Platform Guide"
+    },
+    "cart": {
+        "title": "Your Cart",
+        "subtitle": "Review your magical findings",
+        "empty": "Your cart is empty",
+        "emptySubtitle": "Start adding some amazing stories!",
+        "browseTitles": "Browse Titles",
+        "items": "item",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "total": "Total",
+        "checkout": "Checkout",
+        "continueShopping": "Continue Shopping",
+        "remove": "Remove",
+        "quantity": "Quantity",
+        "physicalProducts": "Physical Products",
+        "digitalProducts": "Digital Products",
+        "requiresShipping": "Requires shipping address",
+        "instantAccess": "Instant access after payment",
+        "physicalSummary": "Physical Order Summary",
+        "digitalSummary": "Digital Order Summary",
+        "checkoutPhysical": "Checkout Physical Products",
+        "checkoutDigital": "Checkout Digital Products",
+        "includesShipping": "Includes shipping & platform fees",
+        "includesFee": "Includes platform fees",
+        "mixedCart": "Mixed Cart – Two Separate Payments",
+        "calculatingShipping": "Calculating shipping...",
+        "calculatedAtCheckout": "Calculated at checkout",
+        "yourCart": "Your Cart",
+        "emptyMessage": "You haven't added any stories yet.",
+        "browseStories": "Browse Stories"
+    },
+    "checkout": {
+        "title": "Checkout",
+        "shipping": {
+            "title": "Shipping Information",
+            "fullName": "Full Name",
+            "phone": "Phone Number",
+            "city": "City",
+            "address": "Address",
+            "required": "Required for physical products"
+        },
+        "payment": {
+            "title": "Payment Method",
+            "method": "Select payment method",
+            "card": "Credit Card",
+            "instapay": "InstaPay",
+            "vodafone": "Vodafone Cash",
+            "proof": "Payment Proof",
+            "reference": "Reference Number",
+            "upload": "Upload Image",
+            "uploadProof": "Upload payment proof image"
+        },
+        "summary": "Order Summary",
+        "placeOrder": "Confirm Order",
+        "processing": "Processing...",
+        "shippingDetails": "Shipping Details",
+        "whereToSend": "Where should we send your physical items?",
+        "completePhysical": "Complete payment for your physical order.",
+        "completeDigital": "Complete payment for your digital order – Instant access!",
+        "fullName": "Full Name",
+        "receiverName": "Receiver Name",
+        "phoneNumber": "Phone Number",
+        "cityGovernorat": "City / Governorate",
+        "cityPlaceholder": "e.g., Cairo",
+        "detailedAddress": "Detailed Address",
+        "addressPlaceholder": "Street, Building, Apartment...",
+        "calculating": "Calculating...",
+        "nextPayment": "Next: Payment",
+        "selectMethod": "1. Select Payment Method",
+        "paymentInstructions": "Payment Instructions",
+        "transferAmount": "Transfer {{amount}} EGP to:",
+        "exactAmount": "* Please transfer the exact amount.",
+        "verifyPayment": "2. Verify Payment",
+        "transactionRef": "Transaction Ref / Number",
+        "refPlaceholder": "e.g., 2349823423",
+        "uploadScreenshot": "Upload payment screenshot (Optional but recommended)",
+        "confirmPayment": "Confirm Payment",
+        "shippingTo": "Shipping to",
+        "physicalOrder": "Physical Order",
+        "digitalOrder": "Digital Order",
+        "deliveryNote": "Please provide the delivery address for your physical products.",
+        "secureCheckout": "Secure Checkout"
     },
     "hero": {
         "tagline": "The universe for storytellers",
@@ -78,6 +161,41 @@
             "platformFees_desc": "Commission Deducted",
             "platformEconomics": "💡 Platform Economics: Our platform thrives with a community-first approach. Your success is our mission!"
         },
+        "activity": {
+            "loading": "Loading your activity...",
+            "storeOrders": "Store Orders",
+            "storeOrdersDesc": "Track your physical and digital purchases",
+            "noOrders": "No store orders yet.",
+            "orderNumber": "ORDER #",
+            "paymentVerified": "✅ Payment Verified",
+            "awaitingApproval": "⏳ Awaiting Approval",
+            "qty": "Qty:",
+            "unit": "EGP / unit",
+            "maker": "Maker:",
+            "billTitle": "Official Order Bill & Status",
+            "acceptedDate": "Accepted Date",
+            "arrivalEstimation": "Arrival Estimation",
+            "workingDays": "Working Days",
+            "carrierTracking": "Carrier Tracking",
+            "awaitingVerification": "Awaiting admin verification of your payment proof...",
+            "awaitingMaker": "Payment verified! Awaiting maker to accept and set delivery date...",
+            "designRequests": "Design Treasure Requests",
+            "designRequestsDesc": "Custom design projects and commissions"
+        },
+        "adminMessages": {
+            "title": "Direct Message from Admin",
+            "subtitle": "Secure messages between you and the platform administration.",
+            "noMessages": "No messages from Admin yet.",
+            "you": "You",
+            "admin": "The Admin",
+            "replyPlaceholder": "Reply to the admin...",
+            "sending": "Sending...",
+            "sendReply": "Send Reply",
+            "announcementsTitle": "Platform Announcements",
+            "announcementsDesc": "Important updates and news for creators.",
+            "noAnnouncements": "No announcements yet.",
+            "team": "Creator Relations Team"
+        },
         "library": {
             "title": "My Library",
             "subtitle": "Your collection of stories and assets.",
@@ -118,6 +236,47 @@
                 "phone": "Phone Number (Vodafone/Orange/Etisalat Cash)",
                 "placeholder": "Enter details here",
                 "instapayHint": "username@instapay"
+            }
+        },
+        "makerOrders": {
+            "title": "Fulfillment Dashboard",
+            "subtitle": "Manage your physical shipments",
+            "loading": "Loading orders...",
+            "filterAll": "All Orders",
+            "noOrders": "No fulfillment requests",
+            "noStatusOrders": "No {{status}} orders at the moment",
+            "emptyState": "You don't have any physical product orders to fulfill yet.",
+            "qty": "Qty",
+            "price": "Price",
+            "shippingInfo": "Shipping Info",
+            "accept": "Accept",
+            "reject": "Reject",
+            "shipOrder": "Ship Order",
+            "tracking": "Tracking:",
+            "rejectedLabel": "Rejected:",
+            "modals": {
+                "acceptTitle": "Accept Order",
+                "estDelivery": "Estimated Delivery (days)",
+                "estDeliveryDesc": "Tell the customer when to expect their order (1-90 days)",
+                "rejectionReason": "Reason for Rejection",
+                "rejectionPlaceholder": "e.g., Out of stock, Cannot ship to location, etc.",
+                "rejectionDesc": "Provide a clear reason to help the customer understand (minimum 5 characters)",
+                "shipTitle": "Ship Order",
+                "trackingNumber": "Tracking Number",
+                "carrier": "Carrier (Optional)",
+                "deliveryDetails": "Delivery Details",
+                "buyerInfo": "Buyer Info",
+                "productInfo": "Product Info",
+                "customizationDetails": "Customization Details",
+                "shippingAddress": "Shipping Address",
+                "contactNumber": "Contact Number",
+                "shippingTip": "Make sure to print these details clearly on your shipping label. Double check the phone number before dispatching.",
+                "confirmAcceptance": "Confirm Acceptance",
+                "accepting": "Accepting...",
+                "rejecting": "Rejecting...",
+                "updating": "Updating...",
+                "markAsShipped": "Mark as Shipped",
+                "close": "Close"
             }
         },
         "products": {
@@ -217,6 +376,46 @@
                 "writer": "Writer (Publish & Sell)",
                 "artist": "Artist (Sell Assets)"
             }
+        },
+        "productDetails": {
+            "by": "by",
+            "rating": "Rating",
+            "reviewCount": "reviews",
+            "price": "Price",
+            "addToCart": "Add to Cart",
+            "buyNow": "Buy Now",
+            "description": "Description",
+            "details": "Details",
+            "genre": "Genre",
+            "type": "Category",
+            "license": "License",
+            "fileFormat": "File Format",
+            "publishedDate": "Published Date",
+            "reviews": "Reviews",
+            "noReviews": "No reviews yet",
+            "writeReview": "Write a Review",
+            "yourRating": "Your Rating",
+            "yourReview": "Your Review",
+            "submitReview": "Post Review",
+            "stock": "{{count}} Units in Stock",
+            "outOfStock": "Out of Stock",
+            "physicalNote": "Physical Book • Shipping Required",
+            "digitalNote": "Protected Digital Content • Anti-Theft Protection",
+            "customizationPlaceholder": "Enter details here...",
+            "readNowFree": "Read Now (Free)",
+            "addingToCart": "Adding...",
+            "addToCartWithPrice": "Add to Cart • {{price}} EGP",
+            "securePayment": "Secure Payment",
+            "free": "Free",
+            "shippingAvailableTo": "Shipping Available To:",
+            "businessDays": "Business Days",
+            "shippingNote": "Shipping costs are calculated automatically at checkout based on your selection. Delivery times are estimated from the moment of dispatch.",
+            "creatorDeliveryNotes": "Creator's Delivery Notes:",
+            "loginToReview": "Please login to write a review.",
+            "reviewPlaceholder": "What did you think of the story?",
+            "readerReviews": "Reader Reviews ({{count}})",
+            "instantAccess": "Instant Digital Access",
+            "physicalProduct": "Physical Product (Shipping Required)"
         }
     },
     "commissions": {
@@ -253,10 +452,216 @@
             "subtitle": "Discover the voices shaping new realities.",
             "viewAll": "View All"
         },
+        "welcome": {
+            "title": "Start your journey in the world of stories",
+            "subtitle": "Join thousands of readers, writers and artists who are shaping the future of storytelling",
+            "copyright": "© 2026 Hekayaty. All rights reserved.",
+            "production": "A Clickers Production"
+        },
         "cta": {
             "title": "Ready to publish your masterpiece?",
             "subtitle": "Join thousands of writers who have found their home on Hekayaty. Keep 80% of your earnings and own your audience.",
             "button": "Create Your Account"
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Welcome Back",
+            "subtitle": "Enter your details to access your account",
+            "email": "Email Address",
+            "password": "Password",
+            "emailPlaceholder": "Enter your email",
+            "passwordPlaceholder": "Enter your password",
+            "button": "Log In",
+            "noAccount": "Don't have an account?",
+            "signUp": "Sign Up Now"
+        },
+        "register": {
+            "title": "Create Account",
+            "subtitle": "Enter your details to get started",
+            "email": "Email Address",
+            "username": "Username",
+            "displayName": "Full Name",
+            "password": "Password",
+            "emailPlaceholder": "hello@example.com",
+            "usernamePlaceholder": "Choose a username",
+            "displayNamePlaceholder": "Your full name",
+            "passwordPlaceholder": "Create a password",
+            "role": "I want to be a:",
+            "reader": "Reader",
+            "writer": "Writer",
+            "artist": "Artist",
+            "button": "Create Account",
+            "haveAccount": "Already have an account?",
+            "logIn": "Log In"
+        },
+        "welcome": {
+            "title": "Start your journey in the world of stories",
+            "subtitle": "Join thousands of readers, writers and artists who are shaping the future of storytelling",
+            "copyright": "© 2026 Hekayaty. All rights reserved.",
+            "production": "A Clickers Production"
+        }
+    },
+    "forgotPassword": {
+        "title": "Reset Password",
+        "subtitle": "Enter your email to receive a reset link",
+        "emailLabel": "Email Address",
+        "emailPlaceholder": "name@example.com",
+        "sendButton": "Send Reset Link",
+        "sending": "Sending...",
+        "backToLogin": "Back to Login",
+        "successTitle": "Check your email",
+        "successDesc": "If an account exists for {{email}}, we have sent a password reset link.",
+        "spamNote": "Please check your spam folder if you don't find it within minutes.",
+        "tryAnother": "Try another email",
+        "rateLimitError": "Too many requests. Please try again later.",
+        "emailError": "Please enter a valid email address"
+    },
+    "writers": {
+        "title": "World Builders Gallery",
+        "subtitle": "Meet the architects of imagination. Discover the writers and artists crafting the next generation of legendary stories.",
+        "searchPlaceholder": "Search by name, username, or bio...",
+        "notFound": "No World Builders found",
+        "notFoundHint": "Try searching with a different name or specialty."
+    },
+    "resetPassword": {
+        "title": "Create New Password",
+        "subtitle": "Enter your new password below",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "button": "Save Password"
+    },
+    "guide": {
+        "pageTitle": "Platform Guide",
+        "title": "📘 Hekayaty Platform Guide",
+        "subtitle": "For Writers and Readers",
+        "disclaimer": "The platform acts only as a technical intermediary and is not a direct party to production or shipping.",
+        "writers": {
+            "title": "✍️ First: Writers Guide",
+            "publishing": {
+                "title": "1️⃣ Publishing Works",
+                "desc": "Every writer can publish their works (digital books, stories, or physical products). The writer is fully responsible for the content, its accuracy, and intellectual property."
+            },
+            "ebooks": {
+                "title": "2️⃣ Digital Books (E-books)",
+                "desc": "Products are delivered digitally via the platform. Hekayaty is responsible for the delivery system only, not the content."
+            },
+            "physical": {
+                "title": "3️⃣ Physical Products",
+                "subtitle": "For physical products (Box Collections - Printed Books):",
+                "writerResponsible": "✅ Writer Responsible For:",
+                "shipping": "Shipping and packaging",
+                "duration": "Adhering to shipping duration",
+                "hekayatyNotResponsible": "❌ Hekayaty Not Responsible For:",
+                "delays": "Shipping or delays",
+                "damage": "Damage during transit"
+            },
+            "shippingData": {
+                "title": "4️⃣ Shipping Data (Mandatory)",
+                "desc": "For physical products, you must specify: Shipping zones, costs, duration, and any special terms. Failure to provide this may lead to account suspension."
+            },
+            "earnings": {
+                "title": "5️⃣ Earnings & Payments",
+                "hold": "Funds are held within the platform to secure the process.",
+                "commission": "The platform deducts a 20% commission.",
+                "instant": "Profits are added to your balance upon confirmation."
+            },
+            "payout": {
+                "title": "6️⃣ Withdrawal (Payout)",
+                "desc": "You can request withdrawal anytime; funds are transferred within 24 hours via chosen payment method."
+            }
+        },
+        "readers": {
+            "title": "📖 Second: Readers Guide",
+            "beforeBuying": {
+                "title": "1️⃣ Before Buying",
+                "desc": "Readers must check product type (digital/physical), shipping cost, duration, and writer policy. Buying denotes agreement."
+            },
+            "payment": {
+                "title": "2️⃣ Payment",
+                "desc": "Payments are made via Hekayaty gateway; funds are held temporarily for security."
+            },
+            "receival": {
+                "title": "3️⃣ Receival",
+                "digital": "Digital: Delivered instantly via site.",
+                "physical": "Physical: Shipped directly from writer.",
+                "delay": "Any shipping delays are resolved with the writer directly."
+            }
+        },
+        "legal": {
+            "title": "⚖️ Important Legal Notes",
+            "desc": "Hekayaty is an intermediary; not responsible for content quality or shipping. Disputes resolved between parties.",
+            "warning": "In case of fraud or violation, account is permanently banned without compensation."
+        },
+        "community": {
+            "title": "🚨 Community & Chat Rules",
+            "chat": {
+                "title": "Chat Rules",
+                "bullying": "Bullying, threats, or offensive language",
+                "racism": "Racism or inciting hate",
+                "sexual": "Sexual content or harmful links"
+            },
+            "content": {
+                "title": "Content Rules",
+                "stolen": "Stolen works (IP violation)",
+                "illegal": "Illegal or violent content",
+                "public": "Violating public taste or law"
+            }
+        },
+        "agreement": {
+            "title": "✅ Agreement",
+            "desc": "By using Hekayaty, you agree to all mentioned rules and warnings and pledge full compliance."
+        }
+    },
+    "orderTracking": {
+        "title": "Track Your Orders",
+        "subtitle": "Follow your wonders' journey",
+        "noOrders": "No orders yet",
+        "noOrdersSubtitle": "Start your journey with your first order!",
+        "orderId": "Order ID",
+        "date": "Date",
+        "status": "Status",
+        "total": "Total",
+        "items": "item",
+        "viewDetails": "View Details",
+        "orderDetails": "Order Details",
+        "arrival": "Expected Arrival",
+        "trackingNumber": "Tracking Number",
+        "shippingTo": "Shipping To",
+        "loadingText": "Uncovering your destiny...",
+        "noOrders2": "No active orders",
+        "noOrders2Desc": "Your library of physical wonders is currently empty. Explore the marketplace to start your next adventure.",
+        "browseMarket": "Browse Marketplace",
+        "yourJourney": "Your Journey",
+        "trackTitle": "Track Your Wonders",
+        "trackSubtitle": "Follow the path of your physical treasures from creator to your door.",
+        "storyOfOrders": "Story of Your Orders",
+        "totalOrders": "Total Orders",
+        "seller": "Seller",
+        "orderSummary": "Order Summary",
+        "paymentStatus": "Payment Status",
+        "verified": "Verified",
+        "pendingVerification": "Pending Verification",
+        "estimatedArrival": "Estimated Arrival",
+        "days": "days",
+        "statuses": {
+            "pending": "Pending",
+            "accepted": "Accepted",
+            "preparing": "Preparing",
+            "pending_verification": "Pending Verification",
+            "paid": "Paid",
+            "shipped": "Shipped",
+            "delivered": "Delivered",
+            "rejected": "Rejected",
+            "cancelled": "Cancelled"
+        },
+        "timeline": {
+            "ordered": "Ordered",
+            "accepted": "Accepted",
+            "preparing": "Preparing",
+            "shipped": "Shipped",
+            "delivered": "Delivered",
+            "reached": "Reached Destination"
         }
     },
     "marketplace": {
@@ -294,7 +699,27 @@
         "about": "About",
         "publishedWorks": "Published Works",
         "allWorks": "All Works",
-        "noWorks": "This scribe hasn't published any items yet."
+        "noWorks": "This scribe hasn't published any items yet.",
+        "notFoundTitle": "Writer Not Found",
+        "notFoundSubtitle": "The scribe you are looking for has not yet chronicled their tale here.",
+        "ownStoreWelcome": "Welcome to Your Store! 🎨",
+        "ownStoreSubtitle": "Make it yours! Customize your appearance, add your logo, and start publishing your amazing work.",
+        "customizeButton": "Customize Store",
+        "addProductButton": "Add Product",
+        "portfolio": "Portfolio",
+        "designAssets": "Design Assets",
+        "noPortfolio": "This artist hasn't organized their portfolio yet.",
+        "noAssets": "No design assets available for purchase.",
+        "visitWorld": "Visit World",
+        "categories": {
+            "All": "All",
+            "Cover": "Cover",
+            "Character": "Character",
+            "Map": "Map",
+            "UI": "UI",
+            "Branding": "Branding",
+            "Other": "Other"
+        }
     },
     "studio": {
         "title": "Writer Studio",
@@ -425,6 +850,7 @@
         "pageTitle": "Notifications Center",
         "pageSubtitle": "Stay updated with your orders, sales, and community interactions.",
         "markAllRead": "Mark all read",
+        "markAsRead": "Mark as read",
         "viewAll": "View all notifications",
         "empty": "No notifications yet",
         "emptyTitle": "Peace and Quiet",
@@ -432,6 +858,7 @@
         "searchPlaceholder": "Search notifications...",
         "settings": "Settings",
         "tipsTitle": "Notification Preferences",
+        "tipsDescription": "You can customize how and when you receive notifications in your settings. Choose between in-app, email, and push alerts.",
         "configure": "Configure Alerts",
         "filter": {
             "all": "All",
@@ -443,6 +870,34 @@
         },
         "priority": {
             "high": "High"
+        }
+    },
+    "errors": {
+        "notFound": "Page Not Found",
+        "notFoundSubtitle": "The page you are looking for does not exist or has been moved.",
+        "backHome": "Back to Home",
+        "serverError": "Server Error",
+        "tryAgain": "Please try again later"
+    },
+    "admin": {
+        "title": "Admin Dashboard",
+        "users": "Users",
+        "orders": "Orders",
+        "products": "Products",
+        "payouts": "Payouts",
+        "settings": "Settings",
+        "pendingOrders": "Pending Orders",
+        "verifyOrder": "Verify Order",
+        "rejectOrder": "Reject Order",
+        "noOrders": "No pending orders",
+        "physicalOrders": {
+            "searchPlaceholder": "Search by product, buyer, seller or order ID...",
+            "noResultsFound": "No physical orders found matching your criteria",
+            "buyer": "Buyer:",
+            "seller": "Seller:",
+            "shippingDestination": "Shipping Destination",
+            "trackingLogistics": "Tracking & Logistics",
+            "waitingCreator": "Waiting for creator to dispatch..."
         }
     }
 }

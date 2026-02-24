@@ -544,19 +544,19 @@ function CreatePayoutDialog({ open, onOpenChange, balance }: { open: boolean; on
     e.preventDefault();
     const val = parseFloat(amount);
     if (isNaN(val) || val <= 0) {
-      setError("Please enter a valid amount.");
+      setError(t("dashboard.wallet.errors.invalidAmount"));
       return;
     }
     if (val > balance) {
-      setError("Insufficient balance.");
+      setError(t("dashboard.wallet.errors.insufficient"));
       return;
     }
     if (val < 200) {
-      setError("Minimum payout is 200 EGP");
+      setError(t("dashboard.wallet.errors.minimum"));
       return;
     }
     if (!methodDetails) {
-      setError("Please provide payment details.");
+      setError(t("dashboard.wallet.errors.noDetails"));
       return;
     }
 
@@ -589,7 +589,7 @@ function CreatePayoutDialog({ open, onOpenChange, balance }: { open: boolean; on
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div className="space-y-2">
-            <label className="text-sm font-bold">Amount (EGP)</label>
+            <label className="text-sm font-bold">{t("dashboard.wallet.amount_egp")}</label>
             <Input
               type="number"
               step="1"
@@ -598,7 +598,7 @@ function CreatePayoutDialog({ open, onOpenChange, balance }: { open: boolean; on
                 setAmount(e.target.value);
                 setError(null);
               }}
-              placeholder="Minimum 200 EGP"
+              placeholder={t("dashboard.wallet.min_payout_placeholder")}
               className="h-12 rounded-xl"
             />
           </div>
@@ -610,11 +610,11 @@ function CreatePayoutDialog({ open, onOpenChange, balance }: { open: boolean; on
                 <SelectValue placeholder={t("dashboard.wallet.payoutMethod")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="vodafone_cash">Vodafone Cash</SelectItem>
-                <SelectItem value="instapay">InstaPay</SelectItem>
-                <SelectItem value="bank_transfer">Bank Transfer (Visa/Mastercard)</SelectItem>
-                <SelectItem value="orange_money">Orange Money</SelectItem>
-                <SelectItem value="etisalat_cash">Etisalat Cash</SelectItem>
+                <SelectItem value="vodafone_cash">{t("dashboard.wallet.methods.vodafoneCash")}</SelectItem>
+                <SelectItem value="instapay">{t("dashboard.wallet.methods.instapay")}</SelectItem>
+                <SelectItem value="bank_transfer">{t("dashboard.wallet.methods.bankTransfer")}</SelectItem>
+                <SelectItem value="orange_money">{t("dashboard.wallet.methods.orangeMoney")}</SelectItem>
+                <SelectItem value="etisalat_cash">{t("dashboard.wallet.methods.etisalatCash")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -631,7 +631,7 @@ function CreatePayoutDialog({ open, onOpenChange, balance }: { open: boolean; on
                 setMethodDetails(e.target.value);
                 setError(null);
               }}
-              placeholder={method === 'instapay' ? 'username@instapay' : 'Enter details here'}
+              placeholder={method === 'instapay' ? t("dashboard.wallet.details.instapayHint") : t("dashboard.wallet.details.placeholder")}
               className="h-12 rounded-xl"
             />
           </div>
@@ -711,11 +711,11 @@ function BrandingForm({ user }: { user: any }) {
           <div className="flex items-center gap-2 p-3 bg-background/50 border border-primary/10 rounded-lg">
             <span className="font-serif font-bold capitalize text-lg">{(t(`dashboard.branding.roles.${user.role}`) || user.role)}</span>
             <span className="text-xs text-muted-foreground bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
-              {t("dashboard.branding.status_active", "Active")}
+              {t("dashboard.branding.status_active")}
             </span>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            {t("dashboard.branding.role_info", "Your account role determines your access level. Contact support to change.")}
+            {t("dashboard.branding.role_info")}
           </p>
         </div>
 
@@ -756,12 +756,12 @@ function BrandingForm({ user }: { user: any }) {
               onValueChange={(val) => register("storeSettings.font").onChange({ target: { value: val } })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a font" />
+                <SelectValue placeholder={t("dashboard.branding.select_font")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="serif">Classic Serif (Merriweather)</SelectItem>
-                <SelectItem value="sans">Modern Sans (Inter)</SelectItem>
-                <SelectItem value="display">Display (Cinzel)</SelectItem>
+                <SelectItem value="serif">{t("dashboard.branding.fonts.serif") || "Classic Serif (Merriweather)"}</SelectItem>
+                <SelectItem value="sans">{t("dashboard.branding.fonts.sans") || "Modern Sans (Inter)"}</SelectItem>
+                <SelectItem value="display">{t("dashboard.branding.fonts.display") || "Display (Cinzel)"}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -773,12 +773,12 @@ function BrandingForm({ user }: { user: any }) {
               onValueChange={(val) => register("storeSettings.headerLayout").onChange({ target: { value: val } })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a layout" />
+                <SelectValue placeholder={t("dashboard.branding.select_layout")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="standard">Standard (Banner + Avatar)</SelectItem>
-                <SelectItem value="hero">Hero (Full Image)</SelectItem>
-                <SelectItem value="minimal">Minimal (Text Only)</SelectItem>
+                <SelectItem value="standard">{t("dashboard.branding.layouts.standard")}</SelectItem>
+                <SelectItem value="hero">{t("dashboard.branding.layouts.hero")}</SelectItem>
+                <SelectItem value="minimal">{t("dashboard.branding.layouts.minimal")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -794,7 +794,7 @@ function BrandingForm({ user }: { user: any }) {
           <h3 className="text-sm font-medium">{t("dashboard.branding.images")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <CloudinaryUpload
-              label="Store Logo / Avatar"
+              label={t("dashboard.branding.avatarLabel")}
               aspectRatio="square"
               folder="hekayaty_avatars"
               onUpload={(url) => {
@@ -804,7 +804,7 @@ function BrandingForm({ user }: { user: any }) {
             />
 
             <CloudinaryUpload
-              label="Store Banner"
+              label={t("dashboard.branding.bannerLabel")}
               aspectRatio="banner"
               defaultImage={user.bannerUrl}
               folder="hekayaty_banners"
@@ -1440,8 +1440,8 @@ function ReaderUnifiedActivity({ user }: { user: any }) {
             <ShoppingBag className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h3 className="text-2xl font-bold font-serif">Store Orders</h3>
-            <p className="text-sm text-muted-foreground">Track your physical and digital purchases</p>
+            <h3 className="text-2xl font-bold font-serif">{t("dashboard.activity.storeOrders")}</h3>
+            <p className="text-sm text-muted-foreground">{t("dashboard.activity.storeOrdersDesc")}</p>
           </div>
         </div>
 

@@ -42,8 +42,8 @@ export default function WriterStore() {
   if (!user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-        <h1 className="text-4xl font-serif font-bold mb-4">Writer Not Found</h1>
-        <p className="text-muted-foreground">The scribe you are looking for has not yet chronicled their tale here.</p>
+        <h1 className="text-4xl font-serif font-bold mb-4">{t("writerStore.notFoundTitle")}</h1>
+        <p className="text-muted-foreground">{t("writerStore.notFoundSubtitle")}</p>
       </div>
     );
   }
@@ -93,23 +93,23 @@ export default function WriterStore() {
               <div className="flex-1">
                 <h3 className="text-2xl font-bold mb-2 flex items-center gap-2">
                   <Palette className="w-6 h-6 text-primary" />
-                  Welcome to Your Store! 🎨
+                  {t("writerStore.ownStoreWelcome")}
                 </h3>
                 <p className="text-muted-foreground">
-                  Make it yours! Customize your appearance, add your logo, and start publishing your amazing work.
+                  {t("writerStore.ownStoreSubtitle")}
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
                 <Link href="/dashboard">
                   <Button className="gap-2" size="lg">
                     <Settings className="w-4 h-4" />
-                    Customize Store
+                    {t("writerStore.customizeButton")}
                   </Button>
                 </Link>
                 <Link href="/dashboard">
                   <Button variant="outline" className="gap-2" size="lg">
                     <Plus className="w-4 h-4" />
-                    Add Product
+                    {t("writerStore.addProductButton")}
                   </Button>
                 </Link>
               </div>
@@ -255,10 +255,10 @@ function ArtistContent({ user, products, themeColor, fontClass }: { user: any, p
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <TabsList className="bg-white/5 border border-white/10 p-1 rounded-xl">
           <TabsTrigger value="portfolio" className="gap-2 px-6">
-            <ImageIcon className="w-4 h-4" /> Portfolio
+            <ImageIcon className="w-4 h-4" /> {t("writerStore.portfolio")}
           </TabsTrigger>
           <TabsTrigger value="assets" className="gap-2 px-6">
-            <Palette className="w-4 h-4" /> Design Assets
+            <Palette className="w-4 h-4" /> {t("writerStore.designAssets")}
           </TabsTrigger>
         </TabsList>
 
@@ -272,7 +272,7 @@ function ArtistContent({ user, products, themeColor, fontClass }: { user: any, p
               className="rounded-full text-xs h-8"
               style={selectedCategory === cat ? { backgroundColor: themeColor } : {}}
             >
-              {cat}
+              {t(`writerStore.categories.${cat}`)}
             </Button>
           ))}
         </div>
@@ -298,7 +298,7 @@ function ArtistContent({ user, products, themeColor, fontClass }: { user: any, p
           ))}
           {(!portfoliosResponse?.data || portfoliosResponse.data.length === 0) && (
             <div className="col-span-full py-20 text-center glass-card rounded-2xl border-dashed border-white/10 border-2">
-              <p className="text-muted-foreground">This artist hasn't organized their portfolio yet.</p>
+              <p className="text-muted-foreground">{t("writerStore.noPortfolio")}</p>
             </div>
           )}
         </div>
@@ -311,7 +311,7 @@ function ArtistContent({ user, products, themeColor, fontClass }: { user: any, p
           ))}
           {(!products || products.length === 0) && (
             <p className="text-muted-foreground col-span-full py-10 text-center">
-              No design assets available for purchase.
+              {t("writerStore.noAssets")}
             </p>
           )}
         </div>

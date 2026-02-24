@@ -17,7 +17,8 @@ import {
     ChevronRight,
     MoreVertical,
     Trash2,
-    BellOff
+    BellOff,
+    Feather
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -174,7 +175,7 @@ export default function NotificationsPage() {
                                                         </h4>
                                                         {n.priority === 'high' && (
                                                             <Badge className="bg-primary hover:bg-primary text-white text-[10px] animate-pulse">
-                                                                {t("common.high", "Urgent")}
+                                                                {t("notifications.priority.high", "Urgent")}
                                                             </Badge>
                                                         )}
                                                         {!n.isRead && (
@@ -214,11 +215,11 @@ export default function NotificationsPage() {
                                                     <DropdownMenuContent align="end" className="bg-[#1a0f0a] border-white/10">
                                                         {!n.isRead && (
                                                             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); markRead(n.id); }}>
-                                                                <Check className="w-4 h-4 mr-2" /> Mark as Read
+                                                                <Check className="w-4 h-4 mr-2" /> {t("notifications.markAsRead", "Mark as Read")}
                                                             </DropdownMenuItem>
                                                         )}
                                                         <DropdownMenuItem className="text-destructive">
-                                                            <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                            <Trash2 className="w-4 h-4 mr-2" /> {t("common.delete", "Delete")}
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
@@ -234,14 +235,14 @@ export default function NotificationsPage() {
                 {/* Bottom Tips */}
                 <div className="mt-12 p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/5">
                     <div className="flex items-start gap-4">
-                        <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                            <Settings className="w-6 h-6" />
+                        <div className="bg-gradient-to-tr from-primary to-accent p-2 rounded-lg">
+                            <Feather className="w-6 h-6 text-white" />
                         </div>
                         <div>
+                            <h1 className="text-2xl font-serif font-bold text-gradient">Hekayaty</h1>
                             <h4 className="font-bold text-lg mb-1">{t("notifications.tipsTitle", "Notification Preferences")}</h4>
                             <p className="text-sm text-muted-foreground mb-4">
-                                You can customize how and when you receive notifications in your settings.
-                                Choose between in-app, email, and push alerts.
+                                {t("notifications.tipsDescription", "You can customize how and when you receive notifications in your settings. Choose between in-app, email, and push alerts.")}
                             </p>
                             <Button variant="outline" size="sm" className="bg-white/5 border-white/10">{t("notifications.configure", "Configure Alerts")}</Button>
                         </div>

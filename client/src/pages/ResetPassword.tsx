@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Lock, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
-// Schema validation
 const resetPasswordSchema = z
     .object({
         password: z.string().min(8, "Password must be at least 8 characters long"),
@@ -24,32 +24,25 @@ const resetPasswordSchema = z
     });
 
 export default function ResetPassword() {
+    const { t } = useTranslation();
     const [location, setLocation] = useLocation();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [sessionCheck, setSessionCheck] = useState(true);
 
-    // Check if we have a valid session (Supabase automatically handles access token from URL)
     useEffect(() => {
         const checkSession = async () => {
             const { data } = await supabase.auth.getSession();
             if (!data.session) {
-                // If no session, user might have clicked an expired link or just navigated here manually
-                // However, standard Supabase implicit flow puts tokens in hash, client handles it.
-                // We give it a moment to process.
                 console.log("No active session found immediately on mount. Checking async...");
             }
             setSessionCheck(false);
         };
         checkSession();
 
-        // Listen for auth state changes (importantly, PASSWORD_RECOVERY event)
         const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
             console.log("Reset Password Auth State Change:", event);
-            if (event === "PASSWORD_RECOVERY") {
-                // This is the ideal state
-            }
         });
 
         return () => {
@@ -73,11 +66,10 @@ export default function ResetPassword() {
 
             setIsSuccess(true);
             toast({
-                title: "Password Updated",
-                description: "Your password has been changed successfully.",
+                title: t('resetPassword.successTitle'),
+                description: t('resetPassword.successDesc'),
             });
 
-            // Redirect after a short delay
             setTimeout(() => {
                 setLocation("/auth");
             }, 3000);
@@ -85,8 +77,8 @@ export default function ResetPassword() {
         } catch (err: any) {
             console.error("Update Password Error:", err);
             toast({
-                title: "Error",
-                description: err.message || "Failed to update password. Link may be expired.",
+                title: t('common.error'),
+                description: err.message || t('common.error'),
                 variant: "destructive",
             });
         } finally {
@@ -104,12 +96,12 @@ export default function ResetPassword() {
                             <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 mb-2">
                                 <CheckCircle2 className="w-8 h-8" />
                             </div>
-                            <h2 className="text-2xl font-bold">Password Reset Successful</h2>
+                            <h2 className="text-2xl font-bold">{t('resetPassword.successTitle')}</h2>
                             <p className="text-muted-foreground">
-                                Your password has been securely updated. You will be redirected to the login page momentarily.
+                                {t('resetPassword.successDesc')}
                             </p>
                             <Button asChild className="mt-4">
-                                <Link href="/auth">Go to Login</Link>
+                                <Link href="/auth">{t('resetPassword.goToLogin')}</Link>
                             </Button>
                         </CardContent>
                     </Card>
@@ -125,45 +117,47 @@ export default function ResetPassword() {
             <div className="flex-1 flex items-center justify-center p-6">
                 <Card className="w-full max-w-md border-border/50 shadow-xl">
                     <CardHeader className="space-y-1">
-                        <CardTitle className="text-2xl font-serif font-bold text-center">Set New Password</CardTitle>
+                        <CardTitle className="text-2xl font-serif font-bold text-center">
+                            {t('resetPassword.title')}
+                        </CardTitle>
                         <CardDescription className="text-center">
-                            Please enter your new secure password below
+                            {t('resetPassword.subtitle')}
                         </CardDescription>
                     </CardHeader>
 
                     <CardContent>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="password">New Password</Label>
+                                <Label htmlFor="password">{t('resetPassword.newPassword')}</Label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                                     <Input
                                         id="password"
                                         type="password"
-                                        placeholder="Min 8 characters"
+                                        placeholder={t('resetPassword.minLength')}
                                         className="pl-10"
                                         {...form.register("password")}
                                     />
                                 </div>
                                 {form.formState.errors.password && (
-                                    <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>
+                                    <p className="text-sm text-red-500">{t('resetPassword.minLength')}</p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                                <Label htmlFor="confirmPassword">{t('resetPassword.confirmPassword')}</Label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                                     <Input
                                         id="confirmPassword"
                                         type="password"
-                                        placeholder="Re-enter password"
+                                        placeholder={t('resetPassword.confirmPassword')}
                                         className="pl-10"
                                         {...form.register("confirmPassword")}
                                     />
                                 </div>
                                 {form.formState.errors.confirmPassword && (
-                                    <p className="text-sm text-red-500">{form.formState.errors.confirmPassword.message}</p>
+                                    <p className="text-sm text-red-500">{t('resetPassword.mismatch')}</p>
                                 )}
                             </div>
 
@@ -171,10 +165,10 @@ export default function ResetPassword() {
                                 {isLoading ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Updating Password...
+                                        {t('resetPassword.updating')}
                                     </>
                                 ) : (
-                                    "Update Password"
+                                    t('resetPassword.button')
                                 )}
                             </Button>
                         </form>

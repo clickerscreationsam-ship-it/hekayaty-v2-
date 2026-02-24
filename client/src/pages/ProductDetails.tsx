@@ -36,7 +36,7 @@ export default function ProductDetails() {
   const likeProduct = useLikeProduct();
 
   if (isLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
-  if (!product) return <div>Product not found</div>;
+  if (!product) return <div className="text-white text-center py-20">Product not found</div>;
 
   const displayImage = selectedImage || (product as any).coverUrl;
   const galleryImages = Array.from(new Set([
@@ -141,7 +141,7 @@ export default function ProductDetails() {
                 </div>
               ) : (
                 <div className="flex items-center gap-1 text-muted-foreground/40 text-xs font-medium italic">
-                  <Star className="w-3.5 h-3.5" /> {t("productDetails.noReviews") || "No reviews yet"}
+                  <Star className="w-3.5 h-3.5" /> {t("productDetails.noReviews")}
                 </div>
               )}
             </div>
@@ -155,12 +155,12 @@ export default function ProductDetails() {
                   <div className="flex flex-wrap items-center gap-3">
                     {product.stockQuantity !== null && (
                       <div className={`flex items-center gap-2 font-semibold text-sm px-3 py-1 rounded-full border ${product.stockQuantity > 0 ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
-                        {product.stockQuantity > 0 ? `${product.stockQuantity} Units in Stock` : 'Out of Stock'}
+                        {product.stockQuantity > 0 ? t("productDetails.stock", { count: product.stockQuantity }) : t("productDetails.outOfStock")}
                       </div>
                     )}
                     <div className="flex items-center gap-2 text-primary font-semibold text-sm bg-primary/10 w-fit px-3 py-1 rounded-full border border-primary/20">
                       <Truck className="w-4 h-4" />
-                      Physical Book • Shipping Required
+                      {t("productDetails.physicalNote")}
                     </div>
                   </div>
 
@@ -190,7 +190,7 @@ export default function ProductDetails() {
                   <div className="flex flex-wrap items-center gap-3">
                     {product.stockQuantity !== null && (
                       <div className={`flex items-center gap-2 font-semibold text-sm px-3 py-1 rounded-full border ${product.stockQuantity > 0 ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
-                        {product.stockQuantity > 0 ? `${product.stockQuantity} ${t("dashboard.products.stock")}` : 'Out of Stock'}
+                        {product.stockQuantity > 0 ? t("productDetails.stock", { count: product.stockQuantity }) : t("productDetails.outOfStock")}
                       </div>
                     )}
                     <div className="flex items-center gap-2 text-amber-500 font-semibold text-sm bg-amber-500/10 w-fit px-3 py-1 rounded-full border border-amber-500/20">
@@ -207,7 +207,7 @@ export default function ProductDetails() {
                       </label>
                       <input
                         className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-sm focus:border-amber-500/50 outline-none transition-all"
-                        placeholder="Enter details here..."
+                        placeholder={t("productDetails.customizationPlaceholder")}
                         onChange={(e) => setCustomization(e.target.value)}
                       />
                     </div>
@@ -238,7 +238,7 @@ export default function ProductDetails() {
                 {product.type === "ebook" && (
                   <div className="w-full flex items-center gap-2 text-[10px] text-green-500 font-bold uppercase tracking-widest mb-2 px-2">
                     <ShieldCheck className="w-3 h-3" />
-                    {t("studio.guide.save") ? "Protected Digital Content • Anti-Theft Protection" : "Protected Digital Content • Anti-Theft Protection"}
+                    {t("productDetails.digitalNote")}
                   </div>
                 )}
                 {product.type === "promotional" ? (
@@ -247,7 +247,7 @@ export default function ProductDetails() {
                       {t("dashboard.products.types.promotional")}
                     </p>
                     <p className="text-muted-foreground text-sm">
-                      {t("marketplace.promotionalDesc") || "This item is for showcase only and cannot be purchased."}
+                      {t("marketplace.promotionalDesc")}
                     </p>
                   </div>
                 ) : (
@@ -256,7 +256,7 @@ export default function ProductDetails() {
                       <Link href={`/read/${product.id}`} className="w-full sm:w-auto">
                         <Button className="w-full h-14 px-8 text-lg font-bold shadow-xl shadow-primary/20 bg-green-600 hover:bg-green-700 rounded-2xl transition-all hover:scale-[1.02]">
                           <BookOpen className="mr-2 w-5 h-5" />
-                          Read Now (Free)
+                          {t("productDetails.readNowFree")}
                         </Button>
                       </Link>
                     ) : (
@@ -271,9 +271,9 @@ export default function ProductDetails() {
                         className="w-full sm:w-auto h-14 px-8 text-lg font-bold shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 rounded-2xl group transition-all hover:scale-[1.02]"
                       >
                         <ShoppingCart className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
-                        {addToCart.isPending ? "Adding..." : (
+                        {addToCart.isPending ? t("productDetails.addingToCart") : (
                           <span>
-                            Add to Cart • <span className="font-serif">{(product.price * quantity)} EGP</span>
+                            {t("productDetails.addToCartWithPrice", { price: product.price * quantity })}
                           </span>
                         )}
                       </Button>
@@ -294,25 +294,25 @@ export default function ProductDetails() {
 
             <div className="mt-8 pt-8 border-t border-border flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-green-500" /> Secure Payment
+                <ShieldCheck className="w-4 h-4 text-green-500" /> {t("productDetails.securePayment")}
               </div>
               {product.requiresShipping || product.type === 'merchandise' || product.type === 'physical' ? (
                 <div className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-orange-500" /> {isArabic ? "منتج مادي (يتطلب شحن)" : "Physical Product (Shipping Required)"}
+                  <Truck className="w-4 h-4 text-orange-500" /> {t("productDetails.physicalProduct")}
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Download className="w-4 h-4 text-blue-500" /> {isArabic ? "وصول رقمي فوري" : "Instant Digital Access"}
+                  <Download className="w-4 h-4 text-blue-500" /> {t("productDetails.instantAccess")}
                 </div>
               )}
               {product.type === "asset" && (
                 <>
                   <div className="flex items-center gap-2 px-2 py-1 rounded bg-muted/50">
-                    <span className="font-semibold text-foreground">License:</span>
-                    {product.licenseType === "commercial" ? "Commercial Use" : "Personal Use"}
+                    <span className="font-semibold text-foreground">{t("productDetails.license")}:</span>
+                    {product.licenseType === "commercial" ? t("dashboard.products.licenseOptions.commercial") : t("dashboard.products.licenseOptions.personal")}
                   </div>
                   <div className="flex items-center gap-2 px-2 py-1 rounded bg-muted/50">
-                    <span className="font-semibold text-foreground">File:</span> ZIP / PSD
+                    <span className="font-semibold text-foreground">{t("productDetails.fileFormat")}:</span> ZIP / PSD
                   </div>
                 </>
               )}
@@ -328,7 +328,9 @@ export default function ProductDetails() {
 
       {/* Reviews Section */}
       <div className="max-w-4xl mx-auto px-4 mt-20">
-        <h2 className="text-2xl font-serif font-bold mb-8">Reader Reviews ({reviews?.length || 0})</h2>
+        <h2 className="text-2xl font-serif font-bold mb-8">
+          {t("productDetails.readerReviews", { count: reviews?.length || 0 })}
+        </h2>
         <ReviewForm productId={id} />
 
         <div className="space-y-6 mt-10">
@@ -353,7 +355,7 @@ export default function ProductDetails() {
                   </div>
                 </div>
                 <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest bg-white/5 px-2 py-1 rounded">
-                  {new Date(review.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                  {new Date(review.createdAt).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>
               </div>
               <p className="text-muted-foreground leading-relaxed text-sm italic">"{review.comment}"</p>
@@ -378,7 +380,7 @@ function ShippingAvailability({ creatorId }: { creatorId: string }) {
     <div className="mt-8 p-6 rounded-2xl bg-amber-500/5 border border-amber-500/10 backdrop-blur-sm">
       <div className="flex items-center gap-2 mb-4 text-amber-500 font-bold">
         <MapPin className="w-5 h-5" />
-        <span>Shipping Available To:</span>
+        <span>{t("productDetails.shippingAvailableTo")}</span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -387,11 +389,11 @@ function ShippingAvailability({ creatorId }: { creatorId: string }) {
             <div className="flex flex-col">
               <span className="text-sm font-semibold">{rate.regionName}</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                {rate.deliveryTimeMin}-{rate.deliveryTimeMax} Business Days
+                {rate.deliveryTimeMin}-{rate.deliveryTimeMax} {t("productDetails.businessDays")}
               </span>
             </div>
             <span className="text-primary font-bold font-serif text-sm">
-              {rate.amount === 0 ? 'FREE' : `${rate.amount} EGP`}
+              {rate.amount === 0 ? t("productDetails.free") : `${rate.amount} EGP`}
             </span>
           </div>
         ))}
@@ -399,12 +401,12 @@ function ShippingAvailability({ creatorId }: { creatorId: string }) {
 
       <div className="mt-4 flex items-start gap-2 text-[10px] text-muted-foreground leading-tight">
         <Info className="w-3 h-3 shrink-0 mt-0.5" />
-        <p>Shipping costs are calculated automatically at checkout based on your selection. Delivery times are estimated from the moment of dispatch.</p>
+        <p>{t("productDetails.shippingNote")}</p>
       </div>
 
       {creator?.shippingPolicy && (
         <div className="mt-6 pt-6 border-t border-amber-500/10 text-sm">
-          <p className="font-bold text-amber-500/80 mb-2">Creator's Delivery Notes:</p>
+          <p className="font-bold text-amber-500/80 mb-2">{t("productDetails.creatorDeliveryNotes")}</p>
           <div className="text-muted-foreground whitespace-pre-line leading-relaxed">
             {creator.shippingPolicy}
           </div>
@@ -433,9 +435,9 @@ function ReviewForm({ productId }: { productId: number }) {
 
   if (!user) return (
     <div className="p-8 text-center glass-card rounded-2xl border border-white/10 my-10">
-      <p className="text-muted-foreground mb-4">{t("productDetails.noReviews") || "Please login to write a review."}</p>
+      <p className="text-muted-foreground mb-4">{t("productDetails.loginToReview")}</p>
       <Link href="/auth">
-        <Button variant="outline" className="rounded-full px-6">{t("common.login") || "Login"}</Button>
+        <Button variant="outline" className="rounded-full px-6">{t("nav.login")}</Button>
       </Link>
     </div>
   );
@@ -449,7 +451,7 @@ function ReviewForm({ productId }: { productId: number }) {
 
       <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
         <Sparkles className="w-5 h-5 text-primary" />
-        {t("productDetails.writeReview") || "Write a Review"}
+        {t("productDetails.writeReview")}
       </h3>
 
       <div className="space-y-6">
@@ -457,13 +459,13 @@ function ReviewForm({ productId }: { productId: number }) {
           <textarea
             {...register("comment")}
             className="w-full p-5 rounded-2xl bg-background/50 border-2 border-primary/5 focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all min-h-[120px] text-lg"
-            placeholder={t("productDetails.yourReview") || "What did you think of the story?"}
+            placeholder={t("productDetails.reviewPlaceholder")}
           />
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-6 bg-primary/5 p-4 rounded-2xl border border-primary/10">
           <div className="flex items-center gap-6">
-            <span className="text-sm font-black uppercase tracking-tighter text-primary/60">{t("productDetails.yourRating") || "Your Rating"}</span>
+            <span className="text-sm font-black uppercase tracking-tighter text-primary/60">{t("productDetails.yourRating")}</span>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((starValue) => {
                 const currentRating = watch("rating") || 5;
@@ -499,7 +501,7 @@ function ReviewForm({ productId }: { productId: number }) {
             disabled={createReview.isPending}
             className="w-full sm:w-auto rounded-xl h-12 px-10 font-black shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-base uppercase tracking-widest"
           >
-            {createReview.isPending ? t("common.processing") : t("productDetails.submitReview") || "Post Review"}
+            {createReview.isPending ? t("common.processing") : t("productDetails.submitReview")}
           </Button>
         </div>
       </div>

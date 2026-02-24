@@ -81,7 +81,7 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
                 "w-full py-2 text-white rounded-lg font-bold shadow-lg active:scale-95 transition-all text-sm uppercase tracking-wider",
                 isCollection ? "bg-secondary hover:bg-secondary/90" : "bg-primary hover:bg-primary/90"
               )}>
-                {isCollection ? t("home.collections.viewBundle") : "View Details"}
+                {isCollection ? t("home.collections.viewBundle") : t("common.viewDetails")}
               </button>
             </Link>
           </div>

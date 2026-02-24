@@ -7,8 +7,10 @@ import { FulfillmentStatusBadge } from "@/components/FulfillmentStatusBadge";
 import { Search, Package, MapPin, User, Store, Truck, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export function PhysicalOrdersAdmin() {
+    const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState<string | undefined>();
     const { data: orders = [], isLoading } = useMakerOrders(statusFilter);
@@ -36,7 +38,7 @@ export function PhysicalOrdersAdmin() {
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                        placeholder="Search by product, buyer, seller or order ID..."
+                        placeholder={t('admin.physicalOrders.searchPlaceholder')}
                         className="pl-10"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -51,7 +53,7 @@ export function PhysicalOrdersAdmin() {
                             size="sm"
                             className="h-8 text-xs px-3"
                         >
-                            {status === 'All' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
+                            {status === 'All' ? t('makerOrders.filterAll') : t(`orderTracking.statuses.${status}`)}
                         </Button>
                     ))}
                 </div>
@@ -61,7 +63,7 @@ export function PhysicalOrdersAdmin() {
                 {filteredOrders.length === 0 ? (
                     <div className="text-center py-20 bg-muted/10 rounded-2xl border-2 border-dashed">
                         <Package className="w-12 h-12 mx-auto text-muted-foreground opacity-20 mb-3" />
-                        <p className="text-muted-foreground font-medium">No physical orders found matching your criteria</p>
+                        <p className="text-muted-foreground font-medium">{t('admin.physicalOrders.noResultsFound')}</p>
                     </div>
                 ) : (
                     filteredOrders.map((order: any) => (
@@ -84,16 +86,16 @@ export function PhysicalOrdersAdmin() {
                                         <div className="flex flex-col gap-2 text-sm">
                                             <div className="flex items-center gap-2 text-blue-400 font-medium">
                                                 <User className="w-4 h-4" />
-                                                Buyer: <span className="text-foreground">{order.buyerName}</span>
+                                                {t('admin.physicalOrders.buyer')} <span className="text-foreground">{order.buyerName}</span>
                                             </div>
                                             <div className="flex items-center gap-2 text-orange-400 font-medium">
                                                 <Store className="w-4 h-4" />
-                                                Seller: <span className="text-foreground">{order.makerName}</span>
+                                                {t('admin.physicalOrders.seller')} <span className="text-foreground">{order.makerName}</span>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2 mt-2">
                                             <Badge variant="secondary" className="bg-primary/20 text-primary border border-primary/20 font-black">
-                                                {order.price} EGP
+                                                {order.price} {t('common.egp')}
                                             </Badge>
                                             {order.trackingNumber && (
                                                 <Badge variant="outline" className="bg-white/5 border-white/10 text-[10px] font-mono">
@@ -111,7 +113,7 @@ export function PhysicalOrdersAdmin() {
                                             <MapPin className="w-4 h-4" />
                                         </div>
                                         <div className="text-xs leading-relaxed">
-                                            <p className="font-bold text-foreground mb-1">Shipping Destination</p>
+                                            <p className="font-bold text-foreground mb-1">{t('admin.physicalOrders.shippingDestination')}</p>
                                             <p className="font-medium text-primary/80">{order.shippingAddress?.fullName}</p>
                                             <p className="text-muted-foreground italic">"{order.shippingAddress?.addressLine}"</p>
                                             <p className="text-muted-foreground">{order.shippingAddress?.city}</p>
@@ -122,18 +124,18 @@ export function PhysicalOrdersAdmin() {
                                     <div className="pt-4 border-t border-white/10 mt-2">
                                         <div className="flex items-center gap-2 text-[10px] font-bold text-primary/50 uppercase tracking-widest mb-2">
                                             <Info className="w-3 h-3" />
-                                            Tracking & Logistics
+                                            {t('admin.physicalOrders.trackingLogistics')}
                                         </div>
                                         {order.fulfillmentStatus === 'shipped' ? (
                                             <div className="p-2 bg-green-500/10 rounded border border-green-500/20">
-                                                <p className="text-[10px] text-green-500 font-bold">Shipped: {formatDate(order.shippedAt)}</p>
+                                                <p className="text-[10px] text-green-500 font-bold">{t('orderTracking.statuses.shipped')}: {formatDate(order.shippedAt)}</p>
                                             </div>
                                         ) : order.fulfillmentStatus === 'rejected' ? (
                                             <div className="p-2 bg-destructive/10 rounded border border-destructive/20">
-                                                <p className="text-[10px] text-destructive font-bold">REJECTED: {order.rejectionReason}</p>
+                                                <p className="text-[10px] text-destructive font-bold">{t('orderTracking.statuses.rejected').toUpperCase()}: {order.rejectionReason}</p>
                                             </div>
                                         ) : (
-                                            <p className="text-[10px] text-muted-foreground italic">Waiting for creator to dispatch...</p>
+                                            <p className="text-[10px] text-muted-foreground italic">{t('admin.physicalOrders.waitingCreator')}</p>
                                         )}
                                     </div>
                                 </div>
