@@ -7,20 +7,59 @@ export async function callEdgeFunction(
     data?: any,
     method: 'GET' | 'POST' | 'PATCH' | 'DELETE' = 'POST'
 ) {
-    console.log(`🚀 callEdgeFunction: ${functionName} [${method}]`, data);
+    console.log(`🚀 callEdgeFunction: ${functionName} [${method}]`);
+
+    // Always explicitly get the session and pass Authorization header.
+    // Relying on the Supabase client to auto-attach the token is unreliable
+    // in some browser environments — the token can be silently missing.
+    const { data: { session } } = await supabase.auth.getSession();
+
+    const headers: Record<string, string> = {
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+    };
+
+    if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+    }
 
     try {
         const { data: responseData, error } = await supabase.functions.invoke(functionName, {
             method,
             body: method === 'GET' ? undefined : data,
+            headers
         });
 
         if (error) {
             console.error(`❌ Edge Function Error [${functionName}]:`, error);
 
-            // Try to extract body if it's a 401 to see the real reason
-            if (error.status === 401 || (error as any).context?.status === 401) {
-                console.warn(`🔄 401 detected for ${functionName}. You might need to refresh or logout/login.`);
+            const status = (error as any).status || (error as any).context?.status;
+            const isUnauthorized =
+                status === 401 ||
+                error.message?.toLowerCase().includes('jwt') ||
+                error.message?.toLowerCase().includes('unauthorized');
+
+            if (isUnauthorized && session) {
+                // Attempt one session refresh and retry
+                console.log(`🔄 Refreshing session and retrying ${functionName}...`);
+                const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+
+                if (!refreshError && refreshed.session) {
+                    const retryHeaders: Record<string, string> = {
+                        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${refreshed.session.access_token}`
+                    };
+
+                    const { data: retryData, error: retryError } = await supabase.functions.invoke(functionName, {
+                        method,
+                        body: method === 'GET' ? undefined : data,
+                        headers: retryHeaders
+                    });
+
+                    if (!retryError) {
+                        console.log(`✅ Retry succeeded for ${functionName}`);
+                        return retryData;
+                    }
+                }
             }
 
             throw new Error(error.message || `Failed to call ${functionName}`);

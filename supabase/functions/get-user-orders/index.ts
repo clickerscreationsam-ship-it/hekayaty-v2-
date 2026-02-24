@@ -7,30 +7,38 @@ serve(async (req) => {
         return new Response('ok', { headers: corsHeaders })
     }
 
-    console.log(`[get-user-orders] Request received: ${req.method}`)
+    const requestId = Math.random().toString(36).substring(7);
+    console.log(`[get-user-orders][${requestId}] Request received: ${req.method}`)
 
     try {
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) {
-            console.error('[get-user-orders] Missing Authorization header')
+            console.error(`[get-user-orders][${requestId}] Missing Authorization header`)
             return new Response(JSON.stringify({ error: 'Unauthorized: Missing token' }), {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 status: 401
             })
         }
 
-        // We use the user's OWN token to verify them first
         const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
-        const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 
-        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-            global: { headers: { Authorization: authHeader } }
-        })
+        if (!supabaseUrl || !supabaseServiceKey) {
+            console.error(`[get-user-orders][${requestId}] Missing env variables: URL=${!!supabaseUrl}, KEY=${!!supabaseServiceKey}`)
+            throw new Error('Server configuration error')
+        }
 
-        const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+
+        // Parse token - more robustly
+        const token = authHeader.replace(/^[Bb]earer\s+/, '').trim()
+        console.log(`[get-user-orders][${requestId}] Verifying token (length: ${token.length})...`)
+
+        // Verify user with service role client - this is the most reliable way in Edge Functions
+        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
 
         if (authError || !user) {
-            console.error('[get-user-orders] Auth error:', authError?.message || 'User not found')
+            console.error(`[get-user-orders][${requestId}] Auth error:`, authError?.message || 'User not found')
             return new Response(JSON.stringify({
                 error: 'Unauthorized: Invalid session',
                 details: authError?.message
@@ -40,13 +48,8 @@ serve(async (req) => {
             })
         }
 
-        // Now we use the ADMIN client to query the database, but we use the userId we just verified
-        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
-
-
         const userId = user.id
-        console.log(`[get-user-orders] Fetching orders for user: ${userId}`)
+        console.log(`[get-user-orders][${requestId}] Successfully verified user: ${userId}`)
 
         // Fetch user's orders - ALL statuses (pending, paid, etc.)
         const { data: orders, error: ordersError } = await supabaseAdmin
