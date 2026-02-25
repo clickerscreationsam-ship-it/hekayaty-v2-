@@ -14,7 +14,9 @@
         "delete": "Delete",
         "viewDetails": "View Details",
         "high": "Urgent",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "beReadyVibe": "Symphony of Stories",
+        "preparingMagic": "Magic is being woven"
     },
     "loading": "Loading...",
     "nav": {
@@ -344,7 +346,9 @@
             "cannotDeletePurchased": "You cannot delete this product because it has already been purchased by users. You can take it offline instead.",
             "sold": "Sold",
             "revenue": "Rev",
-            "ebookGuide": "Manage your e-book content directly in the Writer Studio for maximum security and anti-theft protection."
+            "ebookGuide": "Manage your e-book content directly in the Writer Studio for maximum security and anti-theft protection.",
+            "echoesComing": "Ancient Whispers are Awakening...",
+            "audioComingVibe": "The scrolls of sound are being enchanted. Very soon, your stories will echo through the realms in a grand symphony of voices."
         },
         "shipping": {
             "title": "Shipping Settings",
