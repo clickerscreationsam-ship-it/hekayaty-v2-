@@ -4,9 +4,9 @@ import { useProduct } from "@/hooks/use-products";
 import { useReviews, useCreateReview } from "@/hooks/use-reviews";
 import { useUser, useUserById } from "@/hooks/use-users";
 import { useAddToCart } from "@/hooks/use-cart";
-import { useLikeProduct } from "@/hooks/use-social";
+
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, Star, ShieldCheck, Download, ShoppingCart, Heart, BookOpen, Truck, MapPin, Info, Sparkles, Palette } from "lucide-react";
+import { Loader2, Star, ShieldCheck, Download, ShoppingCart, BookOpen, Truck, MapPin, Info, Sparkles, Palette } from "lucide-react";
 import { useShippingRates } from "@/hooks/use-shipping";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -33,7 +33,7 @@ export default function ProductDetails() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const addToCart = useAddToCart();
-  const likeProduct = useLikeProduct();
+
 
   if (isLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
   if (!product) return <div className="text-white text-center py-20">Product not found</div>;
@@ -278,15 +278,6 @@ export default function ProductDetails() {
                         )}
                       </Button>
                     )}
-
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-14 w-14 rounded-full border-2 hover:border-red-500 hover:text-red-500 hover:bg-red-50"
-                      onClick={() => likeProduct.mutate(product.id)}
-                    >
-                      <Heart className="w-6 h-6" />
-                    </Button>
                   </>
                 )}
               </div>
@@ -368,6 +359,7 @@ export default function ProductDetails() {
 }
 
 function ShippingAvailability({ creatorId }: { creatorId: string }) {
+  const { t } = useTranslation();
   const { data: rates, isLoading: isRatesLoading } = useShippingRates(creatorId);
   const { data: creator, isLoading: isCreatorLoading } = useUserById(creatorId);
 
