@@ -1014,44 +1014,36 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
             )}
 
             {type === "audiobook" && (
-              <div className="col-span-2 space-y-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <AudiobookUpload
-                      label={t("dashboard.products.audioFileMaster") || "Main Audiobook File (Master)"}
-                      onUpload={(data) => {
-                        setValue("audioParts", data.parts);
-                        setValue("audioDuration", data.totalDuration);
-                        // Also set fileUrl to the first part or a master URL if we decide to have one
-                        if (data.parts.length > 0) {
-                          setValue("fileUrl", data.parts[0].url);
-                        }
-                      }}
-                      onClear={() => {
-                        setValue("audioParts", []);
-                        setValue("audioDuration", 0);
-                        setValue("fileUrl", "");
-                      }}
-                    />
+              <div className="col-span-2 p-10 rounded-3xl bg-gradient-to-br from-primary/10 via-amber-500/5 to-primary/5 border border-primary/20 backdrop-blur-md flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in duration-700 shadow-2xl shadow-primary/5 relative overflow-hidden group">
+                {/* Background Decorative Element */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl -mr-16 -mt-16 group-hover:bg-primary/20 transition-colors duration-500" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-amber-500/10 blur-2xl -ml-12 -mb-12" />
+
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center text-primary shadow-inner border border-primary/10 animate-pulse">
+                    <Headphones className="w-10 h-10 drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
                   </div>
-                  <div className="space-y-2">
-                    <CloudinaryUpload
-                      label={t("dashboard.products.audioPreview") || "Public Sample / Preview (Brief)"}
-                      resourceType="video"
-                      folder="hekayaty_audio_previews"
-                      onUpload={(url) => setValue("audioPreviewUrl", url)}
-                    />
+                  <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center text-black font-bold text-[10px] border-2 border-background animate-bounce">
+                    ✨
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">{t("dashboard.products.audioDuration") || "Total Duration (seconds)"}</label>
-                  <Input
-                    type="number"
-                    {...register("audioDuration")}
-                    placeholder="Auto-filled after upload"
-                    readOnly
-                    className="bg-muted"
-                  />
+
+                <div className="space-y-3 relative z-10">
+                  <h3 className="text-2xl font-bold font-serif bg-gradient-to-r from-primary via-amber-600 to-primary bg-clip-text text-transparent">
+                    {t("dashboard.products.echoesComing") || "Ancient Whispers are Awakening..."}
+                  </h3>
+                  <p className="text-sm text-muted-foreground/80 max-w-sm mx-auto leading-relaxed italic">
+                    {t("dashboard.products.audioComingVibe") || "The scrolls of sound are being enchanted. Very soon, your stories will echo through the realms in a grand symphony of voices."}
+                  </p>
+                </div>
+
+                <div className="pt-4 flex flex-col items-center space-y-2">
+                  <span className="px-6 py-2 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-bold uppercase tracking-[0.2em] text-primary shadow-sm hover:bg-primary/20 transition-all cursor-default">
+                    {t("common.beReadyVibe") || "Symphony of Stories"}
+                  </span>
+                  <p className="text-[10px] text-amber-500/50 font-medium tracking-tighter uppercase italic">
+                    {t("common.preparingMagic") || "Magic is being woven"}
+                  </p>
                 </div>
               </div>
             )}
