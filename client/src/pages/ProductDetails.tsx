@@ -6,7 +6,7 @@ import { useUser, useUserById } from "@/hooks/use-users";
 import { useAddToCart } from "@/hooks/use-cart";
 
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, Star, ShieldCheck, Download, ShoppingCart, BookOpen, Truck, MapPin, Info, Sparkles, Palette } from "lucide-react";
+import { Loader2, Star, ShieldCheck, Download, ShoppingCart, BookOpen, Truck, MapPin, Info, Sparkles, Palette, Music, Play } from "lucide-react";
 import { useShippingRates } from "@/hooks/use-shipping";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -231,6 +231,43 @@ export default function ProductDetails() {
                       </button>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {product.type === "audiobook" && (
+                <div className="space-y-4">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-2 text-indigo-400 font-semibold text-sm bg-indigo-500/10 w-fit px-3 py-1 rounded-full border border-indigo-500/20">
+                      <Music className="w-4 h-4" />
+                      {t("productDetails.audiobook") || "Audiobook"}
+                      {product.audioDuration && ` • ${Math.floor(product.audioDuration / 60)} ${t("common.minutes") || "min"}`}
+                    </div>
+                    <div className="flex items-center gap-2 text-green-500 font-bold text-[10px] uppercase tracking-widest bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">
+                      <ShieldCheck className="w-3 h-3" />
+                      {t("productDetails.instantAccess") || "Secure Instant Access"}
+                    </div>
+                  </div>
+
+                  {((product as any).audioPreviewUrl || ((product as any).audioParts?.length > 0)) && (
+                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl relative overflow-hidden group">
+                      <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500 opacity-50 group-hover:opacity-100 transition-opacity" />
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                          <Play className="w-6 h-6 fill-current" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-sm text-indigo-300 uppercase tracking-wider">{t("productDetails.audioPreview") || "Listen to Preview"}</h4>
+                          <p className="text-[10px] text-muted-foreground">{t("productDetails.sampleNarration") || "Sample from the narrator"}</p>
+                        </div>
+                      </div>
+                      <audio
+                        src={(product as any).audioPreviewUrl || (product as any).audioParts[0]?.url}
+                        className="w-full h-10 accent-indigo-500 opacity-80 hover:opacity-100 transition-opacity"
+                        controls
+                        controlsList="nodownload"
+                      />
+                    </div>
+                  )}
                 </div>
               )}
 

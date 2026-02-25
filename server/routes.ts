@@ -5,6 +5,12 @@ import { api } from "@shared/routes";
 import { z } from "zod";
 import { insertOrderSchema, insertCartItemSchema, insertVariantSchema, insertShippingRateSchema, insertShippingAddressSchema } from "@shared/schema";
 import { setupAuth, hashPassword } from "./auth";
+import multer from "multer";
+import { processAudiobook, generateSignedUrl } from "./audio-processor";
+import path from "path";
+import fs from "fs";
+
+const upload = multer({ dest: "temp/uploads/" });
 
 export async function registerRoutes(
   httpServer: Server,
@@ -257,7 +263,22 @@ export async function registerRoutes(
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const userId = (req.user as any).id;
     const library = await storage.getLibrary(userId);
-    res.json(library);
+
+    // Sign Audiobook URLs for security
+    const signedLibrary = library.map(item => {
+      if (item.type === 'audiobook' && (item as any).audioParts?.length > 0) {
+        return {
+          ...item,
+          audioParts: (item as any).audioParts.map((p: any) => ({
+            ...p,
+            url: generateSignedUrl(p.url)
+          }))
+        };
+      }
+      return item;
+    });
+
+    res.json(signedLibrary);
   });
 
   app.post("/api/social/library", async (req, res) => {
@@ -296,7 +317,29 @@ export async function registerRoutes(
     const product = await storage.getProduct(Number(req.params.id));
     if (!product) return res.status(404).json({ message: "Product not found" });
     const variants = await storage.getVariants(product.id);
-    res.json({ ...product, variants });
+
+    // Deep copy to modify
+    const processedProduct = JSON.parse(JSON.stringify(product));
+
+    if (processedProduct.type === 'audiobook' && processedProduct.audioParts?.length > 0) {
+      const userId = (req.user as any)?.id;
+      let hasPurchased = false;
+
+      if (userId) {
+        const library = await storage.getLibrary(userId);
+        hasPurchased = library.some(item => item.id === product.id);
+      }
+
+      // If purchased, sign all. If not, only sign the first part as a preview.
+      processedProduct.audioParts = processedProduct.audioParts.map((p: any, idx: number) => {
+        if (hasPurchased || idx === 0) {
+          return { ...p, url: generateSignedUrl(p.url) };
+        }
+        return { ...p, url: "" }; // Hide URL for other parts
+      });
+    }
+
+    res.json({ ...processedProduct, variants });
   });
 
   app.post(api.products.create.path, async (req, res) => {
@@ -340,6 +383,35 @@ export async function registerRoutes(
     if (!req.isAuthenticated()) return res.sendStatus(401);
     await storage.deleteProduct(Number(req.params.id));
     res.status(204).send();
+  });
+
+  // --- AUDIOBOOK PROCESSING ---
+  app.post("/api/audio/process", upload.single("audio"), async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const multerReq = req as any;
+    if (!multerReq.file) return res.status(400).json({ message: "No audio file uploaded" });
+
+    try {
+      const parts = await processAudiobook(multerReq.file.path);
+
+      // Calculate total duration
+      const totalDuration = parts.reduce((acc, p) => acc + p.duration, 0);
+
+      // Clean up the uploaded file
+      fs.unlinkSync(multerReq.file.path);
+
+      res.json({
+        parts,
+        totalDuration,
+      });
+    } catch (error) {
+      console.error("[AudioProcessError]", error);
+      // Try to clean up if it exists
+      if (multerReq.file && fs.existsSync(multerReq.file.path)) {
+        fs.unlinkSync(multerReq.file.path);
+      }
+      res.status(500).json({ message: "Failed to process audiobook", error: String(error) });
+    }
   });
 
   // === DEBUG TOOLS ===

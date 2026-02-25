@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Edit2, Package, DollarSign, Eye, BarChart, Settings, Palette, Image as ImageIcon, BookOpen, Wallet, TrendingUp, History, ArrowUpRight, ShoppingBag, Download, Loader2, Truck, PenTool, ChevronLeft, UserCog, CheckCircle2, Layout, MessageSquare, Megaphone, Send, Pin, MessageCircle } from "lucide-react";
+import { Plus, Trash2, Edit2, Package, DollarSign, Eye, BarChart, Settings, Palette, Image as ImageIcon, BookOpen, Wallet, TrendingUp, History, ArrowUpRight, ShoppingBag, Download, Loader2, Truck, PenTool, ChevronLeft, UserCog, CheckCircle2, Layout, MessageSquare, Megaphone, Send, Pin, MessageCircle, Music, Headphones } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { z } from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,6 +28,8 @@ import { useEarnings, usePayouts, useRequestPayout } from "@/hooks/use-earnings"
 import { formatDate, cn } from "@/lib/utils";
 import { useUserOrders } from "@/hooks/use-orders";
 import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
+import { AudiobookUpload } from "@/components/ui/audiobook-upload";
+import { AudiobookPlayer } from "@/components/ui/audiobook-player";
 import { CloudinaryGalleryUpload } from "@/components/ui/cloudinary-gallery-upload";
 import { useAdminPrivateMessages, useSendAdminPrivateMessage, useMarkMessageRead, useAdminAnnouncements } from "@/hooks/use-admin-system";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -855,13 +857,15 @@ import { extractTextFromFile } from "@/lib/text-extractor";
 const createSchema = insertProductSchema.extend({
   price: z.coerce.number(),
   writerId: z.string(), // UUID string from Supabase
-  type: z.enum(["ebook", "physical", "asset", "bundle", "promotional", "merchandise"]),
+  type: z.enum(["ebook", "physical", "asset", "bundle", "promotional", "merchandise", "audiobook"]),
   licenseType: z.enum(["personal", "commercial", "standard", "extended"]).optional(),
   content: z.string().optional(), // For extracted ebook text
   stockQuantity: z.coerce.number().optional(),
   weight: z.coerce.number().optional(),
   requiresShipping: z.boolean().optional(),
   productImages: z.array(z.string()).optional(),
+  audioDuration: z.coerce.number().optional(),
+  audioPreviewUrl: z.string().optional(),
 });
 
 function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
@@ -953,6 +957,7 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                 }}
               >
                 <option value="ebook">{t("dashboard.products.types.ebook")}</option>
+                <option value="audiobook">{t("dashboard.products.types.audiobook") || "Audiobook"}</option>
                 <option value="physical">{t("dashboard.products.types.physical")}</option>
                 <option value="merchandise">{t("dashboard.products.types.merchandise")}</option>
                 <option value="asset">{t("dashboard.products.types.asset")}</option>
@@ -1005,6 +1010,49 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                 <p className="text-[10px] text-amber-500 col-span-2 italic">
                   💡 {t("dashboard.products.shippingNote")}
                 </p>
+              </div>
+            )}
+
+            {type === "audiobook" && (
+              <div className="col-span-2 space-y-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <AudiobookUpload
+                      label={t("dashboard.products.audioFileMaster") || "Main Audiobook File (Master)"}
+                      onUpload={(data) => {
+                        setValue("audioParts", data.parts);
+                        setValue("audioDuration", data.totalDuration);
+                        // Also set fileUrl to the first part or a master URL if we decide to have one
+                        if (data.parts.length > 0) {
+                          setValue("fileUrl", data.parts[0].url);
+                        }
+                      }}
+                      onClear={() => {
+                        setValue("audioParts", []);
+                        setValue("audioDuration", 0);
+                        setValue("fileUrl", "");
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <CloudinaryUpload
+                      label={t("dashboard.products.audioPreview") || "Public Sample / Preview (Brief)"}
+                      resourceType="video"
+                      folder="hekayaty_audio_previews"
+                      onUpload={(url) => setValue("audioPreviewUrl", url)}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{t("dashboard.products.audioDuration") || "Total Duration (seconds)"}</label>
+                  <Input
+                    type="number"
+                    {...register("audioDuration")}
+                    placeholder="Auto-filled after upload"
+                    readOnly
+                    className="bg-muted"
+                  />
+                </div>
               </div>
             )}
 
@@ -1390,6 +1438,32 @@ function ReaderLibraryContent({ user }: { user: any }) {
                           <BookOpen className="w-4 h-4 mr-2" /> {t("common.read")}
                         </Button>
                       </Link>
+                    ) : item.type === 'audiobook' ? (
+                      <div className="flex flex-col gap-2">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button className="rounded-full bg-white text-black hover:bg-white/90 font-bold">
+                              <Headphones className="w-4 h-4 mr-2" /> {t("common.listen") || "Listen"}
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-md bg-black/95 border-white/10 backdrop-blur-2xl">
+                            <DialogHeader>
+                              <DialogTitle className="text-xl font-serif text-white">{item.title}</DialogTitle>
+                              <DialogDescription className="text-primary/60">
+                                {t("library.now_playing") || "Now Playing from Library"}
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="py-6">
+                              <AudiobookPlayer
+                                parts={item.audioParts?.length > 0 ? item.audioParts : [{ url: item.fileUrl, title: item.title, duration: item.audioDuration || 0 }]}
+                                title={item.title}
+                                coverUrl={item.coverUrl}
+                              />
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                        <DownloadButton fileUrl={item.fileUrl} />
+                      </div>
                     ) : item.type === 'collection' ? (
                       <Link href={`/collection/${item.collectionId}`}>
                         <Button className="rounded-full bg-white text-black hover:bg-white/90 font-bold">

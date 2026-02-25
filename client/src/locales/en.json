@@ -7,7 +7,9 @@
         "saving": "Saving...",
         "processing": "Processing...",
         "read": "Read",
+        "listen": "Listen",
         "download": "Download",
+        "minutes": "min",
         "all": "All",
         "delete": "Delete",
         "viewDetails": "View Details",
@@ -204,7 +206,8 @@
             "start_exploring": "Start Exploring",
             "track_orders": "Track Orders",
             "browse_store": "Browse Store",
-            "loading": "Loading library..."
+            "loading": "Loading library...",
+            "now_playing": "Now Playing from Library"
         },
         "wallet": {
             "title": "Wallet & Payouts",
@@ -290,11 +293,15 @@
             "type": "Product Type",
             "types": {
                 "ebook": "E-Book / Novel",
+                "audiobook": "Audiobook",
                 "physical": "Physical Book",
                 "merchandise": "Merchandise",
                 "asset": "Design Asset",
                 "promotional": "Promotional Content"
             },
+            "audioFile": "Main Audio File",
+            "audioPreview": "Sample / Preview",
+            "audioDuration": "Duration (seconds)",
             "category": "Merchandise Category",
             "categories": {
                 "clothing": "Clothing",
@@ -415,6 +422,9 @@
             "reviewPlaceholder": "What did you think of the story?",
             "readerReviews": "Reader Reviews ({{count}})",
             "instantAccess": "Instant Digital Access",
+            "audiobook": "Audiobook",
+            "audioPreview": "Listen to Preview",
+            "sampleNarration": "Sample from the narrator",
             "physicalProduct": "Physical Product (Shipping Required)"
         }
     },

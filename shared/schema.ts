@@ -42,7 +42,7 @@ export const products = pgTable("products", {
   coverUrl: text("cover_url").notNull(),
   fileUrl: text("file_url"),
   content: text("content"), // Extracted text for reader
-  type: text("type").notNull().default("ebook"), // ebook, asset, bundle, physical
+  type: text("type").notNull().default("ebook"), // ebook, asset, bundle, physical, promotional, merchandise, audiobook
   genre: text("genre").notNull(),
   isPublished: boolean("is_published").default(false),
   rating: integer("rating").default(0),
@@ -72,6 +72,10 @@ export const products = pgTable("products", {
   isSerialized: boolean("is_serialized").default(false),
   seriesStatus: text("series_status").default("ongoing"), // ongoing, completed
   lastChapterUpdatedAt: timestamp("last_chapter_updated_at").defaultNow(),
+  // Audiobook specific fields
+  audioDuration: integer("audio_duration"), // In seconds
+  audioPreviewUrl: text("audio_preview_url"),
+  audioParts: jsonb("audio_parts").$type<{ url: string; title: string; duration: number }[]>().default([]),
 });
 
 export const chapters = pgTable("chapters", {
