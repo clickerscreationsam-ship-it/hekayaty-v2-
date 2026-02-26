@@ -28,7 +28,11 @@
         "viewDetails": "عرض التفاصيل",
         "high": "عاجل",
         "beReadyVibe": "سيمفونية الحكايات",
-        "preparingMagic": "نحن أحيك السحر الآن"
+        "preparingMagic": "نحن أحيك السحر الآن",
+        "sortBy": "ترتيب حسب",
+        "priceLowHigh": "السعر: من الأقل للأعلى",
+        "priceHighLow": "السعر: من الأعلى للأقل",
+        "topRated": "الأعلى تقييماً"
     },
     "reader": {
         "protected": "عرض محمي"

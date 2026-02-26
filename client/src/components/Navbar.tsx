@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Feather, BookOpen, ShoppingBag, LayoutDashboard, User, Palette, Store, Users, ShieldCheck, Menu, X, PenTool, HelpCircle, MessageSquare } from "lucide-react";
+import { Feather, BookOpen, ShoppingBag, LayoutDashboard, User, Palette, Store, Users, ShieldCheck, Menu, X, PenTool, HelpCircle, MessageSquare, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
 import { useAuth } from "@/hooks/use-auth";
@@ -26,6 +26,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
     { label: t("nav.merchandise"), href: "/merchandise", icon: Store },
     { label: t("nav.assets"), href: "/assets", icon: Palette },
     { label: t("nav.worldbuilders"), href: "/worldbuilders", icon: Users },
+    { label: t("nav.writerWorld"), href: "/worldbuilders", icon: Globe },
     { label: t("nav.guide"), href: "/guide", icon: HelpCircle },
   ];
 

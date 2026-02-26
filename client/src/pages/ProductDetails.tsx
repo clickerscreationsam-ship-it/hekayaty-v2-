@@ -6,7 +6,7 @@ import { useUser, useUserById } from "@/hooks/use-users";
 import { useAddToCart } from "@/hooks/use-cart";
 
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, Star, ShieldCheck, Download, ShoppingCart, BookOpen, Truck, MapPin, Info, Sparkles, Palette, Music, Play } from "lucide-react";
+import { Loader2, Star, ShieldCheck, Download, ShoppingCart, BookOpen, Truck, MapPin, Info, Sparkles, Palette, Music, Play, ArrowUpRight, ExternalLink, Globe } from "lucide-react";
 import { useShippingRates } from "@/hooks/use-shipping";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -29,6 +29,7 @@ export default function ProductDetails() {
   const id = parseInt(params?.id || "0");
 
   const { data: product, isLoading } = useProduct(id);
+  const { data: writer } = useUserById(product?.writerId || "");
   const { data: reviews } = useReviews(id);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -145,6 +146,49 @@ export default function ProductDetails() {
                 </div>
               )}
             </div>
+
+            {writer && (
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  <Link href={`/writer/${writer.username}`}>
+                    <button className="flex items-center gap-3 p-1.5 pr-5 rounded-full bg-white/5 border border-white/10 hover:bg-primary/10 hover:border-primary/30 transition-all group backdrop-blur-md shadow-lg">
+                      <div className="w-9 h-9 rounded-full border border-primary/20 overflow-hidden shadow-inner group-hover:scale-105 transition-transform">
+                        <img
+                          src={writer.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${writer.displayName}`}
+                          className="w-full h-full object-cover"
+                          alt={writer.displayName}
+                        />
+                      </div>
+                      <div className="text-left text-start rtl:text-right rtl:text-end">
+                        <p className="text-[8px] uppercase tracking-[0.2em] text-primary/70 font-bold mb-0.5 leading-none">{isArabic ? "بواسطة" : "WRITTEN BY"}</p>
+                        <h4 className="text-xs font-bold text-foreground flex items-center gap-1 group-hover:text-primary transition-colors leading-none">
+                          {writer.displayName}
+                          <ArrowUpRight className="w-2.5 h-2.5 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                        </h4>
+                      </div>
+                    </button>
+                  </Link>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <Link href="/worldbuilders">
+                    <button className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/20 hover:border-primary/40 text-primary transition-all group backdrop-blur-md shadow-lg h-[46px]">
+                      <Globe className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                      <span className="text-xs font-black uppercase tracking-widest leading-none">
+                        {t("writers.writerWorld")}
+                      </span>
+                    </button>
+                  </Link>
+                </motion.div>
+              </div>
+            )}
 
             <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 leading-tight">{product.title}</h1>
             <p className="text-xl text-muted-foreground mb-8 line-clamp-3">{product.description}</p>
