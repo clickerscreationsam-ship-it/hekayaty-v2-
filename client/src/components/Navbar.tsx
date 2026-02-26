@@ -24,9 +24,9 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
   const navItems = [
     { label: t("nav.marketplace"), href: "/marketplace", icon: ShoppingBag },
     { label: t("nav.merchandise"), href: "/merchandise", icon: Store },
-    { label: t("nav.assets"), href: "/assets", icon: Palette },
+    { label: t("nav.assets"), href: "/assets" },
     { label: t("nav.worldbuilders"), href: "/worldbuilders", icon: Users },
-    { label: t("nav.writerWorld"), href: "/worldbuilders", icon: Globe },
+    { label: t("nav.writerWorld"), href: "/worldbuilders" },
     { label: t("nav.guide"), href: "/guide", icon: HelpCircle },
   ];
 
@@ -66,7 +66,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
                     ${isActive ? "text-primary font-bold scale-105" : "text-muted-foreground hover:text-primary hover:scale-105"}
                   `}
                 >
-                  <Icon className="w-4 h-4 opacity-80" />
+                  {Icon && <Icon className="w-4 h-4 opacity-80" />}
                   <span className="hidden xl:inline">{item.label}</span>
                   {(item.href === '/studio' || item.href === '/admin') && unreadMessagesCount > 0 && (
                     <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-white font-bold shadow-lg shadow-primary/20 animate-pulse">
@@ -181,7 +181,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
                       ${isActive ? "bg-primary/20 text-primary font-bold" : "text-muted-foreground"}
                     `}
                   >
-                    <Icon className="w-5 h-5" />
+                    {Icon && <Icon className="w-5 h-5" />}
                     <span className="flex-1">{item.label}</span>
                     {(item.href === '/studio' || item.href === '/admin') && unreadMessagesCount > 0 && (
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground font-bold">
