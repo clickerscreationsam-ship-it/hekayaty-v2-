@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import marketplaceBg from "@/assets/d2c8245c-c591-4cc9-84d2-27252be8dffb.png";
 import { cn } from "@/lib/utils";
+import { useSort } from "@/hooks/use-sort";
+import { SortSelector } from "@/components/SortSelector";
 
 type MarketplaceType = "ebook" | "asset" | "collection" | "merchandise";
 
@@ -57,9 +59,11 @@ export default function Marketplace() {
 
   const isLoading = productsLoading || (type === 'collection' && collectionsLoading);
 
-  const displayItems = type === 'collection'
+  const initialDisplayItems = type === 'collection'
     ? collections.filter(c => !search || c.title.toLowerCase().includes(search.toLowerCase()))
     : products;
+
+  const { sortBy, setSortBy, sortedItems: displayItems } = useSort<any>(initialDisplayItems);
 
   const getPageTitle = () => {
     switch (type) {
@@ -148,9 +152,8 @@ export default function Marketplace() {
             </button>
           </div>
 
-          {/* Integrated Search Bar */}
-          <div className="mb-12">
-            <div className="relative group max-w-2xl mx-auto md:mx-0">
+          <div className="mb-12 flex flex-col md:flex-row gap-4">
+            <div className="relative group flex-grow max-w-2xl">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-primary transition-colors" />
               <input
                 type="text"
@@ -166,6 +169,12 @@ export default function Marketplace() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
+
+            <SortSelector
+              value={sortBy}
+              onValueChange={setSortBy}
+              className="md:self-center"
+            />
           </div>
 
           {/* Grid View */}

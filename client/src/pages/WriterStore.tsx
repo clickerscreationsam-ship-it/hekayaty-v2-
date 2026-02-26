@@ -17,6 +17,8 @@ import { useTranslation } from "react-i18next";
 import { Product } from "@shared/schema";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { useSort } from "@/hooks/use-sort";
+import { SortSelector } from "@/components/SortSelector";
 
 
 export default function WriterStore() {
@@ -26,7 +28,9 @@ export default function WriterStore() {
   const { t } = useTranslation();
   const { user: currentUser } = useAuth(); // Get logged-in user
   const { data: user, isLoading: userLoading } = useUser(username);
-  const { data: products, isLoading: productsLoading } = useProducts({ writerId: user?.id });
+  const { data: productsData, isLoading: productsLoading } = useProducts({ writerId: user?.id });
+
+  const { sortBy, setSortBy, sortedItems: products } = useSort<Product>(productsData || []);
 
   // Check if the current user is viewing their own store
   const isOwnStore = currentUser?.username === username;
@@ -154,7 +158,7 @@ export default function WriterStore() {
 
         <div className="mb-12">
           {user.role === 'artist' ? (
-            <ArtistContent user={user} products={products} themeColor={themeColor} fontClass={fontClass} />
+            <ArtistContent user={user} productsData={productsData} themeColor={themeColor} fontClass={fontClass} />
           ) : (
             <>
               <h2 className={`text-3xl font-bold mb-8 flex items-center gap-3 ${fontClass}`}>
@@ -162,9 +166,9 @@ export default function WriterStore() {
                 {t("writerStore.publishedWorks")}
               </h2>
 
-              {/* Filtering Toggle */}
-              {(products?.some(p => p.type === 'merchandise') && products?.some(p => p.type !== 'merchandise')) && (
-                <div className="flex justify-center mb-8">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                {/* Filtering Toggle */}
+                {(products?.some(p => p.type === 'merchandise') && products?.some(p => p.type !== 'merchandise')) ? (
                   <div className="glass p-1 rounded-xl flex gap-1">
                     <Button
                       variant={(params as any).filter === 'all' || !(params as any).filter ? 'default' : 'ghost'}
@@ -188,8 +192,14 @@ export default function WriterStore() {
                       {t("dashboard.products.types.merchandise")}
                     </Button>
                   </div>
-                </div>
-              )}
+                ) : <div />}
+
+                <SortSelector
+                  value={sortBy}
+                  onValueChange={setSortBy}
+                  className="w-full md:w-auto"
+                />
+              </div>
 
               {/* Books Section */}
               {((params as any).filter !== 'merch') && (
@@ -242,7 +252,8 @@ export default function WriterStore() {
   );
 }
 
-function ArtistContent({ user, products, themeColor, fontClass }: { user: any, products: any, themeColor: string, fontClass: string }) {
+function ArtistContent({ user, productsData, themeColor, fontClass }: { user: any, productsData: Product[] | undefined, themeColor: string, fontClass: string }) {
+  const { sortBy, setSortBy, sortedItems: products } = useSort<Product>(productsData || []);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedImage, setSelectedImage] = useState<any>(null);
   const { data: portfoliosResponse } = usePortfolios(user.id, selectedCategory);
@@ -262,7 +273,12 @@ function ArtistContent({ user, products, themeColor, fontClass }: { user: any, p
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
+          <SortSelector
+            value={sortBy}
+            onValueChange={setSortBy}
+            className="w-full md:w-auto md:mr-2"
+          />
           {categories.map(cat => (
             <Button
               key={cat}
@@ -323,7 +339,7 @@ function ArtistContent({ user, products, themeColor, fontClass }: { user: any, p
           {selectedImage && <LightboxContent item={selectedImage} onClose={() => setSelectedImage(null)} />}
         </DialogContent>
       </Dialog>
-    </Tabs>
+    </Tabs >
   );
 }
 

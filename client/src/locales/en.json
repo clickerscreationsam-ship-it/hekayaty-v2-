@@ -16,7 +16,11 @@
         "high": "Urgent",
         "loading": "Loading...",
         "beReadyVibe": "Symphony of Stories",
-        "preparingMagic": "Magic is being woven"
+        "preparingMagic": "Magic is being woven",
+        "sortBy": "Sort By",
+        "priceLowHigh": "Price: Low to High",
+        "priceHighLow": "Price: High to Low",
+        "topRated": "Top Rated"
     },
     "loading": "Loading...",
     "nav": {
