@@ -34,7 +34,8 @@
         "getStarted": "Get Started",
         "cart": "Cart",
         "studio": "Writer Studio",
-        "guide": "Platform Guide"
+        "guide": "Platform Guide",
+        "writerWorld": "Writer World"
     },
     "cart": {
         "title": "Your Cart",
@@ -535,6 +536,7 @@
         "title": "World Builders Gallery",
         "subtitle": "Meet the architects of imagination. Discover the writers and artists crafting the next generation of legendary stories.",
         "searchPlaceholder": "Search by name, username, or bio...",
+        "writerWorld": "Writer World",
         "notFound": "No World Builders found",
         "notFoundHint": "Try searching with a different name or specialty."
     },
