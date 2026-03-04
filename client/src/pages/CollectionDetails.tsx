@@ -41,12 +41,12 @@ export default function CollectionDetails() {
             <Navbar />
 
             {/* Background Atmosphere */}
-            <div className="fixed inset-0 z-0 opacity-20 pointer-events-none">
-                <div
-                    className="absolute inset-0 bg-cover bg-center blur-3xl scale-110"
-                    style={{ backgroundImage: `url(${collection.cover_image_url})` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-[#050505]" />
+            <div
+                className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-700 ease-in-out pointer-events-none"
+                style={{ backgroundImage: `url(${collection.cover_image_url})` }}
+            >
+                <div className="absolute inset-0 bg-black/70 backdrop-blur-xl" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-[#050505]" />
             </div>
 
             <div className="relative z-10 pt-32 px-4 max-w-7xl mx-auto">
@@ -161,7 +161,7 @@ export default function CollectionDetails() {
                                                     {idx + 1}
                                                 </div>
                                                 <div className="w-16 h-20 rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-xl">
-                                                    <img src={item.story?.coverUrl} className="w-full h-full object-cover" />
+                                                    <img src={item.story?.cover_url} className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="flex-grow">
                                                     <h4 className="font-bold text-lg group-hover:text-secondary transition-colors">{item.story?.title}</h4>
