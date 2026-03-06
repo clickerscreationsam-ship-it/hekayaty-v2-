@@ -216,6 +216,21 @@
   .custom-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-primary/20 rounded-full hover:bg-primary/40 transition-colors;
   }
+
+  /* GPU Acceleration & Performance */
+  .gpu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
 }
 
 /* Arabic Font Overrides - Luxury Edition */

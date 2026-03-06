@@ -3,7 +3,9 @@ import { Star, ShoppingCart, LayoutGrid, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { Product } from "@shared/schema";
 import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
+import { cn, optimizeImage } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 interface ProductCardProps {
   product?: Product;
@@ -13,6 +15,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, collection, variant = "default" }: ProductCardProps) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const isCompact = variant === "compact";
   const item = product || (collection ? {
     id: collection.id,
@@ -31,13 +34,63 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
   const isCollection = (item as any).isCollection;
   const href = isCollection ? `/collection/${item.id}` : `/book/${item.id}`;
 
+  const handlePrefetch = () => {
+    if (isCollection) return; // Collections might need separate prefetch logic
+
+    queryClient.prefetchQuery({
+      queryKey: ["product", item.id],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from('products')
+          .select(`
+            *,
+            content_data:product_contents(content)
+          `)
+          .eq('id', item.id)
+          .single();
+
+        if (error) return null;
+
+        // Manual mapping logic to match hook output
+        return {
+          id: data.id,
+          writerId: data.writer_id,
+          title: data.title,
+          description: data.description,
+          coverUrl: data.cover_url,
+          fileUrl: data.file_url,
+          type: data.type,
+          genre: data.genre,
+          isPublished: data.is_published ?? false,
+          rating: data.rating ?? 0,
+          reviewCount: data.review_count ?? 0,
+          price: data.price,
+          licenseType: data.license_type ?? 'personal',
+          content: data.content || (data as any).content_data?.content,
+          stockQuantity: data.stock_quantity,
+          weight: data.weight,
+          requiresShipping: data.requires_shipping ?? false,
+          createdAt: data.created_at,
+          isSerialized: (data as any).is_serialized ?? false,
+          seriesStatus: (data as any).series_status ?? 'ongoing',
+          merchandiseCategory: (data as any).merchandise_category,
+          customFields: (data as any).custom_fields,
+          productImages: (data as any).product_images || [],
+        };
+      },
+      staleTime: 60 * 1000,
+    });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
+      onMouseEnter={handlePrefetch}
+      onTouchStart={handlePrefetch}
       className={cn(
-        "group relative glass-card rounded-2xl overflow-hidden transition-all hover:shadow-2xl hover:shadow-primary/5",
+        "group relative glass-card rounded-2xl overflow-hidden transition-all hover:shadow-2xl hover:shadow-primary/5 gpu will-change-transform",
         isCompact ? 'flex gap-4 p-3' : 'flex flex-col',
         isCollection && !isCompact && "border-secondary/20 bg-secondary/[0.02]"
       )}
@@ -68,7 +121,7 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
         </div>
 
         <img
-          src={item.coverUrl}
+          src={optimizeImage(item.coverUrl, isCompact ? 200 : 800)}
           alt={item.title}
           loading="lazy"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"

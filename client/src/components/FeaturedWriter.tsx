@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
+import { optimizeImage } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 interface FeaturedWriterProps {
   writer: Omit<User, 'password' | 'createdAt'>;
@@ -11,18 +14,53 @@ interface FeaturedWriterProps {
 
 export function FeaturedWriter({ writer }: FeaturedWriterProps) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+
+  const handlePrefetch = () => {
+    queryClient.prefetchQuery({
+      queryKey: ["user", writer.username],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('username', writer.username)
+          .single();
+
+        if (error) return null;
+
+        // Manual mapping matching the hook
+        return {
+          ...data,
+          displayName: data.display_name,
+          avatarUrl: data.avatar_url,
+          bannerUrl: data.banner_url,
+          storeSettings: data.store_settings,
+          stripeAccountId: data.stripe_account_id,
+          subscriptionTier: data.subscription_tier || 'free',
+          commissionRate: data.commission_rate || 20,
+          isActive: data.is_active ?? true,
+          shippingPolicy: data.shipping_policy || "",
+        };
+      },
+      staleTime: 60 * 1000,
+    });
+  };
+
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className="relative overflow-hidden rounded-2xl glass-card p-6 border border-primary/10"
+      onMouseEnter={handlePrefetch}
+      onTouchStart={handlePrefetch}
+      className="relative overflow-hidden rounded-2xl glass-card p-6 border border-primary/10 gpu will-change-transform"
     >
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
       <div className="relative z-10 flex flex-col items-center text-center">
         <div className="w-24 h-24 rounded-full border-2 border-primary/20 p-1 mb-4">
           <img
-            src={writer.avatarUrl || `https://ui-avatars.com/api/?name=${writer.displayName}&background=random`}
+            src={optimizeImage(writer.avatarUrl || `https://ui-avatars.com/api/?name=${writer.displayName}&background=random`, 200)}
             alt={writer.displayName}
+            loading="lazy"
             className="w-full h-full rounded-full object-cover"
           />
         </div>

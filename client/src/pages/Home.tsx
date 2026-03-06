@@ -44,6 +44,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
+            className="gpu will-change-transform"
           >
             <div className="flex flex-col items-center gap-3 mb-8">
               <div className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white border border-primary/20 shadow-lg backdrop-blur-md">

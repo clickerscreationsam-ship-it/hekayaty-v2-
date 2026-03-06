@@ -72,7 +72,7 @@ import { useEffect } from "react";
 import "./lib/i18n"; // Import i18n configuration
 import { useTranslation } from "react-i18next";
 
-import { GlobalChat } from "@/components/GlobalChat";
+const GlobalChat = lazy(() => import("@/components/GlobalChat").then(m => ({ default: m.GlobalChat })));
 
 function AppContent() {
   const { i18n } = useTranslation();
@@ -116,7 +116,9 @@ function AppContent() {
   return (
     <>
       <Router />
-      <GlobalChat />
+      <Suspense fallback={null}>
+        <GlobalChat />
+      </Suspense>
     </>
   );
 }
