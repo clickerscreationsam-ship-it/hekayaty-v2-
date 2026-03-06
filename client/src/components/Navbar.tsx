@@ -45,7 +45,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
             <div className="bg-gradient-to-tr from-primary to-accent p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
               <Feather className="w-6 h-6 text-white" />
             </div>
-            <span className="font-serif text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+            <span className="font-serif text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary hidden xs:block">
               {t("welcome").split(' ').slice(-1)[0]}
             </span>
           </Link>
@@ -80,8 +80,12 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
           <div className="flex items-center gap-1.5 sm:gap-3">
             {/* Utility Group */}
             <div className="flex items-center gap-1 sm:gap-2 mr-1 sm:mr-2 pr-1 sm:pr-2 border-r border-white/5">
-              <LanguageSwitcher />
-              {user && <NotificationBell />}
+              <div className="hidden md:block">
+                <LanguageSwitcher />
+              </div>
+              <div className="hidden md:block">
+                {user && <NotificationBell />}
+              </div>
               {user && (user.role === 'writer' || user.role === 'artist' || user.role === 'admin') && (
                 <Link href={user.role === 'admin' ? "/admin" : "/dashboard?tab=admin_messages"}>
                   <Button variant="ghost" size="icon" className="relative h-9 w-9 text-foreground hover:text-primary transition-colors touch-target">
@@ -166,6 +170,10 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-white/10 animate-in slide-in-from-top">
             <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 mb-2">
+                <LanguageSwitcher />
+                {user && <NotificationBell />}
+              </div>
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location === item.href;

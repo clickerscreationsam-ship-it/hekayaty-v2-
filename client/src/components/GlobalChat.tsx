@@ -94,7 +94,7 @@ export function GlobalChat() {
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 className={cn(
-                    "fixed bottom-8 z-[100]",
+                    "fixed bottom-8 z-[40]",
                     isArabic ? "left-8" : "right-8"
                 )}
             >
@@ -124,7 +124,7 @@ export function GlobalChat() {
                         exit={{ x: isArabic ? -400 : 400 }}
                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
                         className={cn(
-                            "fixed top-0 bottom-0 w-full sm:w-[400px] bg-background/80 backdrop-blur-2xl border-l border-white/10 z-[101] shadow-2xl flex flex-col pt-20",
+                            "fixed top-0 bottom-0 w-full sm:w-[400px] bg-background/80 backdrop-blur-2xl border-l border-white/10 z-[45] shadow-2xl flex flex-col pt-20",
                             isArabic ? "left-0 border-r" : "right-0 border-l"
                         )}
                     >
