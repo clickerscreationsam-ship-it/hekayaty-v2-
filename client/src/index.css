@@ -185,7 +185,20 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Specific Touch Protection for Reader */
+  .touch-protect {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -khtml-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    user-drag: none;
+    -webkit-user-drag: none;
   }
 
   /* Smooth scrolling for mobile */
@@ -362,6 +375,10 @@
   }
 
   .no-print {
+    display: none !important;
+  }
+
+  .protected-content-reader {
     display: none !important;
   }
 }

@@ -59,6 +59,54 @@ export default function ReadBook() {
         });
     };
 
+    // Digital Content Protection (Anti-Theft)
+    useEffect(() => {
+        if (isEditing) return; // Allow author to edit freely
+
+        const handleContextMenu = (e: MouseEvent) => {
+            e.preventDefault();
+        };
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Block Ctrl+C (Copy), Ctrl+S (Save), Ctrl+U (View Source), Ctrl+P (Print), F12 (DevTools)
+            const forbiddenKeys = ['c', 's', 'u', 'p'];
+            if ((e.ctrlKey || e.metaKey) && forbiddenKeys.includes(e.key.toLowerCase())) {
+                e.preventDefault();
+            }
+            if (e.key === 'F12') {
+                e.preventDefault();
+            }
+        };
+
+        const handleCopy = (e: ClipboardEvent) => {
+            e.preventDefault();
+        };
+
+        const handleSelectStart = (e: Event) => {
+            e.preventDefault();
+        };
+
+        const handleDragStart = (e: DragEvent) => {
+            e.preventDefault();
+        };
+
+        window.addEventListener('contextmenu', handleContextMenu);
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('copy', handleCopy);
+        window.addEventListener('cut', handleCopy); // Re-use copy handler for cut
+        window.addEventListener('selectstart', handleSelectStart);
+        window.addEventListener('dragstart', handleDragStart);
+
+        return () => {
+            window.removeEventListener('contextmenu', handleContextMenu);
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('copy', handleCopy);
+            window.removeEventListener('cut', handleCopy);
+            window.removeEventListener('selectstart', handleSelectStart);
+            window.removeEventListener('dragstart', handleDragStart);
+        };
+    }, [isEditing]);
+
     if (isLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
     if (!product) return <div>Book not found</div>;
 
@@ -199,13 +247,15 @@ export default function ReadBook() {
                             dir="auto"
                         />
                     ) : (
-                        <div className={cn(
-                            "prose prose-lg max-w-none leading-loose whitespace-pre-wrap transition-colors duration-500",
-                            theme === 'dark' ? "prose-invert text-white" : "text-gray-900",
-                            gTheme.font
-                        )}>
+                        <div
+                            className={cn(
+                                "prose prose-lg max-w-none leading-loose whitespace-pre-wrap transition-colors duration-500 select-none",
+                                theme === 'dark' ? "prose-invert text-white" : "text-gray-900",
+                                gTheme.font
+                            )}
+                        >
                             {textContent ? (
-                                <div>
+                                <div className="no-select protected-content-reader touch-protect">
                                     {chapters && chapters.length > 0 && (
                                         <h2 className={cn("text-3xl font-serif font-bold mb-8", gTheme.accent)}>
                                             {chapters[activeChapterIndex]?.title}
