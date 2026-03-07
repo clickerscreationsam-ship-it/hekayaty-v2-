@@ -14,7 +14,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
   const [location] = useLocation();
   const { data: cartItems } = useCart();
   const { user, logoutMutation } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const cartCount = cartItems?.length || 0;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -45,8 +45,8 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
             <div className="bg-gradient-to-tr from-primary to-accent p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
               <Feather className="w-6 h-6 text-white" />
             </div>
-            <span className="font-serif text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary hidden xs:block">
-              {t("welcome").split(' ').slice(-1)[0]}
+            <span className="font-serif text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+              {i18n.language === 'ar' ? 'حكاياتي' : 'Hekayaty'}
             </span>
           </Link>
 

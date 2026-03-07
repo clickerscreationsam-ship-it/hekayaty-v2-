@@ -43,8 +43,8 @@ export default function Cart() {
     const hasPhysical = physicalItems.length > 0;
     const hasDigital = allDigital.length > 0;
 
-    const physicalSubtotal = physicalItems.reduce((s: number, i: any) => s + (i.product?.price || 0) * (i.quantity || 1), 0);
-    const digitalSubtotal = allDigital.reduce((s: number, i: any) => s + (i.product?.price || i.collection?.price || 0) * (i.quantity || 1), 0);
+    const physicalSubtotal = physicalItems.reduce((s: number, i: any) => s + (i.product?.salePrice || i.product?.price || 0) * (i.quantity || 1), 0);
+    const digitalSubtotal = allDigital.reduce((s: number, i: any) => s + (i.product?.salePrice || i.product?.price || i.collection?.price || 0) * (i.quantity || 1), 0);
 
     const activeItems = checkoutGroup === "physical" ? physicalItems : allDigital;
     const activeSubtotal = checkoutGroup === "physical" ? physicalSubtotal : digitalSubtotal;
@@ -55,7 +55,7 @@ export default function Cart() {
         if (hasPhysical && userAddresses && userAddresses.length > 0 && shippingCost === 0 && !calculateShipping.isPending) {
             const latest = userAddresses[0];
             setShippingDetails({ fullName: latest.fullName, phoneNumber: latest.phoneNumber, city: latest.city, addressLine: latest.addressLine });
-            const itemsForShipping = physicalItems.map((i: any) => ({ productId: i.productId, variantId: i.variantId, price: i.product!.price, creatorId: i.product!.writerId }));
+            const itemsForShipping = physicalItems.map((i: any) => ({ productId: i.productId, variantId: i.variantId, price: (i.product!.salePrice || i.product!.price), creatorId: i.product!.writerId }));
             if (itemsForShipping.length > 0) {
                 calculateShipping.mutate({ items: itemsForShipping, city: latest.city.trim() }, {
                     onSuccess: (data) => { setShippingCost(data.total); setShippingBreakdown(data.breakdown); }
@@ -74,7 +74,7 @@ export default function Cart() {
 
     const handleCalculateShipping = () => {
         if (!shippingDetails.city) return;
-        const itemsForShipping = physicalItems.map((i: any) => ({ productId: i.productId, variantId: i.variantId, price: i.product!.price, creatorId: i.product!.writerId }));
+        const itemsForShipping = physicalItems.map((i: any) => ({ productId: i.productId, variantId: i.variantId, price: (i.product!.salePrice || i.product!.price), creatorId: i.product!.writerId }));
         calculateShipping.mutate({ items: itemsForShipping, city: shippingDetails.city.trim() }, {
             onSuccess: (data) => { setShippingCost(data.total); setShippingBreakdown(data.breakdown); setStep(2); }
         });
@@ -87,7 +87,7 @@ export default function Cart() {
             collectionId: item.collectionId,
             variantId: item.variantId,
             quantity: item.quantity,
-            price: item.product?.price || item.collection?.price || 0,
+            price: item.product?.salePrice || item.product?.price || item.collection?.price || 0,
             creatorId: item.product?.writerId || item.collection?.writerId || null,
             customizationData: item.customizationData
         }));
@@ -423,8 +423,18 @@ function CartItemRow({ item, onUpdate, onRemove }: any) {
                         {item.product?.type ? t(`dashboard.products.types.${item.product.type}`) : (item.collection ? t('home.collections.badge') : t('cart.items'))}
                     </span>
                 </div>
-                <div className="mt-3 text-primary font-bold text-lg">
-                    {item.product?.price || item.collection?.price} <span className="text-xs font-normal">{t('common.egp')}</span>
+                <div className="mt-3 font-bold text-lg">
+                    {item.product?.salePrice && item.product.salePrice < item.product.price ? (
+                        <div className="flex items-center gap-2">
+                            <span className="text-primary">{item.product.salePrice} <span className="text-xs font-normal">{t('common.egp')}</span></span>
+                            <span className="text-muted-foreground text-xs line-through opacity-50">{item.product.price} {t('common.egp')}</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500 text-white animate-pulse">{t('common.offer') || 'OFFER'}</span>
+                        </div>
+                    ) : (
+                        <span className="text-primary">
+                            {item.product?.price || item.collection?.price} <span className="text-xs font-normal">{t('common.egp')}</span>
+                        </span>
+                    )}
                     {item.quantity && item.quantity > 1 && <span className="text-muted-foreground text-xs font-normal"> × {item.quantity}</span>}
                 </div>
             </div>

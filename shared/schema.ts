@@ -49,6 +49,7 @@ export const products = pgTable("products", {
   reviewCount: integer("review_count").default(0),
   price: integer("price").notNull(),
   salePrice: integer("sale_price"), // Discounted price
+  discountPercentage: integer("discount_percentage").default(0), // Percentage (e.g., 50)
   saleEndsAt: timestamp("sale_ends_at"), // When the sale expires
   licenseType: text("license_type").default("personal"),
   // Physical Product Fields

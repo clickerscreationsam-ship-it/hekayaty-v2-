@@ -107,9 +107,9 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
               {t("home.collections.badge")}
             </span>
           )}
-          {(item as any).discount > 0 && (
-            <span className="px-2 py-1 rounded-md bg-red-500 text-white text-[10px] font-black shadow-lg">
-              -{(item as any).discount}%
+          {(product?.discountPercentage || (item as any).discount) > 0 && (
+            <span className="px-2 py-1 rounded-md bg-red-500 text-white text-[10px] font-black shadow-lg animate-bounce">
+              -{(product?.discountPercentage || (item as any).discount)}%
             </span>
           )}
           {product?.type === 'merchandise' && (
@@ -211,13 +211,29 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
                 {t("dashboard.products.types.promotional")}
               </span>
             ) : (
-              <span className="font-black text-xl text-primary">
-                {item.price > 0 ? (
-                  `${item.price} ${t("common.egp")}`
+              <div className="flex flex-col">
+                {product?.salePrice && product.salePrice < product.price ? (
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-muted-foreground line-through opacity-50 decoration-red-500/50">
+                      {product.price} {t("common.egp")}
+                    </span>
+                    <span className="font-black text-xl text-primary flex items-center gap-2">
+                      {product.salePrice} {t("common.egp")}
+                      <span className="px-1.5 py-0.5 rounded bg-red-500 text-white text-[10px] animate-pulse">
+                        {t("common.offer") || "OFFER"}
+                      </span>
+                    </span>
+                  </div>
                 ) : (
-                  <span className="text-primary uppercase tracking-wider">{t("dashboard.products.free")}</span>
+                  <span className="font-black text-xl text-primary">
+                    {item.price > 0 ? (
+                      `${item.price} ${t("common.egp")}`
+                    ) : (
+                      <span className="text-primary uppercase tracking-wider">{t("dashboard.products.free")}</span>
+                    )}
+                  </span>
                 )}
-              </span>
+              </div>
             )}
           </div>
           {isCompact && !isCollection && (

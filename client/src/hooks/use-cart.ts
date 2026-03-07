@@ -64,6 +64,8 @@ export function useCart() {
                         rating: p.rating,
                         reviewCount: p.review_count,
                         price: p.price,
+                        salePrice: p.sale_price,
+                        discountPercentage: p.discount_percentage,
                         licenseType: p.license_type,
                         content: p.content,
                         stockQuantity: p.stock_quantity,

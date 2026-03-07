@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
-import { useProducts, useCreateProduct, useDeleteProduct, useDownloadFile } from "@/hooks/use-products";
+import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, useDownloadFile } from "@/hooks/use-products";
 import { useUser, useUpdateUser } from "@/hooks/use-users";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,6 +53,8 @@ export default function Dashboard() {
   const searchParams = new URLSearchParams(window.location.search);
   const initialTab = searchParams.get('tab') || (user?.role === 'reader' ? 'library' : 'overview');
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -437,7 +439,14 @@ export default function Dashboard() {
                         </div>
                       )}
                       <div className="flex gap-2">
-                        <Button variant="outline" size="icon">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            setEditingProduct(product);
+                            setIsEditOpen(true);
+                          }}
+                        >
                           <Edit2 className="w-4 h-4" />
                         </Button>
                         {((product as any).salesCount || (product as any).sales_count || 0) > 0 ? (
@@ -529,6 +538,18 @@ export default function Dashboard() {
         </Tabs>
 
         <CreatePayoutDialog open={isPayoutOpen} onOpenChange={setIsPayoutOpen} balance={earnings.currentBalance} />
+
+        {editingProduct && (
+          <CreateProductDialog
+            open={isEditOpen}
+            onOpenChange={(v) => {
+              setIsEditOpen(v);
+              if (!v) setEditingProduct(null);
+            }}
+            product={editingProduct}
+            mode="edit"
+          />
+        )}
       </div>
     </div >
   );
@@ -866,31 +887,91 @@ const createSchema = insertProductSchema.extend({
   productImages: z.array(z.string()).optional(),
   audioDuration: z.coerce.number().optional(),
   audioPreviewUrl: z.string().optional(),
+  discountPercentage: z.coerce.number().min(0).max(100).optional(),
+  salePrice: z.coerce.number().optional(),
 });
 
-function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+function CreateProductDialog({ open, onOpenChange, product, mode = 'create' }: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  product?: any;
+  mode?: 'create' | 'edit';
+}) {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const { user } = useAuth();
   const createProduct = useCreateProduct();
+  const updateProduct = useUpdateProduct();
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractError, setExtractError] = useState<string | null>(null);
-  const [isFree, setIsFree] = useState(false);
+  const [isFree, setIsFree] = useState(product?.price === 0);
   const [showImmersiveEditor, setShowImmersiveEditor] = useState(false);
 
   type CreateProductFormValues = z.infer<typeof createSchema>;
   const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<CreateProductFormValues>({
     resolver: zodResolver(createSchema),
-    defaultValues: {
+    defaultValues: mode === 'edit' ? {
+      writerId: product.writerId,
+      title: product.title,
+      description: product.description,
+      coverUrl: product.coverUrl,
+      fileUrl: product.fileUrl,
+      type: product.type,
+      genre: product.genre,
+      isPublished: product.isPublished,
+      price: product.price,
+      licenseType: product.licenseType,
+      stockQuantity: product.stockQuantity,
+      weight: product.weight,
+      requiresShipping: product.requiresShipping,
+      merchandiseCategory: product.merchandiseCategory,
+      customFields: product.customFields,
+      productImages: product.productImages,
+      discountPercentage: product.discountPercentage || 0,
+      salePrice: product.salePrice,
+    } : {
       writerId: user?.id,
       type: "ebook",
       isPublished: true,
       price: 50,
-      licenseType: "personal"
+      licenseType: "personal",
+      discountPercentage: 0
     }
   });
 
   const type = watch("type");
+  const price = watch("price");
+  const discountPercentage = watch("discountPercentage") || 0;
+  const salePrice = price > 0 && discountPercentage > 0
+    ? Math.round(price * (1 - discountPercentage / 100))
+    : undefined;
+
+  // Sync isFree if product changes
+  useEffect(() => {
+    if (mode === 'edit' && product) {
+      setIsFree(product.price === 0);
+      reset({
+        writerId: product.writerId,
+        title: product.title,
+        description: product.description,
+        coverUrl: product.coverUrl,
+        fileUrl: product.fileUrl,
+        type: product.type,
+        genre: product.genre,
+        isPublished: product.isPublished,
+        price: product.price,
+        licenseType: product.licenseType,
+        stockQuantity: product.stockQuantity,
+        weight: product.weight,
+        requiresShipping: product.requiresShipping,
+        merchandiseCategory: product.merchandiseCategory,
+        customFields: product.customFields,
+        productImages: product.productImages,
+        discountPercentage: product.discountPercentage || 0,
+        salePrice: product.salePrice,
+      });
+    }
+  }, [product, mode]);
 
   const handleFileExtract = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -917,15 +998,31 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
     if (finalData.type === 'promotional') {
       finalData.price = 0;
     }
-    createProduct.mutate(finalData, {
-      onSuccess: (newProduct) => {
-        reset();
-        onOpenChange(false);
-        if (newProduct.type === 'ebook') {
-          window.location.href = `/studio/${newProduct.id}`;
+
+    // Calculate salePrice if discount is present
+    if (finalData.price > 0 && finalData.discountPercentage > 0) {
+      finalData.salePrice = Math.round(finalData.price * (1 - finalData.discountPercentage / 100));
+    } else {
+      finalData.salePrice = null;
+    }
+
+    if (mode === 'edit' && product) {
+      updateProduct.mutate({ id: product.id, ...finalData }, {
+        onSuccess: () => {
+          onOpenChange(false);
         }
-      }
-    });
+      });
+    } else {
+      createProduct.mutate(finalData, {
+        onSuccess: (newProduct) => {
+          reset();
+          onOpenChange(false);
+          if (newProduct.type === 'ebook') {
+            window.location.href = `/studio/${newProduct.id}`;
+          }
+        }
+      });
+    }
   };
 
   return (
@@ -937,9 +1034,9 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t("dashboard.products.publishTitle")}</DialogTitle>
+          <DialogTitle>{mode === 'edit' ? t("dashboard.products.editTitle") || "Edit Product" : t("dashboard.products.publishTitle")}</DialogTitle>
           <DialogDescription>
-            {t("dashboard.products.publishDescription")}
+            {mode === 'edit' ? t("dashboard.products.editDescription") || "Update your product details below." : t("dashboard.products.publishDescription")}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit((data) => performSubmit(data, true))} className="space-y-6 mt-4">
@@ -1095,38 +1192,65 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
             </div>
 
             {type !== "promotional" && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium">{t("dashboard.products.price")}</label>
-                <div className="flex items-center gap-4">
-                  <Input
-                    type="number"
-                    {...register("price", { valueAsNumber: true })}
-                    disabled={isFree}
-                    className={isFree ? "opacity-50" : ""}
-                  />
-                  <div className="flex items-center space-x-2 shrink-0">
-                    <Checkbox
-                      id="free-product"
-                      checked={isFree}
-                      onCheckedChange={(checked) => {
-                        setIsFree(checked as boolean);
-                        if (checked) {
-                          setValue("price", 0);
-                        } else {
-                          setValue("price", 50); // Default 50 EGP
-                        }
-                      }}
+              <>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{t("dashboard.products.price")}</label>
+                  <div className="flex items-center gap-4">
+                    <Input
+                      type="number"
+                      {...register("price", { valueAsNumber: true })}
+                      disabled={isFree}
+                      className={isFree ? "opacity-50" : ""}
                     />
-                    <label
-                      htmlFor="free-product"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                    >
-                      {t("dashboard.products.free")}
-                    </label>
+                    <div className="flex items-center space-x-2 shrink-0">
+                      <Checkbox
+                        id="free-product"
+                        checked={isFree}
+                        onCheckedChange={(checked) => {
+                          setIsFree(checked as boolean);
+                          if (checked) {
+                            setValue("price", 0);
+                            setValue("discountPercentage", 0);
+                          } else {
+                            setValue("price", 50); // Default 50 EGP
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor="free-product"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        {t("dashboard.products.free")}
+                      </label>
+                    </div>
                   </div>
+                  <p className="text-xs text-muted-foreground">{isFree ? t("dashboard.products.freeNote") : t("dashboard.products.priceExample")}</p>
                 </div>
-                <p className="text-xs text-muted-foreground">{isFree ? t("dashboard.products.freeNote") : t("dashboard.products.priceExample")}</p>
-              </div>
+
+                {!isFree && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">{isArabic ? "نسبة الخصم (%)" : "Discount Percentage (%)"}</label>
+                    <div className="flex items-center gap-4">
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        {...register("discountPercentage", { valueAsNumber: true })}
+                        placeholder="e.g. 50"
+                      />
+                      {salePrice !== undefined && (
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-muted-foreground uppercase font-bold">{isArabic ? "السعر بعد الخصم" : "Final Sale Price"}</span>
+                          <span className="text-sm font-black text-green-500">{salePrice} EGP</span>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-amber-500 italic">
+                      {isArabic ? "💡 سيتم عرض السعر القديم مشطوباً بجانب السعر الجديد." : "💡 Original price will appear crossed-out next to the new offer price."}
+                    </p>
+                  </div>
+                )}
+              </>
             )}
 
             {type === "asset" && (
@@ -1175,16 +1299,16 @@ function CreateProductDialog({ open, onOpenChange }: { open: boolean; onOpenChan
               type="button"
               variant="outline"
               onClick={handleSubmit((data) => performSubmit(data, false))}
-              disabled={createProduct.isPending}
+              disabled={createProduct.isPending || updateProduct.isPending}
             >
-              {createProduct.isPending ? t("common.saving") : t("dashboard.products.saveDraft")}
+              {(createProduct.isPending || updateProduct.isPending) ? t("common.saving") : t("dashboard.products.saveDraft")}
             </Button>
             <Button
               type="submit"
-              disabled={createProduct.isPending}
+              disabled={createProduct.isPending || updateProduct.isPending}
               className="bg-primary hover:bg-primary/90 text-white font-bold px-8 shadow-lg shadow-primary/20"
             >
-              {createProduct.isPending ? t("common.processing") : t("dashboard.products.publishItem")}
+              {(createProduct.isPending || updateProduct.isPending) ? t("common.processing") : mode === 'edit' ? t("common.save") : t("dashboard.products.publishItem")}
             </Button>
           </div>
         </form>

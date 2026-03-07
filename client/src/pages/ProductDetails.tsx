@@ -54,7 +54,7 @@ export default function ProductDetails() {
     "offers": {
       "@type": "Offer",
       "priceCurrency": "EGP",
-      "price": product.price,
+      "price": (product as any).salePrice || product.price,
       "availability": "https://schema.org/InStock",
       "url": window.location.href
     },
@@ -353,9 +353,25 @@ export default function ProductDetails() {
                       >
                         <ShoppingCart className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
                         {addToCart.isPending ? t("productDetails.addingToCart") : (
-                          <span>
-                            {t("productDetails.addToCartWithPrice", { price: product.price * quantity })}
-                          </span>
+                          <div className="flex flex-col items-center leading-none">
+                            {(product as any).salePrice && (product as any).salePrice < (product as any).price ? (
+                              <div className="flex flex-col items-start bg-black/20 px-3 py-1 rounded-lg">
+                                <span className="text-[10px] text-white/50 line-through">
+                                  {product.price * quantity} {t("common.egp")}
+                                </span>
+                                <span className="flex items-center gap-2">
+                                  {t("productDetails.addToCartWithPrice", { price: (product as any).salePrice * quantity })}
+                                  <span className="text-[9px] bg-red-500 text-white px-1.5 py-0.5 rounded animate-bounce">
+                                    {((product as any).discountPercentage || 0)}% OFF
+                                  </span>
+                                </span>
+                              </div>
+                            ) : (
+                              <span>
+                                {t("productDetails.addToCartWithPrice", { price: product.price * quantity })}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </Button>
                     )}
