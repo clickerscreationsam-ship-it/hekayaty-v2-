@@ -7,12 +7,10 @@ import { HelmetProvider } from "react-helmet-async";
 import React, { Suspense, lazy } from "react";
 import { Loader2 } from "lucide-react";
 
-// Loading component
-const PageLoading = () => (
-  <div className="flex h-[80vh] w-full items-center justify-center">
-    <Loader2 className="h-12 w-12 animate-spin text-primary opacity-50" />
-  </div>
-);
+import { PageSkeleton } from "@/components/ui/skeleton-loader";
+
+// Global Loading component
+const PageLoading = () => <PageSkeleton />;
 
 // Lazy Page Imports
 const Home = lazy(() => import("@/pages/Home"));

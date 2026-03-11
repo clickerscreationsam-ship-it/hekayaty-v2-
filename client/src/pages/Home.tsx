@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { SEO } from "@/components/SEO";
 import { cn } from "@/lib/utils";
+import { GridSkeleton, HeroSkeleton } from "@/components/ui/skeleton-loader";
 
 export default function Home() {
   const { data: writers } = useWriters();
@@ -120,12 +121,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {bestSellers?.map((product) => (
               <ProductCard key={product.id} product={product} />
-            )) || (
-                // Loading skeletons
-                Array(4).fill(0).map((_, i) => (
-                  <div key={i} className="h-96 rounded-2xl bg-card/50 animate-pulse" />
-                ))
-              )}
+            )) || <GridSkeleton count={4} />}
             {bestSellers && bestSellers.length === 0 && (
               <p className="col-span-4 text-center text-muted-foreground py-10">
                 {t("home.bestSellers.empty")}
@@ -158,11 +154,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {merchandise?.slice(0, 4).map((product) => (
               <ProductCard key={product.id} product={product} />
-            )) || (
-                Array(4).fill(0).map((_, i) => (
-                  <div key={i} className="h-96 rounded-2xl bg-card/50 animate-pulse" />
-                ))
-              )}
+            )) || <GridSkeleton count={4} />}
             {merchandise && merchandise.length === 0 && (
               <p className="col-span-4 text-center text-muted-foreground py-10">
                 {t("home.merchandise.empty")}
@@ -195,11 +187,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {serializedStories?.map((product) => (
               <ProductCard key={product.id} product={product} />
-            )) || (
-                Array(4).fill(0).map((_, i) => (
-                  <div key={i} className="h-96 rounded-2xl bg-card/50 animate-pulse" />
-                ))
-              )}
+            )) || <GridSkeleton count={4} />}
             {serializedStories && serializedStories.length === 0 && (
               <p className="col-span-4 text-center text-muted-foreground py-10">
                 {t("home.serialized.empty")}
@@ -231,11 +219,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {collections?.slice(0, 4).map((c) => (
               <ProductCard key={c.id} collection={c} />
-            )) || (
-                Array(4).fill(0).map((_, i) => (
-                  <div key={i} className="h-96 rounded-2xl bg-card/50 animate-pulse" />
-                ))
-              )}
+            )) || <GridSkeleton count={4} />}
             {collections && collections.length === 0 && (
               <p className="col-span-4 text-center text-muted-foreground py-10">
                 {t("home.collections.empty")}

@@ -3,6 +3,9 @@ const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/dashboard',
+  '/marketplace',
+  '/worldbuilders',
+  '/cart',
   '/favicon.png',
   '/robots.txt'
 ];
