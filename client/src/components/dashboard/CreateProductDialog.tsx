@@ -168,7 +168,7 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit((data) => performSubmit(data, true))} className="space-y-6 mt-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2 col-span-2">
               <select
                 {...register("type")}
@@ -314,7 +314,7 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
                       {...register("price", { valueAsNumber: true })}
                       disabled={isFree}
                       className={cn(
-                        "h-14 text-2xl font-black border-2 border-amber-500/50 focus:border-amber-500 text-center transition-all bg-amber-500/5",
+                        "h-14 flex-1 text-2xl font-black border-2 border-amber-500/50 focus:border-amber-500 text-center transition-all bg-amber-500/5",
                         isFree ? "opacity-50" : ""
                       )}
                     />
@@ -349,7 +349,7 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
                         max="100"
                         {...register("discountPercentage", { valueAsNumber: true })}
                         placeholder="e.g. 50"
-                        className="h-14 text-2xl font-black border-2 border-primary/20 focus:border-primary text-center transition-all bg-primary/5"
+                        className="h-14 flex-1 text-2xl font-black border-2 border-primary/20 focus:border-primary text-center transition-all bg-primary/5"
                       />
                       {salePrice !== undefined && (
                         <div className="flex flex-col">
