@@ -16,6 +16,7 @@ import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
 import { CloudinaryGalleryUpload } from "@/components/ui/cloudinary-gallery-upload";
 import { Plus, Headphones, PenTool, CheckCircle2, Layout, ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
+import { cn } from "@/lib/utils";
 
 const createSchema = insertProductSchema.extend({
   price: z.coerce.number(),
@@ -294,13 +295,13 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
 
             <div className="space-y-2 col-span-2">
               <label className="text-sm font-medium">{t("dashboard.products.workTitle")}</label>
-              <Input {...register("title")} placeholder={t("dashboard.products.workTitlePlaceholder")} />
+              <Input {...register("title")} className="h-12 text-lg" placeholder={t("dashboard.products.workTitlePlaceholder")} />
               {errors.title && <p className="text-red-500 text-xs">{String(errors.title.message)}</p>}
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("dashboard.products.genre")}</label>
-              <Input {...register("genre")} placeholder={type === "asset" ? "Icons, Textures..." : t("dashboard.products.genrePlaceholder")} />
+              <Input {...register("genre")} className="h-14 text-lg font-bold text-center" placeholder={type === "asset" ? "Icons, Textures..." : t("dashboard.products.genrePlaceholder")} />
             </div>
 
             {type !== "promotional" && (
@@ -312,7 +313,10 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
                       type="number"
                       {...register("price", { valueAsNumber: true })}
                       disabled={isFree}
-                      className={isFree ? "opacity-50" : ""}
+                      className={cn(
+                        "h-14 text-2xl font-black border-2 border-amber-500/50 focus:border-amber-500 text-center transition-all bg-amber-500/5",
+                        isFree ? "opacity-50" : ""
+                      )}
                     />
                     <div className="flex items-center space-x-2 shrink-0">
                       <Checkbox
@@ -345,6 +349,7 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
                         max="100"
                         {...register("discountPercentage", { valueAsNumber: true })}
                         placeholder="e.g. 50"
+                        className="h-14 text-2xl font-black border-2 border-primary/20 focus:border-primary text-center transition-all bg-primary/5"
                       />
                       {salePrice !== undefined && (
                         <div className="flex flex-col">
