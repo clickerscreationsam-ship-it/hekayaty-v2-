@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useProducts } from "@/hooks/use-products";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Loader2, Globe, Twitter, Instagram, Settings, Plus, Palette, X, ChevronLeft, ChevronRight, LayoutDashboard } from "lucide-react";
 import { StoreChat } from "@/components/StoreChat";
 import { SEO } from "@/components/SEO";
