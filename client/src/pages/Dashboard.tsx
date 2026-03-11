@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy, useMemo } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, useDownloadFile } from "@/hooks/use-products";
 import { useUser, useUpdateUser } from "@/hooks/use-users";
@@ -17,27 +17,42 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
-
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect, Link, useLocation } from "wouter";
-import { ShippingSettings } from "@/components/dashboard/ShippingSettings";
-import { SellerOrders } from "@/components/dashboard/SellerOrders";
-import { DashboardChat } from "@/components/dashboard/DashboardChat";
-import MakerOrders from "@/pages/creator/MakerOrders";
 import { useEarnings, usePayouts, useRequestPayout } from "@/hooks/use-earnings";
 import { formatDate, cn, optimizeImage } from "@/lib/utils";
 import { useUserOrders } from "@/hooks/use-orders";
-import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
-import { AudiobookUpload } from "@/components/ui/audiobook-upload";
-import { AudiobookPlayer } from "@/components/ui/audiobook-player";
-import { CloudinaryGalleryUpload } from "@/components/ui/cloudinary-gallery-upload";
 import { useAdminPrivateMessages, useSendAdminPrivateMessage, useMarkMessageRead, useAdminAnnouncements } from "@/hooks/use-admin-system";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PortfolioManager } from "@/components/creative-hub/PortfolioManager";
-import { CommissionsManager } from "@/components/creative-hub/CommissionsManager";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
 import { useDesignRequests } from "@/hooks/use-commissions";
-import { PrivateChatManager } from "@/components/creative-hub/PrivateChatManager";
-import { CreateProductDialog } from "@/components/dashboard/CreateProductDialog";
+
+// Lazy-loaded heavy components for "rocket" performance
+const ShippingSettings = lazy(() => import("@/components/dashboard/ShippingSettings").then(m => ({ default: m.ShippingSettings })));
+const SellerOrders = lazy(() => import("@/components/dashboard/SellerOrders").then(m => ({ default: m.SellerOrders })));
+const DashboardChat = lazy(() => import("@/components/dashboard/DashboardChat").then(m => ({ default: m.DashboardChat })));
+const MakerOrders = lazy(() => import("@/pages/creator/MakerOrders"));
+const PortfolioManager = lazy(() => import("@/components/creative-hub/PortfolioManager").then(m => ({ default: m.PortfolioManager })));
+const CommissionsManager = lazy(() => import("@/components/creative-hub/CommissionsManager").then(m => ({ default: m.CommissionsManager })));
+const PrivateChatManager = lazy(() => import("@/components/creative-hub/PrivateChatManager").then(m => ({ default: m.PrivateChatManager })));
+const CreateProductDialog = lazy(() => import("@/components/dashboard/CreateProductDialog").then(m => ({ default: m.CreateProductDialog })));
+const AudiobookUpload = lazy(() => import("@/components/ui/audiobook-upload").then(m => ({ default: m.AudiobookUpload })));
+const AudiobookPlayer = lazy(() => import("@/components/ui/audiobook-player").then(m => ({ default: m.AudiobookPlayer })));
+const CloudinaryGalleryUpload = lazy(() => import("@/components/ui/cloudinary-gallery-upload").then(m => ({ default: m.CloudinaryGalleryUpload })));
+
+// Instant Skeleton State
+const DashboardSkeleton = () => (
+  <div className="space-y-6 pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-3xl bg-white/5" />)}
+    </div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <Skeleton className="lg:col-span-2 h-[500px] rounded-3xl bg-white/5" />
+      <Skeleton className="h-[500px] rounded-3xl bg-white/5" />
+    </div>
+  </div>
+);
 
 import dashboardBg from "@/assets/9814ae82-9631-4241-a961-7aec31f9aa4d_09-11-19.png";
 
@@ -75,16 +90,24 @@ export default function Dashboard() {
   }, [user?.id]);
 
   // Calculate Metrics
-  const totalItemsSold = Number(earnings.totalUnitsSold) || 0;
-  const totalGrossRevenue = Number(earnings.totalGross) || 0;
-  const netEarnings = Number(earnings.totalEarnings) || 0;
-  const availableBalance = Number(earnings.currentBalance) || 0;
-  const totalCommission = Number(earnings.totalCommission) || 0;
+  // Memoize Metrics for zero-lag re-renders
+  const metrics = useMemo(() => {
+    return {
+      totalItemsSold: Number(earnings.totalUnitsSold) || 0,
+      totalGrossRevenue: Number(earnings.totalGross) || 0,
+      netEarnings: Number(earnings.totalEarnings) || 0,
+      availableBalance: Number(earnings.currentBalance) || 0,
+      totalCommission: Number(earnings.totalCommission) || 0
+    };
+  }, [earnings.totalUnitsSold, earnings.totalGross, earnings.totalEarnings, earnings.currentBalance, earnings.totalCommission]);
+
+  const { totalItemsSold, totalGrossRevenue, netEarnings, availableBalance, totalCommission } = metrics;
 
   if (isAuthLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="min-h-screen relative">
+        <Navbar />
+        <DashboardSkeleton />
       </div>
     );
   }
@@ -118,7 +141,11 @@ export default function Dashboard() {
                 <Wallet className="w-4 h-4" /> {t("dashboard.tabs.wallet")}
               </Button>
             )}
-            {user.role !== 'reader' && <CreateProductDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />}
+            {user.role !== 'reader' && (
+              <Suspense fallback={<Skeleton className="h-10 w-32 rounded-xl" />}>
+                <CreateProductDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
+              </Suspense>
+            )}
           </div>
         </div>
 
@@ -272,7 +299,9 @@ export default function Dashboard() {
 
           <TabsContent value="portfolio">
             <div className="glass-card rounded-2xl p-8 border border-border">
-              <PortfolioManager artistId={user.id} />
+              <Suspense fallback={<DashboardSkeleton />}>
+                <PortfolioManager artistId={user.id} />
+              </Suspense>
             </div>
           </TabsContent>
 
@@ -282,13 +311,17 @@ export default function Dashboard() {
             </TabsContent>
           ) : (
             <TabsContent value="commissions">
-              <CommissionsManager user={user} />
+              <Suspense fallback={<DashboardSkeleton />}>
+                <CommissionsManager user={user} />
+              </Suspense>
             </TabsContent>
           )}
 
           <TabsContent value="orders">
             <div className="glass-card rounded-2xl p-1 border border-border">
-              <MakerOrders />
+              <Suspense fallback={<DashboardSkeleton />}>
+                <MakerOrders />
+              </Suspense>
             </div>
           </TabsContent>
 
@@ -506,16 +539,22 @@ export default function Dashboard() {
                   <p className="text-muted-foreground text-sm">{t("dashboard.shipping.subtitle")}</p>
                 </div>
               </div>
-              {user && <ShippingSettings userId={user.id} />}
+              <Suspense fallback={<Skeleton className="h-[400px] w-full rounded-2xl" />}>
+                {user && <ShippingSettings userId={user.id} />}
+              </Suspense>
             </div>
           </TabsContent>
 
           <TabsContent value="chat">
-            <DashboardChat />
+            <Suspense fallback={<DashboardSkeleton />}>
+              <DashboardChat />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="private_messages">
-            <PrivateChatManager />
+            <Suspense fallback={<DashboardSkeleton />}>
+              <PrivateChatManager />
+            </Suspense>
           </TabsContent>
 
           <AdminMessagingTab />
@@ -829,7 +868,7 @@ function BrandingForm({ user }: { user: any }) {
               label={t("dashboard.branding.avatarLabel")}
               aspectRatio="square"
               folder="hekayaty_avatars"
-              onUpload={(url) => {
+              onUpload={(url: string) => {
                 setValue("avatarUrl", url);
                 // Optional: trigger immediate save or visual update if needed
               }}
@@ -840,7 +879,7 @@ function BrandingForm({ user }: { user: any }) {
               aspectRatio="banner"
               defaultImage={user.bannerUrl}
               folder="hekayaty_banners"
-              onUpload={(url) => {
+              onUpload={(url: string) => {
                 setValue("bannerUrl", url);
               }}
             />
@@ -1096,12 +1135,14 @@ function ReaderLibraryContent({ user }: { user: any }) {
                                 {t("library.now_playing") || "Now Playing from Library"}
                               </DialogDescription>
                             </DialogHeader>
-                            <div className="py-6">
-                              <AudiobookPlayer
-                                parts={item.audioParts?.length > 0 ? item.audioParts : [{ url: item.fileUrl, title: item.title, duration: item.audioDuration || 0 }]}
-                                title={item.title}
-                                coverUrl={item.coverUrl}
-                              />
+                            <div className="py-6 min-h-[150px] flex items-center justify-center">
+                              <Suspense fallback={<Loader2 className="w-8 h-8 animate-spin text-primary" />}>
+                                <AudiobookPlayer
+                                  parts={item.audioParts?.length > 0 ? item.audioParts : [{ url: item.fileUrl, title: item.title, duration: item.audioDuration || 0 }]}
+                                  title={item.title}
+                                  coverUrl={item.coverUrl}
+                                />
+                              </Suspense>
                             </div>
                           </DialogContent>
                         </Dialog>
@@ -1306,22 +1347,29 @@ function getFulfillmentLabel(status: string) {
   }
 }
 
-function DownloadButton({ fileUrl }: { fileUrl: string }) {
+function DownloadButton({ fileUrl }: { fileUrl: string | null | undefined }) {
   const { t } = useTranslation();
   const download = useDownloadFile();
 
+  if (!fileUrl) return null;
+
   return (
     <Button
+      variant="outline"
+      size="sm"
+      className="rounded-full bg-white/20 border-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
       onClick={() => download.mutate(fileUrl)}
       disabled={download.isPending}
-      className="rounded-full bg-white text-black hover:bg-white/90 font-bold"
     >
       {download.isPending ? (
-        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+        <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
-        <Download className="w-4 h-4 mr-2" />
+        <>
+          <Download className="w-4 h-4 mr-2" />
+          {t("common.download")}
+        </>
       )}
-      {t("common.download")}
     </Button>
   );
 }
+

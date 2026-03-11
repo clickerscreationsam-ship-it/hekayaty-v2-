@@ -2,6 +2,7 @@ const CACHE_NAME = 'hekayaty-v2-cache-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
+  '/dashboard',
   '/favicon.png',
   '/robots.txt'
 ];
