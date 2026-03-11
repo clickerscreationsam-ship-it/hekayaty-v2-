@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useProducts } from "@/hooks/use-products";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
-import { Loader2, Globe, Twitter, Instagram, Settings, Plus, Palette, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, Globe, Twitter, Instagram, Settings, Plus, Palette, X, ChevronLeft, ChevronRight, LayoutDashboard } from "lucide-react";
 import { StoreChat } from "@/components/StoreChat";
 import { SEO } from "@/components/SEO";
 import { usePortfolios, useCreateDesignRequest } from "@/hooks/use-commissions";
@@ -105,15 +105,15 @@ export default function WriterStore() {
               </div>
               <div className="flex flex-wrap gap-3">
                 <Link href="/dashboard">
-                  <Button className="gap-2" size="lg">
-                    <Settings className="w-4 h-4" />
-                    {t("writerStore.customizeButton")}
+                  <Button className="gap-2 shadow-lg shadow-primary/20 hover:scale-105 transition-all duration-300" size="lg">
+                    <LayoutDashboard className="w-4 h-4" />
+                    {t("writerStore.dashboardButton")}
                   </Button>
                 </Link>
                 <Link href="/dashboard">
-                  <Button variant="outline" className="gap-2" size="lg">
-                    <Plus className="w-4 h-4" />
-                    {t("writerStore.addProductButton")}
+                  <Button variant="outline" className="gap-2 border-white/10 hover:bg-white/5 transition-all" size="lg">
+                    <Settings className="w-4 h-4" />
+                    {t("writerStore.customizeButton")}
                   </Button>
                 </Link>
               </div>
