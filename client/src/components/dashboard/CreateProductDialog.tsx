@@ -299,14 +299,11 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
               {errors.title && <p className="text-red-500 text-xs">{String(errors.title.message)}</p>}
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t("dashboard.products.genre")}</label>
-              <Input {...register("genre")} className="h-14 text-lg font-bold text-center" placeholder={type === "asset" ? "Icons, Textures..." : t("dashboard.products.genrePlaceholder")} />
-            </div>
+
 
             {type !== "promotional" && (
               <>
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-2">
                   <label className="text-sm font-medium">{t("dashboard.products.price")}</label>
                   <div className="flex items-center gap-4">
                     <Input
@@ -340,7 +337,7 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
                 </div>
 
                 {!isFree && (
-                  <div className="space-y-2">
+                  <div className="space-y-2 col-span-2">
                     <label className="text-sm font-medium">{isArabic ? "نسبة الخصم (%)" : "Discount Percentage (%)"}</label>
                     <div className="flex items-center gap-4">
                       <Input
@@ -362,6 +359,11 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
                 )}
               </>
             )}
+
+            <div className="space-y-2 col-span-2">
+              <label className="text-sm font-medium">{t("dashboard.products.genre")}</label>
+              <Input {...register("genre")} className="h-14 text-lg font-bold text-center" placeholder={type === "asset" ? "Icons, Textures..." : t("dashboard.products.genrePlaceholder")} />
+            </div>
 
             <div className="space-y-2 col-span-2">
               <CloudinaryUpload
