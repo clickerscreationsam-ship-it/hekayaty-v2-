@@ -25,7 +25,7 @@ import { SellerOrders } from "@/components/dashboard/SellerOrders";
 import { DashboardChat } from "@/components/dashboard/DashboardChat";
 import MakerOrders from "@/pages/creator/MakerOrders";
 import { useEarnings, usePayouts, useRequestPayout } from "@/hooks/use-earnings";
-import { formatDate, cn } from "@/lib/utils";
+import { formatDate, cn, optimizeImage } from "@/lib/utils";
 import { useUserOrders } from "@/hooks/use-orders";
 import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
 import { AudiobookUpload } from "@/components/ui/audiobook-upload";
@@ -37,6 +37,7 @@ import { PortfolioManager } from "@/components/creative-hub/PortfolioManager";
 import { CommissionsManager } from "@/components/creative-hub/CommissionsManager";
 import { useDesignRequests } from "@/hooks/use-commissions";
 import { PrivateChatManager } from "@/components/creative-hub/PrivateChatManager";
+import { CreateProductDialog } from "@/components/dashboard/CreateProductDialog";
 
 import dashboardBg from "@/assets/9814ae82-9631-4241-a961-7aec31f9aa4d_09-11-19.png";
 
@@ -98,10 +99,10 @@ export default function Dashboard() {
 
       {/* Fixed Background */}
       <div
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat gpu will-change-transform"
         style={{ backgroundImage: `url(${dashboardBg})` }}
       />
-      <div className="fixed inset-0 z-0 bg-black/70 backdrop-blur-[2px]" />
+      <div className="fixed inset-0 z-0 bg-black/70 backdrop-blur-[1px] md:backdrop-blur-[2px] gpu will-change-transform" />
 
       <div className="pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
@@ -404,11 +405,12 @@ export default function Dashboard() {
               ) : (
                 <div className="space-y-4">
                   {products?.map(product => (
-                    <div key={product.id} className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl hover:bg-muted/30 transition-colors border border-transparent hover:border-border">
+                    <div key={product.id} className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl hover:bg-muted/30 transition-colors border border-transparent hover:border-border gpu">
                       <img
-                        src={product.coverUrl}
+                        src={optimizeImage(product.coverUrl, 200)}
                         alt={product.title}
                         className="w-16 h-24 object-cover rounded-md shadow-sm"
+                        loading="lazy"
                       />
                       <div className="flex-1 text-center sm:text-left">
                         <h3 className="font-bold font-serif">{product.title}</h3>
@@ -486,6 +488,13 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
+            
+            <CreateProductDialog
+              open={isEditOpen}
+              onOpenChange={setIsEditOpen}
+              product={editingProduct}
+              mode="edit"
+            />
           </TabsContent>
 
           <TabsContent value="shipping">
@@ -867,488 +876,6 @@ function StatCard({ icon: Icon, label, value, color, bg }: any) {
         <p className="text-2xl font-bold font-serif">{value}</p>
       </div>
     </div>
-  );
-}
-
-import { extractTextFromFile } from "@/lib/text-extractor";
-
-// ... existing imports ...
-
-// === CREATE PRODUCT FORM ===
-const createSchema = insertProductSchema.extend({
-  price: z.coerce.number(),
-  writerId: z.string(), // UUID string from Supabase
-  type: z.enum(["ebook", "physical", "asset", "bundle", "promotional", "merchandise", "audiobook"]),
-  licenseType: z.enum(["personal", "commercial", "standard", "extended"]).optional(),
-  content: z.string().optional(), // For extracted ebook text
-  stockQuantity: z.coerce.number().optional(),
-  weight: z.coerce.number().optional(),
-  requiresShipping: z.boolean().optional(),
-  productImages: z.array(z.string()).optional(),
-  audioDuration: z.coerce.number().optional(),
-  audioPreviewUrl: z.string().optional(),
-  discountPercentage: z.coerce.number().min(0).max(100).optional(),
-  salePrice: z.coerce.number().optional(),
-});
-
-function CreateProductDialog({ open, onOpenChange, product, mode = 'create' }: {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  product?: any;
-  mode?: 'create' | 'edit';
-}) {
-  const { t, i18n } = useTranslation();
-  const isArabic = i18n.language === 'ar';
-  const { user } = useAuth();
-  const createProduct = useCreateProduct();
-  const updateProduct = useUpdateProduct();
-  const [isExtracting, setIsExtracting] = useState(false);
-  const [extractError, setExtractError] = useState<string | null>(null);
-  const [isFree, setIsFree] = useState(product?.price === 0);
-  const [showImmersiveEditor, setShowImmersiveEditor] = useState(false);
-
-  type CreateProductFormValues = z.infer<typeof createSchema>;
-  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<CreateProductFormValues>({
-    resolver: zodResolver(createSchema),
-    defaultValues: mode === 'edit' ? {
-      writerId: product.writerId,
-      title: product.title,
-      description: product.description,
-      coverUrl: product.coverUrl,
-      fileUrl: product.fileUrl,
-      type: product.type,
-      genre: product.genre,
-      isPublished: product.isPublished,
-      price: product.price,
-      licenseType: product.licenseType,
-      stockQuantity: product.stockQuantity,
-      weight: product.weight,
-      requiresShipping: product.requiresShipping,
-      merchandiseCategory: product.merchandiseCategory,
-      customFields: product.customFields,
-      productImages: product.productImages,
-      discountPercentage: product.discountPercentage || 0,
-      salePrice: product.salePrice,
-    } : {
-      writerId: user?.id,
-      type: "ebook",
-      isPublished: true,
-      price: 50,
-      licenseType: "personal",
-      discountPercentage: 0
-    }
-  });
-
-  const type = watch("type");
-  const price = watch("price");
-  const discountPercentage = watch("discountPercentage") || 0;
-  const salePrice = price > 0 && discountPercentage > 0
-    ? Math.round(price * (1 - discountPercentage / 100))
-    : undefined;
-
-  // Sync isFree if product changes
-  useEffect(() => {
-    if (mode === 'edit' && product) {
-      setIsFree(product.price === 0);
-      reset({
-        writerId: product.writerId,
-        title: product.title,
-        description: product.description,
-        coverUrl: product.coverUrl,
-        fileUrl: product.fileUrl,
-        type: product.type,
-        genre: product.genre,
-        isPublished: product.isPublished,
-        price: product.price,
-        licenseType: product.licenseType,
-        stockQuantity: product.stockQuantity,
-        weight: product.weight,
-        requiresShipping: product.requiresShipping,
-        merchandiseCategory: product.merchandiseCategory,
-        customFields: product.customFields,
-        productImages: product.productImages,
-        discountPercentage: product.discountPercentage || 0,
-        salePrice: product.salePrice,
-      });
-    }
-  }, [product, mode]);
-
-  const handleFileExtract = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsExtracting(true);
-    setExtractError(null);
-
-    try {
-      const text = await extractTextFromFile(file);
-      setValue("content", text);
-      // Also set fileUrl generally if needed, or just content
-      // setValue("fileUrl", ... maybe upload to Cloudinary too? User asked to extract text)
-    } catch (err: any) {
-      console.error("Extraction failed:", err);
-      setExtractError("Failed to read file: " + err.message);
-    } finally {
-      setIsExtracting(false);
-    }
-  };
-
-  const performSubmit = (data: any, isPublished: boolean) => {
-    const finalData = { ...data, isPublished };
-    if (finalData.type === 'promotional') {
-      finalData.price = 0;
-    }
-
-    // Calculate salePrice if discount is present
-    if (finalData.price > 0 && finalData.discountPercentage > 0) {
-      finalData.salePrice = Math.round(finalData.price * (1 - finalData.discountPercentage / 100));
-    } else {
-      finalData.salePrice = null;
-    }
-
-    if (mode === 'edit' && product) {
-      updateProduct.mutate({ id: product.id, ...finalData }, {
-        onSuccess: () => {
-          onOpenChange(false);
-        }
-      });
-    } else {
-      createProduct.mutate(finalData, {
-        onSuccess: (newProduct) => {
-          reset();
-          onOpenChange(false);
-          if (newProduct.type === 'ebook') {
-            window.location.href = `/studio/${newProduct.id}`;
-          }
-        }
-      });
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="bg-primary hover:bg-primary/90 text-white gap-2">
-          <Plus className="w-4 h-4" /> {t("dashboard.products.createNew")}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{mode === 'edit' ? t("dashboard.products.editTitle") || "Edit Product" : t("dashboard.products.publishTitle")}</DialogTitle>
-          <DialogDescription>
-            {mode === 'edit' ? t("dashboard.products.editDescription") || "Update your product details below." : t("dashboard.products.publishDescription")}
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit((data) => performSubmit(data, true))} className="space-y-6 mt-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2 col-span-2">
-              <select
-                {...register("type")}
-                className="w-full p-2 rounded-md border bg-background"
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setValue("type", val as any);
-                  if (val === "physical" || val === "merchandise") {
-                    setValue("requiresShipping", true);
-                  }
-                }}
-              >
-                <option value="ebook">{t("dashboard.products.types.ebook")}</option>
-                <option value="audiobook">{t("dashboard.products.types.audiobook") || "Audiobook"}</option>
-                <option value="physical">{t("dashboard.products.types.physical")}</option>
-                <option value="merchandise">{t("dashboard.products.types.merchandise")}</option>
-                <option value="asset">{t("dashboard.products.types.asset")}</option>
-                <option value="promotional">{t("dashboard.products.types.promotional")}</option>
-              </select>
-            </div>
-
-            {type === "merchandise" && (
-              <div className="col-span-2 space-y-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">{t("dashboard.products.category")}</label>
-                    <select {...register("merchandiseCategory" as any)} className="w-full p-2 rounded-md border bg-background">
-                      <option value="clothing">{t("dashboard.products.categories.clothing")}</option>
-                      <option value="accessories">{t("dashboard.products.categories.accessories")}</option>
-                      <option value="collectibles">{t("dashboard.products.categories.collectibles")}</option>
-                      <option value="other">{t("dashboard.products.categories.other")}</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">{t("dashboard.products.stock")}</label>
-                    <Input type="number" {...register("stockQuantity")} placeholder="e.g. 50" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">{t("dashboard.products.customization")}</label>
-                  <Input {...register("customFields" as any)} placeholder={t("dashboard.products.customizationLabel")} />
-                </div>
-              </div>
-            )}
-
-            {type === "physical" && (
-              <div className="col-span-2 grid grid-cols-2 gap-4 p-4 rounded-lg bg-muted/30 border border-border">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">{t("dashboard.products.stock")}</label>
-                  <Input type="number" {...register("stockQuantity")} placeholder="e.g. 50" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">{t("dashboard.products.weight")}</label>
-                  <Input type="number" step="10" {...register("weight")} placeholder="e.g. 500" />
-                </div>
-                <div className="flex items-center space-x-2 col-span-2 pt-2">
-                  <Checkbox
-                    id="ship"
-                    defaultChecked={true}
-                    onCheckedChange={(c) => setValue("requiresShipping", c as boolean)}
-                  />
-                  <label htmlFor="ship" className="text-sm font-medium">{t("dashboard.products.requiresShipping")}</label>
-                </div>
-                <p className="text-[10px] text-amber-500 col-span-2 italic">
-                  💡 {t("dashboard.products.shippingNote")}
-                </p>
-              </div>
-            )}
-
-            {type === "audiobook" && (
-              <div className="col-span-2 p-10 rounded-3xl bg-gradient-to-br from-primary/10 via-amber-500/5 to-primary/5 border border-primary/20 backdrop-blur-md flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in duration-700 shadow-2xl shadow-primary/5 relative overflow-hidden group">
-                {/* Background Decorative Element */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl -mr-16 -mt-16 group-hover:bg-primary/20 transition-colors duration-500" />
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-amber-500/10 blur-2xl -ml-12 -mb-12" />
-
-                <div className="relative">
-                  <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center text-primary shadow-inner border border-primary/10 animate-pulse">
-                    <Headphones className="w-10 h-10 drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center text-black font-bold text-[10px] border-2 border-background animate-bounce">
-                    ✨
-                  </div>
-                </div>
-
-                <div className="space-y-3 relative z-10">
-                  <h3 className="text-2xl font-bold font-serif bg-gradient-to-r from-primary via-amber-600 to-primary bg-clip-text text-transparent">
-                    {t("dashboard.products.echoesComing") || "Ancient Whispers are Awakening..."}
-                  </h3>
-                  <p className="text-sm text-muted-foreground/80 max-w-sm mx-auto leading-relaxed italic">
-                    {t("dashboard.products.audioComingVibe") || "The scrolls of sound are being enchanted. Very soon, your stories will echo through the realms in a grand symphony of voices."}
-                  </p>
-                </div>
-
-                <div className="pt-4 flex flex-col items-center space-y-2">
-                  <span className="px-6 py-2 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-bold uppercase tracking-[0.2em] text-primary shadow-sm hover:bg-primary/20 transition-all cursor-default">
-                    {t("common.beReadyVibe") || "Symphony of Stories"}
-                  </span>
-                  <p className="text-[10px] text-amber-500/50 font-medium tracking-tighter uppercase italic">
-                    {t("common.preparingMagic") || "Magic is being woven"}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {type === "ebook" && (
-              <div className="col-span-2 space-y-4">
-                <div className="space-y-4 p-6 border-2 border-primary/20 border-dashed rounded-2xl bg-primary/5">
-                  <div className="flex items-center gap-3 text-primary">
-                    <PenTool className="w-6 h-6" />
-                    <h4 className="font-bold text-lg">{t("studio.title")}</h4>
-                  </div>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {t("dashboard.products.ebookGuide")}
-                  </p>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 text-xs text-green-600 font-medium">
-                      <CheckCircle2 className="w-4 h-4" />
-                      {isArabic ? "لا يوجد رفع ملفات - جرب الأمان الحقيقي" : "No file uploads - Experience true security"}
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-green-600 font-medium">
-                      <CheckCircle2 className="w-4 h-4" />
-                      {isArabic ? "حماية من نسخ الـ PDF والسرقة" : "Anti-PDF scraping & theft protection"}
-                    </div>
-                  </div>
-                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
-                    <p className="text-xs text-amber-600 font-bold">
-                      💡 {isArabic ? "بعد النشر، سيتم توجيهك مباشرة إلى الاستوديو لإضافة فصولك." : "After publishing, you'll be taken to the studio to add your chapters."}
-                    </p>
-                  </div>
-                  <Link href="/studio">
-                    <Button type="button" variant="outline" className="w-full gap-2 border-primary/20 hover:bg-primary/5 hover:text-primary rounded-xl py-6">
-                      <Layout className="w-5 h-5 text-primary" />
-                      {t("nav.studio")}
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-2 col-span-2">
-              <label className="text-sm font-medium">{t("dashboard.products.workTitle")}</label>
-              <Input {...register("title")} placeholder={t("dashboard.products.workTitlePlaceholder")} />
-              {errors.title && <p className="text-red-500 text-xs">{String(errors.title.message)}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t("dashboard.products.genre")}</label>
-              <Input {...register("genre")} placeholder={type === "asset" ? "Icons, Textures..." : t("dashboard.products.genrePlaceholder")} />
-            </div>
-
-            {type !== "promotional" && (
-              <>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">{t("dashboard.products.price")}</label>
-                  <div className="flex items-center gap-4">
-                    <Input
-                      type="number"
-                      {...register("price", { valueAsNumber: true })}
-                      disabled={isFree}
-                      className={isFree ? "opacity-50" : ""}
-                    />
-                    <div className="flex items-center space-x-2 shrink-0">
-                      <Checkbox
-                        id="free-product"
-                        checked={isFree}
-                        onCheckedChange={(checked) => {
-                          setIsFree(checked as boolean);
-                          if (checked) {
-                            setValue("price", 0);
-                            setValue("discountPercentage", 0);
-                          } else {
-                            setValue("price", 50); // Default 50 EGP
-                          }
-                        }}
-                      />
-                      <label
-                        htmlFor="free-product"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                      >
-                        {t("dashboard.products.free")}
-                      </label>
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{isFree ? t("dashboard.products.freeNote") : t("dashboard.products.priceExample")}</p>
-                </div>
-
-                {!isFree && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">{isArabic ? "نسبة الخصم (%)" : "Discount Percentage (%)"}</label>
-                    <div className="flex items-center gap-4">
-                      <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        {...register("discountPercentage", { valueAsNumber: true })}
-                        placeholder="e.g. 50"
-                      />
-                      {salePrice !== undefined && (
-                        <div className="flex flex-col">
-                          <span className="text-[10px] text-muted-foreground uppercase font-bold">{isArabic ? "السعر بعد الخصم" : "Final Sale Price"}</span>
-                          <span className="text-sm font-black text-green-500">{salePrice} EGP</span>
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-[10px] text-amber-500 italic">
-                      {isArabic ? "💡 سيتم عرض السعر القديم مشطوباً بجانب السعر الجديد." : "💡 Original price will appear crossed-out next to the new offer price."}
-                    </p>
-                  </div>
-                )}
-              </>
-            )}
-
-            {type === "asset" && (
-              <div className="space-y-2 col-span-2">
-                <label className="text-sm font-medium">{t("dashboard.products.license")}</label>
-                <select {...register("licenseType")} className="w-full p-2 rounded-md border bg-background">
-                  <option value="personal">{t("dashboard.products.licenseOptions.personal")}</option>
-                  <option value="commercial">{t("dashboard.products.licenseOptions.commercial")}</option>
-                  <option value="extended">{t("dashboard.products.licenseOptions.extended")}</option>
-                </select>
-              </div>
-            )}
-
-            <div className="space-y-2 col-span-2">
-              <CloudinaryUpload
-                label={t("dashboard.products.cover")}
-                aspectRatio="square"
-                folder="hekayaty_covers"
-                onUpload={(url) => setValue("coverUrl", url)}
-              />
-              <Input type="hidden" {...register("coverUrl")} />
-              {errors.coverUrl && <p className="text-red-500 text-xs">{String(errors.coverUrl.message)}</p>}
-            </div>
-
-            {type === "merchandise" && (
-              <div className="space-y-2 col-span-2 border-t pt-4">
-                <CloudinaryGalleryUpload
-                  label={t("dashboard.products.gallery")}
-                  onUpload={(urls) => setValue("productImages", urls)}
-                />
-                <Input type="hidden" {...register("productImages" as any)} />
-              </div>
-            )}
-
-            <div className="space-y-2 col-span-2">
-              <label className="text-sm font-medium">{t("dashboard.products.description")}</label>
-              <Textarea {...register("description")} className="h-32" placeholder={t("dashboard.products.descriptionPlaceholder")} />
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4 border-t border-border">
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="hover:bg-red-500/10 hover:text-red-500">
-              {t("common.cancel")}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleSubmit((data) => performSubmit(data, false))}
-              disabled={createProduct.isPending || updateProduct.isPending}
-            >
-              {(createProduct.isPending || updateProduct.isPending) ? t("common.saving") : t("dashboard.products.saveDraft")}
-            </Button>
-            <Button
-              type="submit"
-              disabled={createProduct.isPending || updateProduct.isPending}
-              className="bg-primary hover:bg-primary/90 text-white font-bold px-8 shadow-lg shadow-primary/20"
-            >
-              {(createProduct.isPending || updateProduct.isPending) ? t("common.processing") : mode === 'edit' ? t("common.save") : t("dashboard.products.publishItem")}
-            </Button>
-          </div>
-        </form>
-
-        {/* Immersive Writer Mode Overlay */}
-        {showImmersiveEditor && (
-          <div className="fixed inset-0 z-[100] bg-background flex flex-col font-arabic">
-            <div className="p-4 border-b border-border flex justify-between items-center bg-muted/30">
-              <div className="flex items-center gap-4">
-                <Button variant="ghost" onClick={() => setShowImmersiveEditor(false)}>
-                  <ChevronLeft className="w-5 h-5 mr-1" /> {t("dashboard.studio_overlay.back")}
-                </Button>
-                <h2 className="text-xl font-serif font-bold italic text-primary">{t("dashboard.studio_overlay.title")}</h2>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground mr-4">
-                  {t("studio.words")}: {watch("content")?.trim() ? watch("content")?.split(/\s+/).length : 0}
-                </span>
-                <Button onClick={() => setShowImmersiveEditor(false)} className="bg-primary text-white font-bold">
-                  {t("dashboard.studio_overlay.save")}
-                </Button>
-              </div>
-            </div>
-            <div className="flex-grow flex justify-center overflow-hidden">
-              <div className="w-full max-w-4xl h-full p-8 md:p-12">
-                <Textarea
-                  value={watch("content")}
-                  onChange={(e) => setValue("content", e.target.value)}
-                  placeholder={t("dashboard.studio_overlay.placeholder")}
-                  className="w-full h-full text-xl md:text-2xl font-serif leading-relaxed resize-none p-12 bg-card border-none focus-visible:ring-0 shadow-2xl rounded-2xl placeholder:italic placeholder:opacity-30"
-                />
-              </div>
-            </div>
-            <div className="p-4 border-t border-border text-center text-xs text-muted-foreground bg-muted/30 uppercase tracking-widest">
-              {t("dashboard.studio_overlay.footer")}
-            </div>
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
   );
 }
 

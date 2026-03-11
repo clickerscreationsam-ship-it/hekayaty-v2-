@@ -16,9 +16,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "react-i18next";
 import { Product } from "@shared/schema";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { useSort } from "@/hooks/use-sort";
 import { SortSelector } from "@/components/SortSelector";
+import { cn, optimizeImage } from "@/lib/utils";
 
 
 export default function WriterStore() {
@@ -80,19 +80,19 @@ export default function WriterStore() {
 
       {/* Full Page Background Image */}
       <div
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat gpu will-change-transform"
         style={{
-          backgroundImage: `url(${user.bannerUrl || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop'})`,
+          backgroundImage: `url(${user.bannerUrl ? optimizeImage(user.bannerUrl, 1600) : 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop'})`,
         }}
       />
 
       {/* Dark Overlay for Readability */}
-      <div className="fixed inset-0 z-0 bg-black/80 backdrop-blur-[2px]" />
+      <div className="fixed inset-0 z-0 bg-black/80 backdrop-blur-[1px] md:backdrop-blur-[2px] gpu will-change-transform" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24">
         {/* Store Owner Welcome Banner */}
         {isOwnStore && (
-          <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-l-4 border-primary backdrop-blur-sm">
+          <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-l-4 border-primary backdrop-blur-md md:backdrop-blur-sm shadow-2xl">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex-1">
                 <h3 className="text-2xl font-bold mb-2 flex items-center gap-2">
