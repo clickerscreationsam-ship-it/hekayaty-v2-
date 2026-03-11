@@ -31,6 +31,27 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    reportCompressedSize: false,
+    cssCodeSplit: true,
+    minify: 'esbuild',
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-core': ['react', 'react-dom', 'wouter'],
+          'vendor-utils': ['lucide-react', 'framer-motion', 'clsx', 'tailwind-merge'],
+          'vendor-ui': [
+            '@radix-ui/react-dialog', 
+            '@radix-ui/react-tabs', 
+            '@radix-ui/react-tooltip',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-label'
+          ],
+          'vendor-charts': ['recharts'],
+          'vendor-i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
+        }
+      }
+    }
   },
   server: {
     fs: {

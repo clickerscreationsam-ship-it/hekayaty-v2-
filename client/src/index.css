@@ -79,12 +79,23 @@
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-foreground;
     font-family: var(--font-sans);
+    background-color: transparent !important;
+    overflow-x: hidden;
+  }
+
+  /* Performant Fixed Background Layer */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
     background-image: url('./assets/site-bg.png');
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
-    /* Ensure no background color obscures the image, but keep a fallback just in case */
-    background-color: transparent !important;
+    background-repeat: no-repeat;
+    transform: translateZ(0); /* Hardware Acceleration Trigger */
+    will-change: transform;
+    pointer-events: none;
   }
 
   h1,
@@ -102,11 +113,20 @@
 
   /* Updated glass classes to be dark and clearer */
   .glass {
-    @apply bg-black/40 backdrop-blur-md border border-white/10 shadow-lg;
+    @apply bg-black/40 border border-white/10 shadow-lg;
+    backdrop-filter: blur(12px);
+    transform: translateZ(0);
   }
 
   .glass-card {
-    @apply bg-black/50 backdrop-blur-sm border border-white/10 shadow-xl transition-all duration-300 hover:shadow-primary/20 hover:border-primary/40 hover:-translate-y-1;
+    @apply bg-black/50 border border-white/10 shadow-xl transition-all duration-300;
+    backdrop-filter: blur(6px);
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+
+  .glass-card:hover {
+    @apply shadow-primary/20 border-primary/40 -translate-y-1;
   }
 
   .text-gradient {
