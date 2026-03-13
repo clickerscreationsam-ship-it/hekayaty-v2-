@@ -25,9 +25,9 @@ export function GridSkeleton({ count = 8, className }: { count?: number; classNa
 }
 
 export function PageSkeleton() {
-  return <MagicLoader />;
+  return null;
 }
 
 export function HeroSkeleton() {
-  return <MagicLoader />;
+  return null;
 }

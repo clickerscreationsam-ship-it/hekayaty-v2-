@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 import { PageSkeleton } from "@/components/ui/skeleton-loader";
 
 // Global Loading component
-const PageLoading = () => <PageSkeleton />;
+const PageLoading = () => null;
 
 // Lazy Page Imports
 const Home = lazy(() => import("@/pages/Home"));
@@ -36,7 +36,7 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 
 function Router() {
   return (
-    <Suspense fallback={<PageLoading />}>
+    <Suspense fallback={<PageSkeleton />}>
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/auth" component={AuthPage} />
