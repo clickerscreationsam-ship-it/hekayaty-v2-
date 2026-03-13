@@ -42,17 +42,7 @@ const AudiobookPlayer = lazy(() => import("@/components/ui/audiobook-player").th
 const CloudinaryGalleryUpload = lazy(() => import("@/components/ui/cloudinary-gallery-upload").then(m => ({ default: m.CloudinaryGalleryUpload })));
 
 // Instant Skeleton State
-const DashboardSkeleton = () => (
-  <div className="space-y-6 pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-3xl bg-white/5" />)}
-    </div>
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <Skeleton className="lg:col-span-2 h-[500px] rounded-3xl bg-white/5" />
-      <Skeleton className="h-[500px] rounded-3xl bg-white/5" />
-    </div>
-  </div>
-);
+const DashboardSkeleton = () => <PageSkeleton />;
 
 import dashboardBg from "@/assets/9814ae82-9631-4241-a961-7aec31f9aa4d_09-11-19.png";
 

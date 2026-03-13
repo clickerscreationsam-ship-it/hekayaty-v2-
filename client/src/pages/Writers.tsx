@@ -7,6 +7,8 @@ import { Search, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import writersBg from "@/assets/WhatsApp Image 2026-01-07 at 8.17.48 PM.jpeg";
 
+import { PageSkeleton } from "@/components/ui/skeleton-loader";
+
 export default function Writers() {
     const { t } = useTranslation();
     const [search, setSearch] = useState("");
@@ -17,6 +19,8 @@ export default function Writers() {
         (writer.bio && writer.bio.toLowerCase().includes(search.toLowerCase())) ||
         writer.username.toLowerCase().includes(search.toLowerCase())
     ) || [];
+
+    if (isLoading) return <PageSkeleton />;
 
     return (
         <div className="min-h-screen relative overflow-hidden bg-background">

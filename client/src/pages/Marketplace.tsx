@@ -11,6 +11,7 @@ import marketplaceBg from "@/assets/d2c8245c-c591-4cc9-84d2-27252be8dffb.png";
 import { cn } from "@/lib/utils";
 import { useSort } from "@/hooks/use-sort";
 import { SortSelector } from "@/components/SortSelector";
+import { PageSkeleton } from "@/components/ui/skeleton-loader";
 
 type MarketplaceType = "ebook" | "asset" | "collection" | "merchandise";
 
@@ -82,6 +83,8 @@ export default function Marketplace() {
       default: return t("marketplace.subtitle");
     }
   };
+
+  if (isLoading) return <PageSkeleton />;
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">

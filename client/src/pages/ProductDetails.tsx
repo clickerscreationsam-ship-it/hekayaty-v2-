@@ -16,7 +16,8 @@ import { insertReviewSchema } from "@shared/schema";
 import { z } from "zod";
 import { SEO } from "@/components/SEO";
 import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
+import { cn, optimizeImage } from "@/lib/utils";
+import { PageSkeleton } from "@/components/ui/skeleton-loader";
 import { motion } from "framer-motion";
 
 export default function ProductDetails() {
@@ -36,8 +37,8 @@ export default function ProductDetails() {
   const addToCart = useAddToCart();
 
 
-  if (isLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
-  if (!product) return <div className="text-white text-center py-20">Product not found</div>;
+  if (isLoading) return <PageSkeleton />;
+  if (!product) return <div className="min-h-screen flex items-center justify-center bg-background text-white">Product not found</div>;
 
   const displayImage = selectedImage || (product as any).coverUrl;
   const galleryImages = Array.from(new Set([

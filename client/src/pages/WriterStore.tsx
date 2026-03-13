@@ -20,6 +20,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useSort } from "@/hooks/use-sort";
 import { SortSelector } from "@/components/SortSelector";
 import { cn, optimizeImage } from "@/lib/utils";
+import { PageSkeleton } from "@/components/ui/skeleton-loader";
 
 
 export default function WriterStore() {
@@ -37,11 +38,7 @@ export default function WriterStore() {
   const isOwnStore = currentUser?.username === username;
 
   if (userLoading || productsLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+    return <PageSkeleton />;
   }
 
   if (!user) {
