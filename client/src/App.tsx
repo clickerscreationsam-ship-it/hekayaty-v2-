@@ -70,15 +70,16 @@ import { useEffect } from "react";
 import "./lib/i18n"; // Import i18n configuration
 import { useTranslation } from "react-i18next";
 import { persistence } from "./lib/persistence";
+import { preloadWritersDashboard } from "./lib/writerDashboardPreloader";
 
 const GlobalChat = lazy(() => import("@/components/GlobalChat").then(m => ({ default: m.GlobalChat })));
 
 function AppContent() {
   const { i18n } = useTranslation();
 
-  // Beyond Rocket Mode: Restore state from persistence layer instantly
+  // Beyond Rocket Mode: Restore state and Preload Dashboard
   useEffect(() => {
-    const restoreStore = async () => {
+    const initApp = async () => {
       try {
         const [session, user, cart] = await Promise.all([
           persistence.get("/api/session"),
@@ -89,11 +90,14 @@ function AppContent() {
         if (session) queryClient.setQueryData(["/api/session"], session);
         if (user) queryClient.setQueryData(["/api/user"], user);
         if (cart) queryClient.setQueryData(["/api/cart"], cart);
+
+        // Background preload the Writers Dashboard data
+        preloadWritersDashboard();
       } catch (err) {
-        console.warn("Restoration failed", err);
+        console.warn("Beyond Rocket initialization partially failed", err);
       }
     };
-    restoreStore();
+    initApp();
   }, []);
 
   useEffect(() => {

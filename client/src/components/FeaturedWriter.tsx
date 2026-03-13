@@ -4,10 +4,9 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
-import { optimizeImage } from "@/lib/utils";
+import { optimizeImage, usePrefetchHover } from "@/lib/performance-core";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { prefetchImage, prefetchData } from "@/lib/prefetch";
 
 interface FeaturedWriterProps {
   writer: Omit<User, 'password' | 'createdAt'>;
@@ -17,38 +16,34 @@ export function FeaturedWriter({ writer }: FeaturedWriterProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
-  const handlePrefetch = () => {
-    // Beyond Rocket Mode: Prefetch assets and profile
-    prefetchImage(optimizeImage(writer.avatarUrl || "", 800));
-    
-    prefetchData(["user", writer.username], async () => {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('username', writer.username)
-        .single();
+  const fetchWriter = async () => {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('username', writer.username)
+      .single();
 
-      if (error) return null;
-      return {
-        ...data,
-        displayName: data.display_name,
-        avatarUrl: data.avatar_url,
-        bannerUrl: data.banner_url,
-        storeSettings: data.store_settings,
-        stripeAccountId: data.stripe_account_id,
-        subscriptionTier: data.subscription_tier || 'free',
-        commissionRate: data.commission_rate || 20,
-        isActive: data.is_active ?? true,
-        shippingPolicy: data.shipping_policy || "",
-      };
-    });
+    if (error) return null;
+    return {
+      ...data,
+      displayName: data.display_name,
+      avatarUrl: data.avatar_url,
+      bannerUrl: data.banner_url,
+      storeSettings: data.store_settings,
+      stripeAccountId: data.stripe_account_id,
+      subscriptionTier: data.subscription_tier || 'free',
+      commissionRate: data.commission_rate || 20,
+      isActive: data.is_active ?? true,
+      shippingPolicy: data.shipping_policy || "",
+    };
   };
+
+  const prefetchProps = usePrefetchHover(["user", writer.username], fetchWriter);
 
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      onMouseEnter={handlePrefetch}
-      onTouchStart={handlePrefetch}
+      {...prefetchProps}
       className="relative overflow-hidden rounded-2xl glass-card p-6 border border-primary/10 gpu will-change-transform"
     >
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />

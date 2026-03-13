@@ -3,10 +3,10 @@ import { Star, ShoppingCart, LayoutGrid, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { Product } from "@shared/schema";
 import { useTranslation } from "react-i18next";
-import { cn, optimizeImage } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { prefetchImage, prefetchData } from "@/lib/prefetch";
+import { usePrefetchHover, optimizeImage } from "@/lib/performance-core";
 
 interface ProductCardProps {
   product?: Product;
@@ -35,61 +35,52 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
   const isCollection = (item as any).isCollection;
   const href = isCollection ? `/collection/${item.id}` : `/book/${item.id}`;
 
-  const handlePrefetch = () => {
-    if (isCollection) return; // Collections might need separate prefetch logic
+  const fetchProductDetails = async () => {
+    if ((item as any).isCollection) return null;
+    const { data, error } = await supabase
+      .from('products')
+      .select(`*, content_data:product_contents(content)`)
+      .eq('id', item.id)
+      .single();
 
-    queryClient.prefetchQuery({
-      queryKey: ["product", item.id],
-      queryFn: async () => {
-        const { data, error } = await supabase
-          .from('products')
-          .select(`
-            *,
-            content_data:product_contents(content)
-          `)
-          .eq('id', item.id)
-          .single();
-
-        if (error) return null;
-
-        // Manual mapping logic to match hook output
-        return {
-          id: data.id,
-          writerId: data.writer_id,
-          title: data.title,
-          description: data.description,
-          coverUrl: data.cover_url,
-          fileUrl: data.file_url,
-          type: data.type,
-          genre: data.genre,
-          isPublished: data.is_published ?? false,
-          rating: data.rating ?? 0,
-          reviewCount: data.review_count ?? 0,
-          price: data.price,
-          licenseType: data.license_type ?? 'personal',
-          content: data.content || (data as any).content_data?.content,
-          stockQuantity: data.stock_quantity,
-          weight: data.weight,
-          requiresShipping: data.requires_shipping ?? false,
-          createdAt: data.created_at,
-          isSerialized: (data as any).is_serialized ?? false,
-          seriesStatus: (data as any).series_status ?? 'ongoing',
-          merchandiseCategory: (data as any).merchandise_category,
-          customFields: (data as any).custom_fields,
-          productImages: (data as any).product_images || [],
-        };
-      },
-      staleTime: 60 * 1000,
-    });
+    if (error) return null;
+    return {
+      id: data.id,
+      writerId: data.writer_id,
+      title: data.title,
+      description: data.description,
+      coverUrl: data.cover_url,
+      fileUrl: data.file_url,
+      type: data.type,
+      genre: data.genre,
+      isPublished: data.is_published ?? false,
+      rating: data.rating ?? 0,
+      reviewCount: data.review_count ?? 0,
+      price: data.price,
+      salePrice: data.sale_price,
+      discountPercentage: data.discount_percentage,
+      licenseType: data.license_type ?? 'personal',
+      content: data.content || (data as any).content_data?.[0]?.content,
+      stockQuantity: data.stock_quantity,
+      weight: data.weight,
+      requiresShipping: data.requires_shipping ?? false,
+      createdAt: data.created_at,
+      isSerialized: (data as any).is_serialized ?? false,
+      seriesStatus: (data as any).series_status ?? 'ongoing',
+      merchandiseCategory: (data as any).merchandise_category,
+      customFields: (data as any).custom_fields,
+      productImages: (data as any).product_images || [],
+    };
   };
+
+  const prefetchProps = usePrefetchHover(["product", item.id], fetchProductDetails);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      onMouseEnter={handlePrefetch}
-      onTouchStart={handlePrefetch}
+      {...prefetchProps}
       className={cn(
         "group relative glass-card rounded-2xl overflow-hidden transition-all hover:shadow-2xl hover:shadow-primary/5 gpu will-change-transform",
         isCompact ? 'flex gap-4 p-3' : 'flex flex-col',
