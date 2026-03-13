@@ -30,7 +30,6 @@ const createSchema = insertProductSchema.extend({
   productImages: z.array(z.string()).optional(),
   audioDuration: z.coerce.number().optional(),
   audioPreviewUrl: z.string().optional(),
-  discountPercentage: z.coerce.number().min(0).max(100).optional(),
   salePrice: z.coerce.number().optional(),
 });
 
@@ -79,16 +78,12 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
       isPublished: true,
       price: 50,
       licenseType: "personal",
-      discountPercentage: 0
     }
   });
 
   const type = watch("type");
   const price = watch("price");
-  const discountPercentage = watch("discountPercentage") || 0;
-  const salePrice = price > 0 && discountPercentage > 0
-    ? Math.round(price * (1 - discountPercentage / 100))
-    : undefined;
+
 
   useEffect(() => {
     if (mode === 'edit' && product) {
@@ -110,7 +105,6 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
         merchandiseCategory: product.merchandiseCategory,
         customFields: product.customFields,
         productImages: product.productImages,
-        discountPercentage: product.discountPercentage || 0,
         salePrice: product.salePrice,
       });
     }
@@ -122,11 +116,7 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
       finalData.price = 0;
     }
 
-    if (finalData.price > 0 && finalData.discountPercentage > 0) {
-      finalData.salePrice = Math.round(finalData.price * (1 - finalData.discountPercentage / 100));
-    } else {
-      finalData.salePrice = null;
-    }
+    finalData.salePrice = null;
 
     if (mode === 'edit' && product) {
       updateProduct.mutate({ id: product.id, ...finalData }, {
@@ -323,7 +313,6 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
                           setIsFree(checked as boolean);
                           if (checked) {
                             setValue("price", 0);
-                            setValue("discountPercentage", 0);
                           } else {
                             setValue("price", 50);
                           }
@@ -336,27 +325,7 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
                   </div>
                 </div>
 
-                {!isFree && (
-                  <div className="space-y-2 col-span-2">
-                    <label className="text-sm font-medium">{isArabic ? "نسبة الخصم (%)" : "Discount Percentage (%)"}</label>
-                    <div className="flex items-center gap-4">
-                      <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        {...register("discountPercentage", { valueAsNumber: true })}
-                        placeholder="e.g. 50"
-                        className="h-14 flex-1 text-2xl font-black border-2 border-primary/20 focus:border-primary text-center transition-all bg-primary/5"
-                      />
-                      {salePrice !== undefined && (
-                        <div className="flex flex-col">
-                          <span className="text-[10px] text-muted-foreground uppercase font-bold">{isArabic ? "السعر بعد الخصم" : "Final Sale Price"}</span>
-                          <span className="text-sm font-black text-green-500">{salePrice} EGP</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+
               </>
             )}
 
