@@ -110,18 +110,27 @@ function AppContent() {
     }
   }, [i18n.language]);
 
-  // Handle Chunk Load Errors (New Version Updates)
+  // Handle Chunk Load Errors (New Version Updates / Stale Cache)
   useEffect(() => {
     const handleChunkError = (e: any) => {
-      const message = e.message || (e.reason && e.reason.message);
+      const message = e.message || (e.reason && e.reason.message) || "";
       const isChunkError =
-        message?.includes("Failed to fetch dynamically imported module") ||
-        message?.includes("Importing a module script failed") ||
-        message?.includes("Loading chunk");
+        message.includes("Failed to fetch dynamically imported module") ||
+        message.includes("Importing a module script failed") ||
+        message.includes("Loading chunk") ||
+        message.includes("MIME type") || // Catch the "MIME type of 'text/html'" error
+        message.includes("Unexpected token '<'") || // Catch HTML returned as JS
+        e.target?.tagName === "SCRIPT"; // Catch script load failures
 
       if (isChunkError) {
-        console.warn("New version detected or connection interrupted. Refreshing for latest site...");
-        window.location.reload();
+        console.warn("[Beyond Rocket] Version mismatch or connection error detected. Self-healing refresh starting...");
+        // Use a small delay to avoid recursive refresh loops
+        const lastReload = sessionStorage.getItem("last-perf-reload");
+        const now = Date.now();
+        if (!lastReload || now - parseInt(lastReload) > 5000) {
+          sessionStorage.setItem("last-perf-reload", now.toString());
+          window.location.reload();
+        }
       }
     };
 
