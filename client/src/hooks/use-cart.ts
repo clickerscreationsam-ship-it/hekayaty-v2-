@@ -18,6 +18,8 @@ type CartItemWithDetails = CartItem & {
     variant?: Variant
 };
 
+import { persistence } from "@/lib/persistence";
+
 export function useCart() {
     return useQuery<CartItemWithDetails[]>({
         queryKey: ["/api/cart"],
@@ -36,7 +38,7 @@ export function useCart() {
             if (!cartItems) return [];
 
             // Map data from snake_case to camelCase
-            return cartItems.map(item => {
+            const mappedItems = cartItems.map(item => {
                 const p = item.product;
                 const c = item.collection;
 
@@ -85,6 +87,11 @@ export function useCart() {
                     } : null
                 };
             }).filter(Boolean) as any[];
+
+            // Persist the mapped items
+            persistence.set("/api/cart", mappedItems).catch(console.error);
+
+            return mappedItems;
         }
     });
 }

@@ -28,6 +28,8 @@ interface SignUpData {
     role: 'reader' | 'writer' | 'artist';
 }
 
+import { persistence } from "@/lib/persistence";
+
 export function useAuth() {
     const queryClient = useQueryClient();
     const { toast } = useToast();
@@ -37,6 +39,9 @@ export function useAuth() {
         queryKey: ["/api/session"],
         queryFn: async () => {
             const { data } = await supabase.auth.getSession();
+            if (data.session) {
+                persistence.set("/api/session", data.session).catch(console.error);
+            }
             return data.session;
         },
     });
@@ -61,7 +66,7 @@ export function useAuth() {
             const dbUser = data as unknown as DbUser;
 
             // Map snake_case to camelCase
-            return {
+            const mappedUser = {
                 ...dbUser,
                 displayName: dbUser.display_name,
                 avatarUrl: dbUser.avatar_url,
@@ -75,6 +80,9 @@ export function useAuth() {
                 skills: dbUser.skills,
                 createdAt: new Date(dbUser.created_at),
             };
+
+            persistence.set("/api/user", mappedUser).catch(console.error);
+            return mappedUser;
         },
         enabled: !!session?.user?.id,
     });

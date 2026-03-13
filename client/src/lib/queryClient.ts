@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { persistence } from "./persistence";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -29,7 +30,8 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
     async ({ queryKey }) => {
-      const res = await fetch(queryKey.join("/") as string, {
+      const url = queryKey.join("/");
+      const res = await fetch(url, {
         credentials: "include",
       });
 
@@ -38,20 +40,28 @@ export const getQueryFn: <T>(options: {
       }
 
       await throwIfResNotOk(res);
-      return await res.json();
+      const data = await res.json();
+      
+      // Persist successful GET requests
+      if (url.startsWith('/api/')) {
+        persistence.set(`query:${url}`, data).catch(console.error);
+      }
+      
+      return data;
     };
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
-      refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
+      refetchOnWindowFocus: true,
+      staleTime: 1000 * 30, // 30 seconds stale time
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours
+      retry: 1,
     },
     mutations: {
       retry: false,
     },
   },
 });
+

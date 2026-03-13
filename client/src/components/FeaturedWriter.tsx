@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { optimizeImage } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { prefetchImage, prefetchData } from "@/lib/prefetch";
 
 interface FeaturedWriterProps {
   writer: Omit<User, 'password' | 'createdAt'>;
@@ -17,32 +18,29 @@ export function FeaturedWriter({ writer }: FeaturedWriterProps) {
   const queryClient = useQueryClient();
 
   const handlePrefetch = () => {
-    queryClient.prefetchQuery({
-      queryKey: ["user", writer.username],
-      queryFn: async () => {
-        const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('username', writer.username)
-          .single();
+    // Beyond Rocket Mode: Prefetch assets and profile
+    prefetchImage(optimizeImage(writer.avatarUrl || "", 800));
+    
+    prefetchData(["user", writer.username], async () => {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('username', writer.username)
+        .single();
 
-        if (error) return null;
-
-        // Manual mapping matching the hook
-        return {
-          ...data,
-          displayName: data.display_name,
-          avatarUrl: data.avatar_url,
-          bannerUrl: data.banner_url,
-          storeSettings: data.store_settings,
-          stripeAccountId: data.stripe_account_id,
-          subscriptionTier: data.subscription_tier || 'free',
-          commissionRate: data.commission_rate || 20,
-          isActive: data.is_active ?? true,
-          shippingPolicy: data.shipping_policy || "",
-        };
-      },
-      staleTime: 60 * 1000,
+      if (error) return null;
+      return {
+        ...data,
+        displayName: data.display_name,
+        avatarUrl: data.avatar_url,
+        bannerUrl: data.banner_url,
+        storeSettings: data.store_settings,
+        stripeAccountId: data.stripe_account_id,
+        subscriptionTier: data.subscription_tier || 'free',
+        commissionRate: data.commission_rate || 20,
+        isActive: data.is_active ?? true,
+        shippingPolicy: data.shipping_policy || "",
+      };
     });
   };
 

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { cn, optimizeImage } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { prefetchImage, prefetchData } from "@/lib/prefetch";
 
 interface ProductCardProps {
   product?: Product;

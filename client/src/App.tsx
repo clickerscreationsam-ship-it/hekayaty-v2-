@@ -69,11 +69,32 @@ function Router() {
 import { useEffect } from "react";
 import "./lib/i18n"; // Import i18n configuration
 import { useTranslation } from "react-i18next";
+import { persistence } from "./lib/persistence";
 
 const GlobalChat = lazy(() => import("@/components/GlobalChat").then(m => ({ default: m.GlobalChat })));
 
 function AppContent() {
   const { i18n } = useTranslation();
+
+  // Beyond Rocket Mode: Restore state from persistence layer instantly
+  useEffect(() => {
+    const restoreStore = async () => {
+      try {
+        const [session, user, cart] = await Promise.all([
+          persistence.get("/api/session"),
+          persistence.get("/api/user"),
+          persistence.get("/api/cart")
+        ]);
+
+        if (session) queryClient.setQueryData(["/api/session"], session);
+        if (user) queryClient.setQueryData(["/api/user"], user);
+        if (cart) queryClient.setQueryData(["/api/cart"], cart);
+      } catch (err) {
+        console.warn("Restoration failed", err);
+      }
+    };
+    restoreStore();
+  }, []);
 
   useEffect(() => {
     document.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
