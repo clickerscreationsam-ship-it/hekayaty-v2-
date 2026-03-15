@@ -385,14 +385,6 @@ export default function Cart() {
                                         <Label className="text-sm">{t('checkout.transactionRef')}</Label>
                                         <Input placeholder={t('checkout.refPlaceholder')} value={reference} onChange={(e) => setReference(e.target.value)} />
                                     </div>
-                                    <div className="space-y-2">
-                                        <CloudinaryUpload
-                                            label={t('checkout.uploadScreenshot')}
-                                            folder="hekayaty_payments"
-                                            onUpload={(url) => setProofUrl(url)}
-                                            aspectRatio="video"
-                                        />
-                                    </div>
                                 </div>
 
                                 <DialogFooter className="mt-6 flex flex-col sm:flex-row gap-2">
