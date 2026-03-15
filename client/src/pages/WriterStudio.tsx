@@ -194,8 +194,8 @@ export default function WriterStudio() {
     if (!user) return <Redirect to="/auth" />;
 
     return (
-        <div className="min-h-screen bg-[#0a0a0b] text-foreground font-sans selection:bg-primary/30">
-            <Navbar hideNav={true} />
+        <div className="min-h-screen bg-[#0a0a0b] text-foreground font-sans selection:bg-primary/30 pt-16">
+            <Navbar />
 
             <div className="flex h-[calc(100vh-64px)] overflow-hidden">
                 {/* Sidebar */}
