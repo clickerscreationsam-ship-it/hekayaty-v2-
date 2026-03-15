@@ -180,15 +180,14 @@ export default function Marketplace() {
             />
           </div>
 
-          {/* Grid View */}
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
               {Array(8).fill(0).map((_, i) => (
-                <div key={i} className="aspect-[3/4] rounded-3xl bg-white/5 border border-white/10 animate-pulse" />
+                <div key={i} className="aspect-[3/4] rounded-2xl md:rounded-3xl bg-white/5 border border-white/10 animate-pulse" />
               ))}
             </div>
           ) : displayItems.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
               {displayItems.map((item: any) => (
                 <div key={item.id} className="transition-transform duration-300 hover:scale-[1.02]">
                   <ProductCard

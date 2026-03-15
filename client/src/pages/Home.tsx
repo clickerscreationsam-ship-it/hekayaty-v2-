@@ -118,7 +118,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {bestSellers?.map((product) => (
               <ProductCard key={product.id} product={product} />
             )) || <GridSkeleton count={4} />}
@@ -151,7 +151,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {merchandise?.slice(0, 4).map((product) => (
               <ProductCard key={product.id} product={product} />
             )) || <GridSkeleton count={4} />}
@@ -184,7 +184,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {serializedStories?.map((product) => (
               <ProductCard key={product.id} product={product} />
             )) || <GridSkeleton count={4} />}
@@ -216,7 +216,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {collections?.slice(0, 4).map((c) => (
               <ProductCard key={c.id} collection={c} />
             )) || <GridSkeleton count={4} />}
@@ -244,7 +244,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {writers?.slice(0, 4).map((writer) => (
               <FeaturedWriter key={writer.id} writer={writer} />
             )) || (

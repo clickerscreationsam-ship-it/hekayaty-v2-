@@ -56,15 +56,14 @@ export default function Writers() {
                         </div>
                     </div>
 
-                    {/* Writers Grid */}
                     {isLoading ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                             {Array(8).fill(0).map((_, i) => (
                                 <div key={i} className="h-80 rounded-2xl bg-white/5 animate-pulse" />
                             ))}
                         </div>
                     ) : filteredWriters.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
                             {filteredWriters.map(writer => (
                                 <FeaturedWriter key={writer.id} writer={writer} />
                             ))}
