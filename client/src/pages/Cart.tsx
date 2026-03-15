@@ -8,9 +8,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
 import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/Navbar";
+import { Home } from "lucide-react";
 
 type CheckoutGroup = "physical" | "digital";
 
@@ -295,14 +297,25 @@ export default function Cart() {
                                     <Label>{t('checkout.phoneNumber', t('checkout.shipping.phone'))}</Label>
                                     <Input value={shippingDetails.phoneNumber} onChange={(e) => setShippingDetails({ ...shippingDetails, phoneNumber: e.target.value })} placeholder="01xxxxxxxxx" />
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label>{t('checkout.cityGovernorat', t('checkout.shipping.city'))}</Label>
-                                        <Input value={shippingDetails.city} onChange={(e) => setShippingDetails({ ...shippingDetails, city: e.target.value })} placeholder={t('checkout.cityPlaceholder')} />
+                                        <Label className="flex items-center gap-2 text-base">
+                                            <MapPin className="w-5 h-5 text-amber-500" />
+                                            {t('checkout.cityGovernorat', t('checkout.shipping.city'))}
+                                        </Label>
+                                        <Input value={shippingDetails.city} onChange={(e) => setShippingDetails({ ...shippingDetails, city: e.target.value })} placeholder={t('checkout.cityPlaceholder')} className="h-12" />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>{t('checkout.detailedAddress', t('checkout.shipping.address'))}</Label>
-                                        <Input value={shippingDetails.addressLine} onChange={(e) => setShippingDetails({ ...shippingDetails, addressLine: e.target.value })} placeholder={t('checkout.addressPlaceholder')} />
+                                        <Label className="flex items-center gap-2 text-base">
+                                            <Home className="w-6 h-6 text-amber-500" />
+                                            {t('checkout.detailedAddress', t('checkout.shipping.address'))}
+                                        </Label>
+                                        <Textarea
+                                            value={shippingDetails.addressLine}
+                                            onChange={(e) => setShippingDetails({ ...shippingDetails, addressLine: e.target.value })}
+                                            placeholder={t('checkout.addressPlaceholder')}
+                                            className="min-h-[120px] text-lg py-4 border-2 border-primary/20 focus:border-primary transition-all shadow-inner"
+                                        />
                                     </div>
                                 </div>
                                 <DialogFooter className="mt-6">
