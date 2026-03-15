@@ -513,12 +513,6 @@ export default function Dashboard() {
               )}
             </div>
             
-            <CreateProductDialog
-              open={isEditOpen}
-              onOpenChange={setIsEditOpen}
-              product={editingProduct}
-              mode="edit"
-            />
           </TabsContent>
 
           <TabsContent value="shipping">

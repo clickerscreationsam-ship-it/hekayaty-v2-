@@ -389,7 +389,7 @@
             "accountType": "Account Type",
             "roles": {
                 "reader": "Reader (Browse & Read)",
-                "writer": "Writer (Publish & Sell)",
+                "writer": "Writer / Publisher (Publish & Sell)",
                 "artist": "Artist (Sell Assets)"
             }
         },
@@ -508,7 +508,7 @@
             "passwordPlaceholder": "Create a password",
             "role": "I want to be a:",
             "reader": "Reader",
-            "writer": "Writer",
+            "writer": "Writer / Publisher",
             "artist": "Artist",
             "button": "Create Account",
             "haveAccount": "Already have an account?",

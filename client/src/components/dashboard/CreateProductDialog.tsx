@@ -53,7 +53,7 @@ export function CreateProductDialog({ open, onOpenChange, product, mode = 'creat
   type CreateProductFormValues = z.infer<typeof createSchema>;
   const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<CreateProductFormValues>({
     resolver: zodResolver(createSchema),
-    defaultValues: mode === 'edit' ? {
+    defaultValues: mode === 'edit' && product ? {
       writerId: product.writerId,
       title: product.title,
       description: product.description,
