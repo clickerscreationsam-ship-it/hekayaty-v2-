@@ -74,7 +74,7 @@ export default function MakerOrders() {
             <div className="flex items-center justify-center py-12">
                 <div className="text-center">
                     <Package className="w-12 h-12 animate-spin mx-auto mb-4 text-primary" />
-                    <p className="text-sm text-muted-foreground font-medium">{t('makerOrders.loading')}</p>
+                    <p className="text-sm text-muted-foreground font-medium">{t('dashboard.makerOrders.loading')}</p>
                 </div>
             </div>
         );
@@ -83,8 +83,8 @@ export default function MakerOrders() {
     return (
         <div className="w-full">
             <div className="mb-6 px-4 pt-4">
-                <h2 className="text-xl font-bold mb-1">{t('makerOrders.title')}</h2>
-                <p className="text-sm text-muted-foreground">{t('makerOrders.subtitle')}</p>
+                <h2 className="text-xl font-bold mb-1">{t('dashboard.makerOrders.title')}</h2>
+                <p className="text-sm text-muted-foreground">{t('dashboard.makerOrders.subtitle')}</p>
             </div>
 
             {/* Status Filter Tabs */}
@@ -96,7 +96,7 @@ export default function MakerOrders() {
                         onClick={() => setStatusFilter(status === 'All' ? undefined : status)}
                         size="sm"
                     >
-                        {status === 'All' ? t('makerOrders.filterAll') : t(`orderTracking.statuses.${status}`)}
+                        {status === 'All' ? t('dashboard.makerOrders.filterAll') : t(`orderTracking.statuses.${status}`)}
                         {status !== 'All' && (
                             <span className="ml-2 bg-primary-foreground text-primary rounded-full px-2 py-0.5 text-xs">
                                 {orders.filter((o: MakerOrder) => o.fulfillmentStatus === status).length}
@@ -111,11 +111,11 @@ export default function MakerOrders() {
                 {orders.length === 0 ? (
                     <Card className="p-12 text-center bg-muted/20 border-border/50">
                         <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-30" />
-                        <h3 className="text-xl font-semibold mb-2">{t('makerOrders.noOrders')}</h3>
+                        <h3 className="text-xl font-semibold mb-2">{t('dashboard.makerOrders.noOrders')}</h3>
                         <p className="text-muted-foreground">
                             {statusFilter
-                                ? t('makerOrders.noStatusOrders', { status: t(`orderTracking.statuses.${statusFilter}`) })
-                                : t('makerOrders.emptyState')}
+                                ? t('dashboard.makerOrders.noStatusOrders', { status: t(`orderTracking.statuses.${statusFilter}`) })
+                                : t('dashboard.makerOrders.emptyState')}
                         </p>
                     </Card>
                 ) : (
@@ -157,7 +157,7 @@ export default function MakerOrders() {
                                                     <div className="p-1 bg-purple-500/10 rounded text-purple-500">
                                                         <Hash className="w-3.5 h-3.5" />
                                                     </div>
-                                                    <span className="font-bold">{t('makerOrders.qty')}: {order.quantity || 1}</span>
+                                                    <span className="font-bold">{t('dashboard.makerOrders.qty')}: {order.quantity || 1}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2.5 text-muted-foreground/80">
                                                     <div className="p-1 bg-green-500/10 rounded text-green-500">
@@ -186,7 +186,7 @@ export default function MakerOrders() {
                                                     <div className="p-1.5 bg-primary/20 rounded-lg group-hover/addr:bg-primary group-hover/addr:text-primary-foreground transition-all">
                                                         <MapPin className="w-4 h-4" />
                                                     </div>
-                                                    <span className="font-bold text-xs uppercase tracking-widest text-primary/70">{t('makerOrders.shippingInfo')}</span>
+                                                    <span className="font-bold text-xs uppercase tracking-widest text-primary/70">{t('dashboard.makerOrders.shippingInfo')}</span>
                                                 </div>
                                                 <ChevronRight className="w-4 h-4 text-muted-foreground group-hover/addr:translate-x-1 transition-transform" />
                                             </div>
@@ -211,7 +211,7 @@ export default function MakerOrders() {
                                                     className="w-full"
                                                 >
                                                     <CheckCircle className="w-4 h-4 mr-2" />
-                                                    {t('makerOrders.accept')}
+                                                    {t('dashboard.makerOrders.accept')}
                                                 </Button>
                                                 <Button
                                                     size="sm"
@@ -220,7 +220,7 @@ export default function MakerOrders() {
                                                     className="w-full"
                                                 >
                                                     <XCircle className="w-4 h-4 mr-2" />
-                                                    {t('makerOrders.reject')}
+                                                    {t('dashboard.makerOrders.reject')}
                                                 </Button>
                                             </>
                                         )}
@@ -232,20 +232,20 @@ export default function MakerOrders() {
                                                 className="w-full"
                                             >
                                                 <Truck className="w-4 h-4 mr-2" />
-                                                {t('makerOrders.shipOrder')}
+                                                {t('dashboard.makerOrders.shipOrder')}
                                             </Button>
                                         )}
 
                                         {order.fulfillmentStatus === 'shipped' && order.trackingNumber && (
                                             <div className="text-sm bg-muted p-3 rounded">
-                                                <p className="font-medium mb-1">{t('makerOrders.tracking')}</p>
+                                                <p className="font-medium mb-1">{t('dashboard.makerOrders.tracking')}</p>
                                                 <p className="text-xs font-mono">{order.trackingNumber}</p>
                                             </div>
                                         )}
 
                                         {order.fulfillmentStatus === 'rejected' && order.rejectionReason && (
                                             <div className="text-sm bg-destructive/10 p-3 rounded text-destructive">
-                                                <p className="font-medium mb-1">{t('makerOrders.rejectedLabel')}</p>
+                                                <p className="font-medium mb-1">{t('dashboard.makerOrders.rejectedLabel')}</p>
                                                 <p className="text-xs">{order.rejectionReason}</p>
                                             </div>
                                         )}
@@ -261,11 +261,11 @@ export default function MakerOrders() {
             <Dialog open={acceptModal.open} onOpenChange={(open) => setAcceptModal({ open })}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{t('makerOrders.modals.acceptTitle')}</DialogTitle>
+                        <DialogTitle>{t('dashboard.makerOrders.modals.acceptTitle')}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                         <div>
-                            <Label htmlFor="delivery-days">{t('makerOrders.modals.estDelivery')}</Label>
+                            <Label htmlFor="delivery-days">{t('dashboard.makerOrders.modals.estDelivery')}</Label>
                             <Input
                                 id="delivery-days"
                                 type="number"
@@ -276,7 +276,7 @@ export default function MakerOrders() {
                                 className="mt-2"
                             />
                             <p className="text-sm text-muted-foreground mt-1">
-                                {t('makerOrders.modals.estDeliveryDesc')}
+                                {t('dashboard.makerOrders.modals.estDeliveryDesc')}
                             </p>
                         </div>
                     </div>
@@ -285,7 +285,7 @@ export default function MakerOrders() {
                             {t('common.cancel')}
                         </Button>
                         <Button onClick={handleAccept} disabled={acceptOrder.isPending}>
-                            {acceptOrder.isPending ? t('makerOrders.modals.accepting') : t('makerOrders.modals.confirmAcceptance')}
+                            {acceptOrder.isPending ? t('dashboard.makerOrders.modals.accepting') : t('dashboard.makerOrders.modals.confirmAcceptance')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -295,21 +295,21 @@ export default function MakerOrders() {
             <Dialog open={rejectModal.open} onOpenChange={(open) => setRejectModal({ open })}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{t('makerOrders.modals.rejectTitle')}</DialogTitle>
+                        <DialogTitle>{t('dashboard.makerOrders.modals.rejectTitle')}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                         <div>
-                            <Label htmlFor="rejection-reason">{t('makerOrders.modals.rejectionReason')}</Label>
+                            <Label htmlFor="rejection-reason">{t('dashboard.makerOrders.modals.rejectionReason')}</Label>
                             <Textarea
                                 id="rejection-reason"
                                 value={rejectionReason}
                                 onChange={(e) => setRejectionReason(e.target.value)}
-                                placeholder={t('makerOrders.modals.rejectionPlaceholder')}
+                                placeholder={t('dashboard.makerOrders.modals.rejectionPlaceholder')}
                                 className="mt-2"
                                 rows={4}
                             />
                             <p className="text-sm text-muted-foreground mt-1">
-                                {t('makerOrders.modals.rejectionDesc')}
+                                {t('dashboard.makerOrders.modals.rejectionDesc')}
                             </p>
                         </div>
                     </div>
@@ -322,7 +322,7 @@ export default function MakerOrders() {
                             onClick={handleReject}
                             disabled={rejectOrder.isPending || rejectionReason.trim().length < 5}
                         >
-                            {rejectOrder.isPending ? t('makerOrders.modals.rejecting') : t('makerOrders.modals.rejectTitle')}
+                            {rejectOrder.isPending ? t('dashboard.makerOrders.modals.rejecting') : t('dashboard.makerOrders.modals.rejectTitle')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -332,11 +332,11 @@ export default function MakerOrders() {
             <Dialog open={shipModal.open} onOpenChange={(open) => setShipModal({ open })}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{t('makerOrders.modals.shipTitle')}</DialogTitle>
+                        <DialogTitle>{t('dashboard.makerOrders.modals.shipTitle')}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                         <div>
-                            <Label htmlFor="tracking-number">{t('makerOrders.modals.trackingNumber')} *</Label>
+                            <Label htmlFor="tracking-number">{t('dashboard.makerOrders.modals.trackingNumber')} *</Label>
                             <Input
                                 id="tracking-number"
                                 value={trackingNumber}
@@ -346,7 +346,7 @@ export default function MakerOrders() {
                             />
                         </div>
                         <div>
-                            <Label htmlFor="carrier">{t('makerOrders.modals.carrier')}</Label>
+                            <Label htmlFor="carrier">{t('dashboard.makerOrders.modals.carrier')}</Label>
                             <Input
                                 id="carrier"
                                 value={carrier}
@@ -364,7 +364,7 @@ export default function MakerOrders() {
                             onClick={handleShip}
                             disabled={updateShipment.isPending || trackingNumber.trim().length < 3}
                         >
-                            {updateShipment.isPending ? t('makerOrders.modals.updating') : t('makerOrders.modals.markAsShipped')}
+                            {updateShipment.isPending ? t('dashboard.makerOrders.modals.updating') : t('dashboard.makerOrders.modals.markAsShipped')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -376,7 +376,7 @@ export default function MakerOrders() {
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-2xl">
                             <MapPin className="w-6 h-6 text-primary" />
-                            {t('makerOrders.modals.deliveryDetails')}
+                            {t('dashboard.makerOrders.modals.deliveryDetails')}
                         </DialogTitle>
                     </DialogHeader>
 
@@ -384,7 +384,7 @@ export default function MakerOrders() {
                         <div className="space-y-6 py-4">
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('makerOrders.modals.buyerInfo')}</h4>
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('dashboard.makerOrders.modals.buyerInfo')}</h4>
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -392,7 +392,7 @@ export default function MakerOrders() {
                                             </div>
                                             <div>
                                                 <p className="text-sm font-semibold">{(detailsModal.order as any).buyerName}</p>
-                                                <p className="text-xs text-muted-foreground">{t('makerOrders.modals.buyerInfo')}</p>
+                                                <p className="text-xs text-muted-foreground">{t('dashboard.makerOrders.modals.buyerInfo')}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3">
@@ -408,13 +408,13 @@ export default function MakerOrders() {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('makerOrders.modals.productInfo')}</h4>
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('dashboard.makerOrders.modals.productInfo')}</h4>
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-3">
                                             <img src={(detailsModal.order as any).productCoverUrl} className="w-10 h-10 rounded-lg object-cover border" />
                                             <div>
                                                 <p className="text-sm font-semibold truncate max-w-[120px]">{(detailsModal.order as any).productTitle}</p>
-                                                <p className="text-xs text-muted-foreground">{t('makerOrders.qty')}: {(detailsModal.order as any).quantity || 1}</p>
+                                                <p className="text-xs text-muted-foreground">{t('dashboard.makerOrders.qty')}: {(detailsModal.order as any).quantity || 1}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -423,7 +423,7 @@ export default function MakerOrders() {
 
                             {((detailsModal.order as any).customizationData) && Object.keys((detailsModal.order as any).customizationData).length > 0 && (
                                 <div className="space-y-4 pt-4 border-t">
-                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('makerOrders.modals.customizationDetails')}</h4>
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('dashboard.makerOrders.modals.customizationDetails')}</h4>
                                     <div className="bg-amber-500/5 p-4 rounded-xl border border-amber-500/10">
                                         {Object.entries((detailsModal.order as any).customizationData as Record<string, string>).map(([key, value]) => (
                                             <div key={key} className="flex flex-col">
@@ -437,7 +437,7 @@ export default function MakerOrders() {
 
                             {((detailsModal.order as any).shippingAddress) && (
                                 <div className="space-y-4 pt-4 border-t">
-                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('makerOrders.modals.shippingAddress')}</h4>
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('dashboard.makerOrders.modals.shippingAddress')}</h4>
                                     <div className="bg-muted/50 p-6 rounded-2xl space-y-4 border border-border">
                                         <div className="flex items-start gap-4">
                                             <MapPin className="w-5 h-5 text-primary mt-1" />
@@ -457,7 +457,7 @@ export default function MakerOrders() {
                                                 <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                                             </div>
                                             <div>
-                                                <p className="text-xs text-muted-foreground uppercase font-bold">{t('makerOrders.modals.contactNumber')}</p>
+                                                <p className="text-xs text-muted-foreground uppercase font-bold">{t('dashboard.makerOrders.modals.contactNumber')}</p>
                                                 <p className="text-lg font-mono font-bold tracking-wider">{(detailsModal.order as any).shippingAddress.phoneNumber}</p>
                                             </div>
                                         </div>
@@ -470,7 +470,7 @@ export default function MakerOrders() {
                                     <Truck className="w-4 h-4 text-amber-600" />
                                 </div>
                                 <p className="text-xs text-amber-800 leading-relaxed font-medium">
-                                    {t('makerOrders.modals.shippingTip')}
+                                    {t('dashboard.makerOrders.modals.shippingTip')}
                                 </p>
                             </div>
                         </div>
@@ -478,7 +478,7 @@ export default function MakerOrders() {
 
                     <DialogFooter>
                         <Button className="w-full" onClick={() => setDetailsModal({ open: false })}>
-                            {t('makerOrders.modals.close')}
+                            {t('dashboard.makerOrders.modals.close')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
