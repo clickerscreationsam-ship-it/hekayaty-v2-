@@ -43,15 +43,17 @@ export function VirtualizedGrid<T>({ items, renderItem, itemHeight, gap = 32 }: 
     );
   }
 
+  const VirtualizedList = List as any;
+
   return (
-    <List
+    <VirtualizedList
       height={800} 
       itemCount={rows}
       itemSize={itemHeight + gap}
       width="100%"
       style={{ overflowX: 'hidden' }}
     >
-      {Row}
-    </List>
+      {Row as any}
+    </VirtualizedList>
   );
 }

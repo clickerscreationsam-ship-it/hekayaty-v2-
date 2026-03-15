@@ -199,7 +199,10 @@ export default function WriterStudio() {
 
             <div className="flex h-[calc(100vh-64px)] overflow-hidden">
                 {/* Sidebar */}
-                <aside className="w-80 border-r border-white/5 bg-black/40 backdrop-blur-xl flex flex-col hidden md:flex shrink-0">
+                <aside className={cn(
+                    "border-r border-white/5 bg-black/40 backdrop-blur-xl flex-col shrink-0",
+                    selectedId || selectedCollectionId ? "hidden md:flex w-80" : "flex w-full md:w-80"
+                )}>
                     <div className="p-6 border-b border-white/5">
                         <h2 className="text-xl font-serif font-bold text-gradient flex items-center gap-2">
                             <PenTool className="w-5 h-5" />
@@ -329,7 +332,10 @@ export default function WriterStudio() {
                 </aside>
 
                 {/* Main View Area */}
-                <main className="flex-grow overflow-hidden relative bg-white/[0.01]">
+                <main className={cn(
+                    "flex-grow overflow-hidden relative bg-white/[0.01]",
+                    !selectedId && !selectedCollectionId ? "hidden md:block" : "block"
+                )}>
                     <AnimatePresence mode="wait">
                         {selectedCollectionId ? (
                             <CollectionEditor
@@ -349,59 +355,108 @@ export default function WriterStudio() {
                                     <div className="flex-grow flex items-center justify-center"><Loader2 className="animate-spin text-primary w-12 h-12" /></div>
                                 ) : (
                                     <>
-                                        <header className="h-16 border-b border-white/5 bg-black/20 flex items-center justify-between px-8 backdrop-blur-md">
-                                            <div className="flex items-center gap-6">
-                                                <div>
-                                                    <h1 className="font-serif font-bold text-xl">{currentProduct.title}</h1>
-                                                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">
-                                                        {currentProduct.isPublished ? t("studio.public") : t("studio.draft")}
-                                                    </p>
+                                        <header className="border-b border-white/5 bg-black/20 backdrop-blur-md shrink-0 flex flex-col md:flex-row md:items-center justify-between">
+                                            <div className="h-16 flex items-center justify-between px-4 md:px-8">
+                                                <div className="flex items-center gap-2 md:gap-6">
+                                                    <Button variant="ghost" size="icon" className="md:hidden shrink-0 -ml-2" onClick={() => setLocation('/studio')}>
+                                                        <ChevronLeft className="w-6 h-6" />
+                                                    </Button>
+                                                    <div>
+                                                        <h1 className="font-serif font-bold text-lg md:text-xl truncate max-w-[150px] md:max-w-xs">{currentProduct.title}</h1>
+                                                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">
+                                                            {currentProduct.isPublished ? t("studio.public") : t("studio.draft")}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center gap-2 md:hidden">
+                                                    <SaveButton
+                                                        product={currentProduct}
+                                                        content={content}
+                                                        title={title}
+                                                        description={description}
+                                                        genre={genre}
+                                                        price={price}
+                                                        isSerialized={isSerialized}
+                                                        seriesStatus={seriesStatus}
+                                                        coverUrl={coverUrl}
+                                                        appearanceSettings={appSettings}
+                                                        activeChapterId={activeChapterId}
+                                                        chapters={chapters}
+                                                        iconOnly={true}
+                                                    />
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-4">
-                                                <Tabs value={activeTab} onValueChange={setActiveTab} className="bg-white/5 p-1 rounded-full">
-                                                    <TabsList className="bg-transparent h-8 border-none p-0">
-                                                        <TabsTrigger value="write" className="rounded-full px-4 text-xs font-bold uppercase tracking-wider">{t("studio.tabs.write")}</TabsTrigger>
-                                                        <TabsTrigger value="appearance" className="rounded-full px-4 text-xs font-bold uppercase tracking-wider">{t("studio.tabs.appearance")}</TabsTrigger>
-                                                        <TabsTrigger value="market" className="rounded-full px-4 text-xs font-bold uppercase tracking-wider">{t("studio.tabs.market")}</TabsTrigger>
+                                            <div className="flex items-center gap-4 px-4 pb-3 md:pb-0 md:px-8 md:h-16 overflow-x-auto no-scrollbar">
+                                                <Tabs value={activeTab} onValueChange={setActiveTab} className="bg-white/5 p-1 rounded-full shrink-0">
+                                                    <TabsList className="bg-transparent h-8 border-none p-0 flex">
+                                                        <TabsTrigger value="write" className="rounded-full px-3 md:px-4 text-[10px] md:text-xs font-bold uppercase tracking-wider">{t("studio.tabs.write")}</TabsTrigger>
+                                                        <TabsTrigger value="appearance" className="rounded-full px-3 md:px-4 text-[10px] md:text-xs font-bold uppercase tracking-wider">{t("studio.tabs.appearance")}</TabsTrigger>
+                                                        <TabsTrigger value="market" className="rounded-full px-3 md:px-4 text-[10px] md:text-xs font-bold uppercase tracking-wider">{t("studio.tabs.market")}</TabsTrigger>
                                                     </TabsList>
                                                 </Tabs>
 
-                                                <div className="h-8 w-px bg-white/10" />
+                                                <div className="h-8 w-px bg-white/10 hidden md:block" />
 
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="gap-2 rounded-full border-white/10 hover:bg-white/5 hidden sm:flex"
+                                                    className="gap-2 rounded-full border-white/10 hover:bg-white/5 hidden md:flex"
                                                     onClick={() => setLocation(`/read/${selectedId}`)}
                                                 >
                                                     <Eye className="w-4 h-4" />
                                                     {t("studio.preview")}
                                                 </Button>
 
-                                                <SaveButton
-                                                    product={currentProduct}
-                                                    content={content}
-                                                    title={title}
-                                                    description={description}
-                                                    genre={genre}
-                                                    price={price}
-                                                    isSerialized={isSerialized}
-                                                    seriesStatus={seriesStatus}
-                                                    coverUrl={coverUrl}
-                                                    appearanceSettings={appSettings}
-                                                    activeChapterId={activeChapterId}
-                                                    chapters={chapters}
-                                                />
+                                                <div className="hidden md:block">
+                                                    <SaveButton
+                                                        product={currentProduct}
+                                                        content={content}
+                                                        title={title}
+                                                        description={description}
+                                                        genre={genre}
+                                                        price={price}
+                                                        isSerialized={isSerialized}
+                                                        seriesStatus={seriesStatus}
+                                                        coverUrl={coverUrl}
+                                                        appearanceSettings={appSettings}
+                                                        activeChapterId={activeChapterId}
+                                                        chapters={chapters}
+                                                    />
+                                                </div>
                                             </div>
                                         </header>
 
-                                        <div className="flex-grow overflow-hidden flex">
+                                        <div className="flex-grow overflow-hidden flex flex-col md:flex-row">
                                             {/* Story Editor Tabs Logic */}
                                             {activeTab === "write" && (
-                                                <div className="flex flex-grow overflow-hidden">
-                                                    <div className="w-64 border-r border-white/5 bg-black/20 flex flex-col shrink-0">
+                                                <div className="flex flex-col md:flex-row flex-grow overflow-hidden">
+                                                    {/* Mobile Chapter Selector */}
+                                                    <div className="md:hidden border-b border-white/5 bg-black/20 p-4 flex gap-2 shrink-0">
+                                                        <div className="flex-grow relative">
+                                                            <select
+                                                                className="w-full appearance-none bg-white/5 border border-white/10 rounded-xl p-3 text-sm font-bold pl-4 pr-10 focus:ring-primary focus:border-primary"
+                                                                value={activeChapterId || ''}
+                                                                onChange={(e) => handleChapterSelect(Number(e.target.value))}
+                                                            >
+                                                                {chapters?.map((chapter) => (
+                                                                    <option key={chapter.id} value={chapter.id} className="bg-background text-foreground">
+                                                                        {chapter.title}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                                <Layers className="w-4 h-4 text-muted-foreground" />
+                                                            </div>
+                                                        </div>
+                                                        <Button size="icon" variant="outline" onClick={handleAddChapter} disabled={createChapter.isPending} className="shrink-0 aspect-square h-auto rounded-xl bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
+                                                            {createChapter.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                                                        </Button>
+                                                    </div>
+
+                                                    {/* Desktop Chapter Sidebar */}
+                                                    <div className="w-64 border-r border-white/5 bg-black/20 flex-col shrink-0 hidden md:flex">
                                                         <div className="p-4 border-b border-white/5 flex items-center justify-between">
                                                             <h3 className="font-bold text-[10px] uppercase tracking-wider opacity-50">{t("studio.chapters")}</h3>
                                                             <Button size="sm" variant="ghost" onClick={handleAddChapter} disabled={createChapter.isPending} className="h-6 w-6 p-0 rounded-md">
@@ -427,12 +482,12 @@ export default function WriterStudio() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex-grow overflow-y-auto p-12">
+                                                    <div className="flex-grow overflow-y-auto p-4 md:p-12">
                                                         {activeChapterId && (
                                                             <div className="max-w-3xl mx-auto space-y-8">
                                                                 <input
                                                                     className="bg-transparent border-none text-4xl font-serif font-bold w-full focus:outline-none placeholder:text-muted-foreground/20 text-gradient mb-8"
-                                                                    value={chapters.find(c => c.id === activeChapterId)?.title || ""}
+                                                                    value={chapters?.find((c: any) => c.id === activeChapterId)?.title || ""}
                                                                     onChange={(e) => updateChapter.mutate({ id: activeChapterId, title: e.target.value })}
                                                                     placeholder="Untitled Chapter"
                                                                 />
@@ -458,7 +513,7 @@ export default function WriterStudio() {
                                             )}
 
                                             {activeTab === "appearance" && (
-                                                <div className="flex-grow p-12 overflow-y-auto">
+                                                <div className="flex-grow p-6 md:p-12 overflow-y-auto">
                                                     <div className="max-w-4xl mx-auto space-y-12">
                                                         <section>
                                                             <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-8">{t("studio.appearance.themes")}</h3>
@@ -521,7 +576,7 @@ export default function WriterStudio() {
                                             )}
 
                                             {activeTab === "market" && (
-                                                <div className="flex-grow p-12 overflow-y-auto">
+                                                <div className="flex-grow p-6 md:p-12 overflow-y-auto">
                                                     <div className="max-w-4xl mx-auto space-y-12 pb-24">
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                                             <section className="space-y-8">
@@ -570,8 +625,8 @@ export default function WriterStudio() {
                                                             )}
                                                         </section>
 
-                                                        <section className="pt-12 border-t border-white/5 flex items-center justify-between">
-                                                            <div className="flex items-center gap-4">
+                                                        <section className="pt-12 border-t border-white/5 flex flex-col sm:flex-row items-center sm:justify-between gap-6">
+                                                            <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
                                                                 <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center", currentProduct.isPublished ? "bg-green-500/10 text-green-500" : "bg-amber-500/10 text-amber-500")}>
                                                                     {currentProduct.isPublished ? <CheckCircle2 className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
                                                                 </div>
@@ -610,7 +665,7 @@ export default function WriterStudio() {
     );
 }
 
-function SaveButton({ product, content, title, description, genre, price, isSerialized, seriesStatus, coverUrl, appearanceSettings, activeChapterId, chapters }: any) {
+function SaveButton({ product, content, title, description, genre, price, isSerialized, seriesStatus, coverUrl, appearanceSettings, activeChapterId, chapters, iconOnly }: any) {
     const { t } = useTranslation();
     const updateProduct = useUpdateProduct();
     const updateChapter = useUpdateChapter();
@@ -644,9 +699,9 @@ function SaveButton({ product, content, title, description, genre, price, isSeri
     };
 
     return (
-        <Button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/90 text-white gap-2 rounded-full px-6 shadow-lg shadow-primary/20">
+        <Button onClick={handleSave} disabled={saving} className={cn("bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg shadow-primary/20", iconOnly ? "w-10 h-10 p-0" : "gap-2 px-6")}>
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            {saving ? t("common.saving") : t("studio.save")}
+            {!iconOnly && (saving ? t("common.saving") : t("studio.save"))}
         </Button>
     );
 }

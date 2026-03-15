@@ -9,8 +9,9 @@ import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
 import {
     Save, Loader2, GripVertical, Plus, Trash2,
     CheckCircle2, AlertCircle, LayoutGrid,
-    ArrowRight, Info, DollarSign, Percent, Sparkles
+    ArrowRight, Info, DollarSign, Percent, Sparkles, ChevronLeft
 } from "lucide-react";
+import { useLocation } from "wouter";
 import { motion, Reorder } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,7 @@ export function CollectionEditor({ collId, allStories }: CollectionEditorProps) 
     const { t } = useTranslation();
     const { data: collection, isLoading } = useCollection(collId);
     const updateCollection = useUpdateCollection();
+    const [, setLocation] = useLocation();
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -78,25 +80,28 @@ export function CollectionEditor({ collId, allStories }: CollectionEditorProps) 
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col h-full overflow-hidden"
         >
-            <header className="h-16 border-b border-white/5 bg-black/20 flex items-center justify-between px-8 backdrop-blur-md">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-secondary/10 text-secondary rounded-lg">
+            <header className="h-16 border-b border-white/5 bg-black/20 flex items-center justify-between px-4 md:px-8 backdrop-blur-md shrink-0">
+                <div className="flex items-center gap-2 md:gap-3">
+                    <Button variant="ghost" size="icon" className="md:hidden shrink-0 -ml-2" onClick={() => setLocation('/studio')}>
+                        <ChevronLeft className="w-6 h-6" />
+                    </Button>
+                    <div className="p-2 bg-secondary/10 text-secondary rounded-lg hidden sm:block">
                         <LayoutGrid className="w-5 h-5" />
                     </div>
-                    <h1 className="font-serif font-bold text-xl">{title || t("studio.collections.new")}</h1>
+                    <h1 className="font-serif font-bold text-lg md:text-xl truncate max-w-[150px] md:max-w-xs">{title || t("studio.collections.new")}</h1>
                 </div>
 
                 <Button
                     onClick={handleSave}
                     disabled={updateCollection.isPending}
-                    className="bg-secondary hover:bg-secondary/90 text-white gap-2 rounded-full px-6"
+                    className="bg-secondary hover:bg-secondary/90 text-white gap-2 rounded-full px-4 md:px-6"
                 >
                     {updateCollection.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                    {t("common.save")}
+                    <span className="hidden sm:inline">{t("common.save")}</span>
                 </Button>
             </header>
 
-            <div className="flex-grow overflow-y-auto p-12">
+            <div className="flex-grow overflow-y-auto p-4 md:p-12">
                 <div className="max-w-5xl mx-auto space-y-12 pb-24">
                     <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-12">
                         <div className="space-y-12">

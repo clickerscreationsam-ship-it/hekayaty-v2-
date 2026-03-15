@@ -25,6 +25,7 @@ import { useUserOrders } from "@/hooks/use-orders";
 import { useAdminPrivateMessages, useSendAdminPrivateMessage, useMarkMessageRead, useAdminAnnouncements } from "@/hooks/use-admin-system";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PageSkeleton } from "@/components/ui/skeleton-loader";
 import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
 import { useDesignRequests } from "@/hooks/use-commissions";
 
