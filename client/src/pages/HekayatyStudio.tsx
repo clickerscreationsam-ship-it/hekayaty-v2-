@@ -23,18 +23,20 @@ import {
   Globe,
   Radio,
   Briefcase,
-  Timer
+  Timer,
+  Palette
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 // --- Components ---
 
 const FloatingParticles = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(20)].map((_, i) => (
+      {[...Array(30)].map((_, i) => (
         <motion.div
            key={i}
            className="absolute w-1 h-1 bg-primary/40 rounded-full"
@@ -44,15 +46,15 @@ const FloatingParticles = () => {
              opacity: 0 
            }}
            animate={{ 
-             y: [null, "-20%"],
-             opacity: [0, 0.8, 0],
-             scale: [1, 1.5, 1]
+             y: [null, "-30%"],
+             opacity: [0, 0.6, 0],
+             scale: [1, 2, 1]
            }}
            transition={{ 
-             duration: Math.random() * 5 + 5, 
+             duration: Math.random() * 8 + 8, 
              repeat: Infinity, 
              ease: "linear",
-             delay: Math.random() * 10
+             delay: Math.random() * 15
            }}
         />
       ))}
@@ -61,60 +63,69 @@ const FloatingParticles = () => {
 };
 
 const SectionTitle = ({ title, subtitle, centered = false }: { title: string; subtitle?: string; centered?: boolean }) => (
-  <div className={cn("mb-12 space-y-4", centered && "text-center")}>
+  <div className={cn("mb-16 space-y-6", centered && "text-center")}>
     <motion.h2 
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="text-4xl md:text-5xl font-serif font-bold text-gradient"
+      className="text-5xl md:text-7xl font-serif font-black text-gradient leading-tight"
     >
       {title}
     </motion.h2>
     {subtitle && (
       <motion.p 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ delay: 0.1 }}
-        className="text-muted-foreground text-lg max-w-2xl mx-auto"
+        transition={{ delay: 0.15 }}
+        className="text-muted-foreground text-xl md:text-2xl max-w-3xl mx-auto font-sans leading-relaxed opacity-80"
       >
         {subtitle}
       </motion.p>
     )}
+    <motion.div 
+      initial={{ width: 0 }}
+      whileInView={{ width: centered ? "100px" : "150px" }}
+      viewport={{ once: true }}
+      className={cn("h-1 bg-primary/40 rounded-full mt-8", centered && "mx-auto")}
+    />
   </div>
 );
 
 const ServiceCard = ({ icon: Icon, title, description, badge, items }: { icon: any; title: string; description: string; badge?: string; items?: string[] }) => {
   return (
     <motion.div 
-      whileHover={{ y: -10, transition: { duration: 0.3 } }}
-      className="glass-card p-8 rounded-3xl group relative overflow-hidden h-full flex flex-col"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      whileHover={{ y: -15, transition: { duration: 0.4, ease: "easeOut" } }}
+      className="glass-card p-10 rounded-[3rem] group relative overflow-hidden h-full flex flex-col border border-white/5 transition-all duration-500 hover:border-primary/20 hover:shadow-[0_20px_50px_rgba(255,215,0,0.1)] shadow-2xl"
     >
-      <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-20 transition-opacity">
-        <Icon size={120} />
+      <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-700">
+        <Icon size={180} />
       </div>
       
-      <div className="relative z-10">
-        <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 ring-1 ring-primary/20 group-hover:ring-primary/50 transition-all">
-          <Icon size={28} />
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-tr from-primary/20 to-primary/5 text-primary flex items-center justify-center mb-10 ring-1 ring-primary/30 group-hover:ring-primary/60 transition-all duration-700 group-hover:scale-110 shadow-2xl">
+          <Icon size={36} />
         </div>
         
         {badge && (
-          <span className="inline-block px-3 py-1 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest mb-4 ring-1 ring-primary/30">
+          <span className="inline-block self-start px-4 py-1.5 rounded-xl bg-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-6 ring-1 ring-primary/20 backdrop-blur-md">
             {badge}
           </span>
         )}
         
-        <h3 className="text-2xl font-serif font-bold mb-3">{title}</h3>
-        <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+        <h3 className="text-3xl font-serif font-black mb-6 group-hover:text-primary transition-colors">{title}</h3>
+        <p className="text-muted-foreground text-base leading-relaxed mb-10 opacity-70 group-hover:opacity-100 transition-opacity">
           {description}
         </p>
         
         {items && (
-          <ul className="space-y-3 mt-auto">
+          <ul className="space-y-4 mt-auto border-t border-white/5 pt-8">
             {items.map((item, idx) => (
-              <li key={idx} className="flex items-center gap-3 text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary" />
+              <li key={idx} className="flex items-center gap-4 text-xs font-bold text-white/40 group-hover:text-white/80 transition-all">
+                <div className="w-2 h-2 rounded-full bg-primary/20 group-hover:bg-primary shadow-[0_0_10px_rgba(255,215,0,0.5)] transition-all" />
                 {item}
               </li>
             ))}
@@ -123,7 +134,7 @@ const ServiceCard = ({ icon: Icon, title, description, badge, items }: { icon: a
       </div>
       
       {/* Glow Effect */}
-      <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-transparent via-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
     </motion.div>
   );
 };
@@ -131,80 +142,83 @@ const ServiceCard = ({ icon: Icon, title, description, badge, items }: { icon: a
 // --- Page Sections ---
 
 const Hero = () => {
+  const { t } = useTranslation();
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Cinematic Background */}
+    <section className="relative min-h-[110vh] flex items-center justify-center overflow-hidden pt-20">
+      {/* Cinematic Background Layer */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background z-10" />
-        <div className="absolute inset-0 bg-black/40 z-10" />
-        <img 
-          src="https://images.unsplash.com/photo-1519074063223-997672cc02d0?q=80&w=2000" 
-          alt="Cinematic Universe" 
-          className="w-full h-full object-cover scale-110"
-        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/40 to-background z-10" />
+        <div className="absolute inset-0 bg-black/60 z-10" />
+        <motion.div 
+            initial={{ scale: 1.15 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="w-full h-full"
+        >
+            <img 
+                src="/images/studio-bg.png" 
+                alt="Cinematic Universe" 
+                className="w-full h-full object-cover object-center"
+            />
+        </motion.div>
         <FloatingParticles />
       </div>
       
-      <div className="container-responsive relative z-20 text-center space-y-8">
+      <div className="container-responsive relative z-20 text-center space-y-12">
         <motion.div
            initial={{ opacity: 0, scale: 0.9 }}
            animate={{ opacity: 1, scale: 1 }}
-           transition={{ duration: 1 }}
+           transition={{ duration: 1.2 }}
         >
-          <span className="px-6 py-2 rounded-full border border-primary/30 bg-primary/5 text-primary text-xs font-bold uppercase tracking-[0.3em] backdrop-blur-sm">
-            The Hub of Imagination
+          <span className="px-8 py-3 rounded-full border border-primary/40 bg-primary/10 text-primary text-[11px] font-black uppercase tracking-[0.4em] backdrop-blur-xl shadow-2xl ring-1 ring-white/10">
+            {t("studioPage.hero.tagline")}
           </span>
         </motion.div>
         
         <motion.h1 
-          className="text-6xl md:text-8xl font-serif font-black"
-          initial={{ opacity: 0, y: 30 }}
+          className="text-7xl md:text-[9.5rem] font-serif font-black tracking-tight drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
+          transition={{ delay: 0.2, duration: 1, ease: "easeOut" }}
         >
-          <span className="block text-white mb-2">Turn Your Story</span>
-          <span className="block text-gradient">Into a Universe</span>
+          <span className="block text-white mb-2 leading-[0.9]">{t("studioPage.hero.title1")}</span>
+          <span className="block text-gradient leading-[0.9]">{t("studioPage.hero.title2")}</span>
         </motion.h1>
         
         <motion.p 
-          className="text-xl md:text-2xl text-muted-foreground/80 max-w-3xl mx-auto font-sans"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-xl md:text-3xl text-white/70 max-w-4xl mx-auto font-sans leading-relaxed font-medium drop-shadow-lg"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
+          transition={{ delay: 0.4, duration: 1 }}
         >
-          From writing to branding, from imagination to reality. Transform your narrative into an immersive brand experience.
+          {t("studioPage.hero.subtitle")}
         </motion.p>
         
         <motion.div
-          className="pt-8 flex flex-col sm:flex-row items-center justify-center gap-6"
-          initial={{ opacity: 0, y: 20 }}
+          className="pt-12 flex flex-col sm:flex-row items-center justify-center gap-8"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
+          transition={{ delay: 0.6, duration: 1 }}
         >
-          <Button size="lg" className="h-16 px-12 rounded-full bg-primary text-primary-foreground hover:scale-105 transition-transform text-lg font-bold group shadow-2xl shadow-primary/20">
-            Start Your Journey
-            <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" />
+          <Button size="lg" className="h-20 px-16 rounded-[2.5rem] bg-primary text-black hover:bg-primary/90 hover:scale-110 transition-all text-xl font-black group shadow-[0_20px_50px_rgba(255,215,0,0.3)] border-none">
+            {t("studioPage.hero.ctaPrimary")}
+            <ArrowRight className="ml-4 group-hover:translate-x-2 transition-transform" />
           </Button>
           
-          <Button variant="outline" size="lg" className="h-16 px-10 rounded-full border-white/10 hover:bg-white/5 text-lg font-medium backdrop-blur-md">
-            Explore Services
+          <Button variant="outline" size="lg" className="h-20 px-14 rounded-[2.5rem] border-white/20 bg-white/5 hover:bg-white/10 text-xl font-bold backdrop-blur-2xl transition-all hover:scale-105">
+            {t("studioPage.hero.ctaSecondary")}
           </Button>
         </motion.div>
       </div>
       
-      {/* Scroll Indicator */}
-      <motion.div 
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 text-muted-foreground/50"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <div className="w-[1px] h-12 bg-gradient-to-b from-primary/50 to-transparent" />
-      </motion.div>
+      {/* Subtle Bottom Glow */}
+      <div className="absolute bottom-0 inset-x-0 h-96 bg-gradient-to-t from-background via-background/0 to-transparent pointer-events-none" />
     </section>
   );
 };
 
 const JourneyBar = () => {
+  const { t } = useTranslation();
   const steps = [
     { label: "Idea", icon: Sparkles, desc: "The Genesis" },
     { label: "Writing", icon: BookOpen, desc: "The Scripture" },
@@ -214,31 +228,34 @@ const JourneyBar = () => {
   ];
 
   return (
-    <div className="container-responsive py-32">
-      <div className="relative p-12 rounded-[3rem] bg-gradient-to-r from-primary/5 via-transparent to-primary/5 border border-white/5">
-        <div className="absolute top-1/2 left-20 right-20 h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent -translate-y-1/2 z-0" />
-        
-        <div className="flex flex-col md:flex-row justify-between relative z-10 gap-12 md:gap-0">
+    <div className="container-responsive py-48">
+      <div className="relative p-20 rounded-[4rem] bg-gradient-to-b from-[#0f0f10] to-[#050506] border border-white/5 shadow-[0_40px_100px_rgba(0,0,0,0.4)]">
+        <div className="absolute top-1/2 left-32 right-32 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent -translate-y-1/2 z-0 opacity-40" />
+        <div className="absolute top-1/2 left-32 right-32 h-[3px] bg-primary/10 -translate-y-1/2 blur-lg pointer-events-none" />
+
+        <div className="flex flex-col md:flex-row justify-between relative z-10 gap-16 md:gap-0">
           {steps.map((step, idx) => (
             <motion.div 
               key={idx}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
+              transition={{ delay: idx * 0.15 }}
               className="flex flex-col items-center group flex-1"
             >
-              <div className="w-20 h-20 rounded-3xl bg-[#0f0f10] border border-white/10 flex items-center justify-center mb-6 group-hover:border-primary group-hover:shadow-[0_0_30px_rgba(255,215,0,0.3)] transition-all duration-500 relative">
-                 <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 rounded-3xl transition-colors" />
-                 <step.icon size={28} className="text-muted-foreground group-hover:text-primary transition-colors duration-500 relative z-10" />
-                 {idx < steps.length - 1 && (
-                   <div className="absolute -right-4 top-1/2 -translate-y-1/2 hidden md:block group-hover:translate-x-2 transition-transform">
-                      <ChevronRight size={16} className="text-primary/20" />
-                   </div>
-                 )}
+              <div className="relative w-24 h-24 mb-8">
+                 <div className="absolute inset-0 bg-primary/20 rounded-[2rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                 <div className="relative w-full h-full rounded-[2.5rem] bg-[#1a1a1c] border border-white/10 flex items-center justify-center group-hover:border-primary group-hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] transition-all duration-700 group-hover:-translate-y-3">
+                    <step.icon size={36} className="text-muted-foreground group-hover:text-primary transition-colors duration-500" />
+                    {idx < steps.length - 1 && (
+                      <div className="absolute -right-8 top-1/2 -translate-y-1/2 hidden md:block opacity-0 group-hover:opacity-100 group-hover:translate-x-4 transition-all duration-700">
+                         <ChevronRight size={24} className="text-primary/40" />
+                      </div>
+                    )}
+                 </div>
               </div>
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors mb-1">{step.label}</span>
-              <span className="text-[10px] font-serif italic text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">{step.desc}</span>
+              <span className="text-sm font-black uppercase tracking-[0.3em] text-white/40 group-hover:text-primary transition-all duration-500 mb-2">{step.label}</span>
+              <span className="text-xs font-serif italic text-muted-foreground opacity-60 group-hover:opacity-100 transition-opacity uppercase tracking-widest">{step.desc}</span>
             </motion.div>
           ))}
         </div>
@@ -248,113 +265,135 @@ const JourneyBar = () => {
 };
 
 const MarketplaceAndCompetition = () => {
+  const { t } = useTranslation();
   return (
-    <div className="container-responsive py-32 pb-48">
-       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+    <section className="container-responsive py-48 pb-64">
+       <div className="grid grid-cols-1 lg:grid-cols-2 gap-32">
           {/* Marketplace */}
-          <div className="space-y-12">
-             <div className="space-y-4">
-                <h3 className="text-3xl font-serif font-bold text-gradient">The Creator Council</h3>
-                <p className="text-muted-foreground text-lg">Direct access to the architects, weavers, and painters of the digital age.</p>
+          <div className="space-y-16">
+             <div className="space-y-6">
+                <span className="text-[11px] font-black uppercase tracking-[0.4em] text-primary">The Council</span>
+                <h3 className="text-5xl md:text-6xl font-serif font-black text-gradient leading-tight">The Creator<br />Council</h3>
+                <p className="text-muted-foreground text-xl leading-relaxed max-w-xl opacity-70">
+                   Access an exclusive network of high-tier architects, sound designers, and visual wizards to manifest your world.
+                </p>
              </div>
              
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 {[
                   { name: "Samer A.", role: "Lead Illustrator", rating: 5, img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Samer" },
                   { name: "Laila H.", role: "Sound Architect", rating: 4.9, img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Laila" }
                 ].map((freelancer, i) => (
-                  <motion.div key={i} whileHover={{ y: -5 }} className="p-6 rounded-3xl bg-white/5 border border-white/10 flex items-center gap-4 group">
-                     <div className="w-16 h-16 rounded-2xl bg-white/10 overflow-hidden shrink-0">
-                        <img src={freelancer.img} alt={freelancer.name} />
+                  <motion.div 
+                    key={i} 
+                    whileHover={{ y: -8, scale: 1.02 }} 
+                    className="p-8 rounded-[2.5rem] bg-white/5 border border-white/5 flex items-center gap-6 group hover:bg-white/10 transition-all duration-500"
+                  >
+                     <div className="w-20 h-20 rounded-3xl bg-white/5 overflow-hidden shrink-0 border border-white/10 group-hover:border-primary/40 shadow-2xl transition-all">
+                        <img src={freelancer.img} alt={freelancer.name} className="w-full h-full object-cover" />
                      </div>
                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold truncate group-hover:text-primary transition-colors">{freelancer.name}</h4>
-                        <p className="text-[10px] uppercase font-black text-white/40 tracking-widest">{freelancer.role}</p>
-                        <div className="flex items-center gap-1 mt-2 text-primary">
-                           <Star size={10} fill="currentColor" />
-                           <span className="text-xs font-bold">{freelancer.rating}</span>
+                        <h4 className="text-lg font-black truncate group-hover:text-primary transition-colors mb-1">{freelancer.name}</h4>
+                        <p className="text-[10px] uppercase font-black text-white/30 tracking-[0.2em] group-hover:text-white/60 transition-colors">{freelancer.role}</p>
+                        <div className="flex items-center gap-2 mt-3 text-primary">
+                           <Star size={12} fill="currentColor" />
+                           <span className="text-sm font-bold tracking-tighter">{freelancer.rating}</span>
                         </div>
                      </div>
                   </motion.div>
                 ))}
              </div>
-             <Button variant="ghost" className="text-primary hover:bg-primary/10 gap-2 font-bold uppercase tracking-widest text-xs">
-                Browse Marketplace <ArrowRight size={14} />
+             <Button variant="ghost" className="text-primary hover:bg-primary/10 gap-3 font-black uppercase tracking-[0.2em] text-[11px] h-14 px-8 rounded-2xl ring-1 ring-primary/20">
+                Browse Marketplace <ArrowRight size={16} />
              </Button>
           </div>
 
           {/* Competitions */}
-          <div className="space-y-12">
-             <div className="space-y-4">
-                <h3 className="text-3xl font-serif font-bold text-gradient">The Arena</h3>
-                <p className="text-muted-foreground text-lg">Battle for glory. Winners receive exclusive marketing drops and funding.</p>
+          <div className="space-y-16">
+             <div className="space-y-6">
+                <span className="text-[11px] font-black uppercase tracking-[0.4em] text-primary">Battle Royale</span>
+                <h3 className="text-5xl md:text-6xl font-serif font-black text-gradient leading-tight">The Arena</h3>
+                <p className="text-muted-foreground text-xl leading-relaxed max-w-xl opacity-70">
+                   Compete with the elite. Win funding, exclusive production drops, and a featured spot in the Hekayaty Pantheon.
+                </p>
              </div>
              
-             <div className="rounded-3xl border border-primary/20 bg-primary/5 p-8 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
-                   <Star size={80} className="text-primary" />
+             <div className="rounded-[3.5rem] border border-primary/20 bg-gradient-to-br from-primary/10 via-transparent to-transparent p-12 relative overflow-hidden group shadow-2xl">
+                <div className="absolute -top-24 -right-24 p-8 opacity-[0.05] group-hover:scale-125 group-hover:opacity-10 transition-all duration-1000">
+                   <Star size={250} className="text-primary" />
                 </div>
-                <div className="space-y-6 relative z-10">
-                   <div className="flex items-center gap-4">
-                      <div className="px-3 py-1 rounded-full bg-primary text-black text-[10px] font-black uppercase tracking-widest">Active Challenge</div>
-                      <span className="text-xs font-bold text-white/60"> ends in 4 Days</span>
+                <div className="space-y-10 relative z-10">
+                   <div className="flex items-center gap-6">
+                      <div className="px-5 py-2 rounded-xl bg-primary text-black text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl">Active Challenge</div>
+                      <span className="text-xs font-black text-white/40 uppercase tracking-widest flex items-center gap-2"><Timer size={14}/> 4 Days Left</span>
                    </div>
-                   <h4 className="text-2xl font-serif font-black">"Genesis of the Fallen"</h4>
-                   <p className="text-sm text-muted-foreground leading-relaxed">Design a character sound identity for a fallen celestial being. Top 3 entries get showcased in the Studio.</p>
-                   <div className="flex items-center -space-x-2">
-                       {[...Array(5)].map((_, i) => (
-                         <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-white/10 overflow-hidden">
-                           <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=user${i}`} alt="user" />
-                         </div>
-                       ))}
-                       <span className="pl-4 text-xs font-bold text-white/40">+124 participants</span>
+                   <div className="space-y-4">
+                      <h4 className="text-3xl font-serif font-black leading-tight">"Genesis of the Fallen"</h4>
+                      <p className="text-base text-muted-foreground leading-relaxed max-w-md italic">
+                        "Design a character sound identity for a fallen celestial being. Top 3 entries get showcased in the Studio."
+                      </p>
                    </div>
-                   <Button className="w-full h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest">Join the Arena</Button>
+                   <div className="flex items-center gap-8 border-y border-white/5 py-8">
+                       <div className="flex items-center -space-x-4">
+                          {[...Array(5)].map((_, i) => (
+                            <div key={i} className="w-12 h-12 rounded-full border-4 border-[#0f0f10] bg-white/10 overflow-hidden shadow-2xl hover:scale-110 transition-transform cursor-pointer">
+                              <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=user${i + 50}`} alt="user" />
+                            </div>
+                          ))}
+                          <div className="w-12 h-12 rounded-full border-4 border-[#0f0f10] bg-primary text-black flex items-center justify-center text-xs font-black shadow-2xl">+124</div>
+                       </div>
+                   </div>
+                   <Button className="w-full h-16 rounded-[1.5rem] bg-primary text-black font-black uppercase tracking-[0.2em] hover:scale-[1.02] transition-transform shadow-[0_15px_40px_rgba(255,215,0,0.2)]">Join the Arena</Button>
                 </div>
              </div>
           </div>
        </div>
-    </div>
+    </section>
   );
 };
 
 const ServicesGrid = () => {
+  const { t } = useTranslation();
   const sections = [
     {
-      title: "Product & Merch Design",
+      title: t("studioPage.arsenal.merch.title"),
       icon: Shirt,
-      description: "Tangible pieces of your world, crafted for your fans.",
-      items: ["Story T-shirts", "Box Collections", "Posters & Art", "Special Edition Covers"]
+      description: t("studioPage.arsenal.merch.desc"),
+      badge: "Physical Mastery",
+      items: t("studioPage.arsenal.merch.items", { returnObjects: true }) as string[]
     },
     {
-      title: "Marketing & Media",
+      title: t("studioPage.arsenal.media.title"),
       icon: Film,
-      description: "Visual storytelling that captivates and attracts audiences.",
-      items: ["Cinematic Trailers", "Reels & TikTok UI", "Social Media Mockups", "Campaign Visuals"]
+      description: t("studioPage.arsenal.media.desc"),
+      badge: "Visual Epic",
+      items: t("studioPage.arsenal.media.items", { returnObjects: true }) as string[]
     },
     {
-      title: "Music & Sound",
+      title: t("studioPage.arsenal.music.title"),
       icon: Music,
-      description: "The sonic soul of your universe, composed with passion.",
-      items: ["Theme Songs", "Background Score", "Character Sound Identity", "Atmospheric SFX"]
+      description: t("studioPage.arsenal.music.desc"),
+      badge: "Sonic Soul",
+      items: t("studioPage.arsenal.music.items", { returnObjects: true }) as string[]
     },
     {
-      title: "Advertising & Branding",
+      title: t("studioPage.arsenal.branding.title"),
       icon: Megaphone,
-      description: "Building an author brand that stands the test of time.",
-      items: ["Campaign Dashboards", "Branding Kits", "Author Identity Cards", "Strategy Roadmap"]
+      description: t("studioPage.arsenal.branding.desc"),
+      badge: "Authority",
+      items: t("studioPage.arsenal.branding.items", { returnObjects: true }) as string[]
     }
   ];
 
   return (
-    <section className="container-responsive py-24 pb-48">
+    <section className="container-responsive py-48 pb-64">
       <SectionTitle 
         centered
-        title="Creative Arsenal"
-        subtitle="Every tool you need to transform a single spark into a global phenomenon."
+        title={t("studioPage.arsenal.title")}
+        subtitle={t("studioPage.arsenal.subtitle")}
       />
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
         {sections.map((section, idx) => (
           <ServiceCard key={idx} {...section} />
         ))}
@@ -364,48 +403,62 @@ const ServicesGrid = () => {
 };
 
 const AdvancedLabs = () => {
+  const { t } = useTranslation();
   return (
-    <section className="bg-black/20 py-32 rounded-[4rem] mx-4 md:mx-12 overflow-hidden border border-white/5 relative">
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[120px] -mr-48 -mt-48 rounded-full" />
+    <section className="bg-black/30 py-48 rounded-[6rem] mx-4 md:mx-16 overflow-hidden border border-white/5 relative shadow-[0_50px_150px_rgba(0,0,0,0.5)]">
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 blur-[150px] -mr-64 -mt-64 rounded-full" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/5 blur-[150px] -ml-64 -mb-64 rounded-full" />
+      
       <div className="container-responsive relative z-10">
         <SectionTitle 
-          title="The Forge: Advanced Labs"
-          subtitle="Push the boundaries of storytelling with our experimental high-end service pods."
+          title={t("studioPage.forge.title")}
+          subtitle={t("studioPage.forge.subtitle")}
         />
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* World Building Lab */}
-          <div className="lg:col-span-2 glass-card p-12 rounded-[3rem] overflow-hidden group">
-            <div className="flex flex-col md:flex-row gap-12">
-              <div className="flex-1 space-y-8">
-                <div className="w-16 h-16 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center ring-1 ring-secondary/20">
-                  <Map size={32} />
+          <div className="lg:col-span-2 glass-card p-16 rounded-[4rem] overflow-hidden group border border-white/5">
+            <div className="flex flex-col md:flex-row gap-20">
+              <div className="flex-1 space-y-10">
+                <div className="w-24 h-24 rounded-3xl bg-secondary/10 text-secondary flex items-center justify-center ring-1 ring-secondary/20 shadow-2xl group-hover:scale-110 transition-transform duration-700">
+                  <Map size={48} />
                 </div>
-                <h3 className="text-3xl font-serif font-bold">World Building Lab</h3>
-                <p className="text-muted-foreground italic text-lg leading-relaxed">
-                  "Map your thoughts into reality. Define the topography, culture, and architecture of your imagination."
+                <h3 className="text-4xl md:text-5xl font-serif font-black leading-tight">{t("studioPage.forge.world.title")}</h3>
+                <p className="text-muted-foreground italic text-xl leading-relaxed opacity-80">
+                  "{t("studioPage.forge.world.desc")}"
                 </p>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4 text-sm font-bold text-primary">
-                    <ChevronRight size={16} /> Interactive Map Preview
+                <div className="space-y-6 pt-6">
+                  <div className="flex items-center gap-6 text-base font-black text-primary uppercase tracking-widest">
+                    <ChevronRight size={20} /> {t("studioPage.forge.world.preview")}
                   </div>
-                  <div className="flex items-center gap-4 text-sm font-bold text-white/40">
-                    <ChevronRight size={16} /> Character Evolution Tree
+                  <div className="flex items-center gap-6 text-base font-black text-white/30 uppercase tracking-widest">
+                    <ChevronRight size={20} /> {t("studioPage.forge.world.evolution")}
                   </div>
                 </div>
-                <Button variant="outline" className="rounded-full border-primary/20 text-primary hover:bg-primary/10 px-8 mt-4">Enter the Lab</Button>
+                <Button variant="outline" className="h-16 rounded-2xl border-primary/20 text-primary hover:bg-primary/10 px-12 mt-10 text-xs font-black uppercase tracking-[0.2em] ring-1 ring-primary/20">
+                   {t("studioPage.forge.world.cta")}
+                </Button>
               </div>
-              <div className="flex-1 relative aspect-[4/3] md:aspect-auto min-h-[300px]">
-                 <div className="absolute inset-0 bg-[#0f0f10] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group-hover:ring-primary/30 transition-all shadow-2xl">
-                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1548345680-f5475ee511d7?q=80&w=1000')] bg-cover opacity-20 mix-blend-luminosity" />
+              <div className="flex-1 relative aspect-[4/3] md:aspect-auto min-h-[400px]">
+                 <div className="absolute inset-0 bg-[#0a0a0b] rounded-[3rem] overflow-hidden ring-1 ring-white/10 group-hover:ring-primary/40 transition-all duration-1000 shadow-2xl">
+                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1548345680-f5475ee511d7?q=80&w=1000')] bg-cover opacity-30 mix-blend-luminosity grayscale group-hover:grayscale-0 transition-all duration-1000" />
                     <motion.div 
-                      className="absolute top-1/2 left-1/3 w-4 h-4 bg-primary rounded-full shadow-[0_0_20px_rgba(255,215,0,0.8)]"
-                      animate={{ scale: [1, 1.5, 1], opacity: [0.8, 1, 0.8] }}
-                      transition={{ duration: 2, repeat: Infinity }}
+                      className="absolute top-1/2 left-1/3 w-6 h-6 bg-primary rounded-full shadow-[0_0_30px_rgba(255,215,0,0.8)] z-20"
+                      animate={{ scale: [1, 1.8, 1], opacity: [0.6, 1, 0.6] }}
+                      transition={{ duration: 3, repeat: Infinity }}
                     />
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                       <div className="w-[80%] h-[80%] border border-primary/10 rounded-full animate-[spin_60s_linear_infinite]" />
-                       <div className="w-[60%] h-[60%] border border-primary/5 rounded-full animate-[spin_40s_linear_infinite_reverse]" />
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+                       <div className="w-[85%] h-[85%] border border-primary/20 rounded-full animate-[spin_80s_linear_infinite]" />
+                       <div className="w-[65%] h-[65%] border border-primary/10 rounded-full animate-[spin_60s_linear_infinite_reverse]" />
+                    </div>
+                    {/* UI HUD Overlay */}
+                    <div className="absolute top-10 left-10 p-6 glass rounded-[1.5rem] border border-white/10 space-y-3 z-20">
+                       <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-white/60">LIVE ANALYTICS</span>
+                       </div>
+                       <div className="text-primary font-black uppercase text-xs">REGION: ELDORIA</div>
+                       <div className="text-white/40 text-[9px] uppercase tracking-widest">STABILITY: 94%</div>
                     </div>
                  </div>
               </div>
@@ -413,89 +466,93 @@ const AdvancedLabs = () => {
           </div>
           
           {/* Interactive Experience */}
-          <div className="glass-card p-10 rounded-[3rem] flex flex-col justify-between group overflow-hidden relative">
-             <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity blur-3xl rounded-full" />
-             <div className="space-y-6">
-               <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                 <Radio size={24} />
+          <div className="glass-card p-14 rounded-[4rem] flex flex-col justify-between group overflow-hidden relative border border-white/5">
+             <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity blur-[100px] rounded-full" />
+             <div className="space-y-8">
+               <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/20 shadow-2xl">
+                 <Radio size={32} />
                </div>
-               <h3 className="text-2xl font-serif font-bold">Visual Novel Experiences</h3>
-               <p className="text-sm text-muted-foreground leading-loose">Transform your narrative into an interactive choice-based epic.</p>
+               <h3 className="text-3xl font-serif font-black leading-tight">{t("studioPage.forge.novel.title")}</h3>
+               <p className="text-lg text-muted-foreground leading-relaxed opacity-70 italic">{t("studioPage.forge.novel.desc")}</p>
              </div>
-             <div className="mt-12 space-y-3 relative">
-                <div className="absolute -left-10 -right-10 top-0 bottom-0 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
-                <motion.div whileHover={{ scale: 1.02 }} className="w-full p-5 rounded-2xl bg-primary/20 text-primary border border-primary/40 text-xs font-black uppercase tracking-wider text-center cursor-pointer shadow-lg shadow-primary/5">
-                  Reclaim the Throne
+             <div className="mt-20 space-y-4 relative">
+                <div className="absolute -left-14 -right-14 top-0 bottom-0 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
+                <motion.div whileHover={{ scale: 1.05 }} className="w-full p-6 rounded-[1.5rem] bg-primary text-black border border-primary/40 text-[11px] font-black uppercase tracking-[0.2em] text-center cursor-pointer shadow-2xl shadow-primary/10">
+                  {t("studioPage.forge.novel.choice1")}
                 </motion.div>
-                <div className="w-full p-5 rounded-2xl bg-white/5 text-white/30 border border-white/5 text-xs font-black uppercase tracking-wider text-center opacity-50">
-                  Exile into the Wasteland
+                <div className="w-full p-6 rounded-[1.5rem] bg-white/5 text-white/20 border border-white/5 text-[11px] font-black uppercase tracking-[0.2em] text-center opacity-40">
+                  {t("studioPage.forge.novel.choice2")}
                 </div>
              </div>
           </div>
           
           {/* Author Brand Builder */}
-          <div className="lg:col-span-1 glass-card p-10 rounded-[3rem] group">
-             <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-8">
-               <Users size={24} />
+          <div className="lg:col-span-1 glass-card p-14 rounded-[4rem] group border border-white/5">
+             <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-10 ring-1 ring-primary/20 shadow-2xl">
+               <Users size={32} />
              </div>
-             <h3 className="text-2xl font-serif font-bold mb-4">Author Brand Builder</h3>
-             <p className="text-sm text-muted-foreground mb-10 leading-relaxed">From "Writer" to "Icon". We sculpt your professional identity for the global stage.</p>
-             <div className="flex items-center gap-6 p-4 rounded-3xl bg-black/40 border border-white/5">
-                <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
-                   <div className="w-8 h-8 rounded-full bg-white/10" />
+             <h3 className="text-3xl font-serif font-black leading-tight mb-6">{t("studioPage.forge.brand.title")}</h3>
+             <p className="text-lg text-muted-foreground mb-12 leading-relaxed opacity-70 italic">{t("studioPage.forge.brand.desc")}</p>
+             <div className="flex items-center gap-8 p-6 rounded-[2rem] bg-black/40 border border-white/5 shadow-inner">
+                <div className="w-24 h-24 rounded-3xl bg-white/5 flex items-center justify-center overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-1000">
+                   <div className="w-12 h-12 rounded-full bg-white/10" />
                 </div>
-                <ArrowRight size={24} className="text-primary animate-pulse" />
-                <div className="w-16 h-16 rounded-2xl bg-primary/20 border border-primary/40 flex items-center justify-center overflow-hidden shadow-[0_0_20px_rgba(255,215,0,0.3)] transition-all duration-700 group-hover:scale-110">
-                   <Star size={24} className="text-primary" />
+                <ArrowRight size={32} className="text-primary animate-pulse" />
+                <div className="w-24 h-24 rounded-3xl bg-primary/20 border border-primary/40 flex items-center justify-center overflow-hidden shadow-[0_0_40px_rgba(255,215,0,0.4)] transition-all duration-1000 group-hover:scale-110">
+                   <Star size={36} className="text-primary" />
                 </div>
              </div>
-             <div className="mt-8 text-[10px] font-black uppercase tracking-widest text-white/30 text-center">Transforming Identity</div>
+             <div className="mt-10 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 text-center">{t("studioPage.forge.brand.label")}</div>
           </div>
 
           {/* Audiobook Studio */}
-          <div className="lg:col-span-2 glass-card p-10 rounded-[3rem] group overflow-hidden relative">
-             <div className="flex flex-col md:flex-row items-center gap-10">
+          <div className="lg:col-span-2 glass-card p-14 rounded-[4rem] group overflow-hidden relative border border-white/5">
+             <div className="flex flex-col md:flex-row items-center gap-16">
                <div className="w-full md:w-1/3">
                   <div className="relative aspect-square">
-                     <div className="absolute inset-0 bg-primary/10 rounded-full animate-pulse blur-3xl" />
-                     <div className="relative aspect-square rounded-[2rem] bg-black/60 border border-white/10 flex items-center justify-center overflow-hidden ring-1 shadow-2xl">
-                        <Mic size={64} className="text-primary opacity-20 group-hover:opacity-100 transition-opacity duration-700" />
-                        <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-primary/20 to-transparent" />
+                     <div className="absolute inset-0 bg-primary/20 rounded-full animate-pulse blur-[100px] opacity-40" />
+                     <div className="relative aspect-square rounded-[3rem] bg-black/60 border border-white/10 flex items-center justify-center overflow-hidden ring-1 shadow-[0_30px_100px_rgba(0,0,0,0.4)]">
+                        <Mic size={96} className="text-primary opacity-20 group-hover:opacity-100 transition-opacity duration-1000" />
+                        <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-primary/30 to-transparent" />
                      </div>
                   </div>
                </div>
-               <div className="flex-1 space-y-6">
+               <div className="flex-1 space-y-10">
                  <div className="flex items-center justify-between">
-                   <h3 className="text-2xl font-serif font-bold">Audiobook Studio</h3>
-                   <div className="flex gap-2">
-                      <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Studio Session</span>
+                   <h3 className="text-3xl font-serif font-black leading-tight">{t("studioPage.forge.audio.title")}</h3>
+                   <div className="flex gap-4 items-center">
+                      <div className="w-3 h-3 rounded-full bg-red-600 animate-pulse shadow-[0_0_15px_rgba(220,38,38,1)]" />
+                      <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40">{t("studioPage.forge.audio.session")}</span>
                    </div>
                  </div>
                  
-                 <div className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-4">
-                    <div className="flex justify-between items-center text-xs font-bold text-muted-foreground mb-4">
+                 <div className="p-10 rounded-[2.5rem] bg-[#0c0c0e] border border-white/5 space-y-8 shadow-inner">
+                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
                        <span>The Lost Prophet - Chapter 12</span>
-                       <span>2:45 / 14:00</span>
+                       <span className="text-primary">2:45 / 14:00</span>
                     </div>
-                    <div className="flex items-end gap-1 h-12">
-                       {[...Array(40)].map((_, i) => (
+                    <div className="flex items-end gap-1.5 h-20">
+                       {[...Array(45)].map((_, i) => (
                          <motion.div 
                            key={i} 
-                           className="flex-1 bg-primary/40 rounded-full"
-                           animate={{ height: [Math.random() * 20 + 5 + i/2, Math.random() * 40 + 10, Math.random() * 20 + 5] }}
-                           transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.05 }}
+                           className="flex-1 bg-primary/40 rounded-full shadow-[0_0_10px_rgba(255,215,0,0.1)]"
+                           animate={{ height: [Math.random() * 30 + 10 + i/2.5, Math.random() * 70 + 20, Math.random() * 30 + 10] }}
+                           transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.04 }}
                          />
                        ))}
                     </div>
+                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-primary/60">
+                       <span className="flex items-center gap-2 italic">{t("studioPage.forge.audio.narrator")}</span>
+                       <span className="flex items-center gap-2"><Sparkles size={12}/> {t("studioPage.forge.audio.mastered")}</span>
+                    </div>
                  </div>
                  
-                 <div className="flex gap-4">
-                    <Button size="sm" variant="ghost" className="rounded-full bg-white/5 gap-2 text-[10px] font-bold uppercase tracking-widest">
-                       <Users size={12} /> Voice A
+                 <div className="flex gap-6">
+                    <Button size="sm" variant="ghost" className="h-12 rounded-xl bg-white/5 gap-3 text-[10px] font-black uppercase tracking-widest px-6 hover:bg-white/10 transition-all">
+                       <Users size={14} /> {t("studioPage.forge.audio.voiceA")}
                     </Button>
-                    <Button size="sm" variant="ghost" className="rounded-full bg-primary/10 text-primary gap-2 text-[10px] font-bold uppercase tracking-widest ring-1 ring-primary/20">
-                       <Users size={12} /> Voice B
+                    <Button size="sm" variant="ghost" className="h-12 rounded-xl bg-primary/20 text-primary gap-3 text-[10px] font-black uppercase tracking-widest px-6 ring-1 ring-primary/40 hover:bg-primary/30 transition-all">
+                       <Users size={14} /> {t("studioPage.forge.audio.voiceB")}
                     </Button>
                  </div>
                </div>
@@ -503,15 +560,18 @@ const AdvancedLabs = () => {
           </div>
 
           {/* Film Pitch Studio */}
-          <div className="lg:col-span-3 glass-card p-12 rounded-[3.5rem] group relative overflow-hidden">
-             <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background z-10 pointer-events-none" />
+          <div className="lg:col-span-3 glass-card p-20 rounded-[5rem] group relative overflow-hidden border border-white/5">
+             <div className="absolute inset-x-0 top-0 h-96 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+             <div className="absolute inset-y-0 left-0 w-96 bg-gradient-to-r from-background via-transparent to-transparent z-10 pointer-events-none" />
+             <div className="absolute inset-y-0 right-0 w-96 bg-gradient-to-l from-background via-transparent to-transparent z-10 pointer-events-none" />
+             
              <div className="relative z-20">
                 <SectionTitle 
-                  title="Film Pitch Studio"
-                  subtitle="Prepare your story for the silver screen with industry-standard pitch decks and visual narratives."
+                  title={t("studioPage.forge.film.title")}
+                  subtitle={t("studioPage.forge.film.subtitle")}
                 />
                 
-                <div className="flex gap-6 overflow-hidden mt-12 py-8">
+                <div className="flex gap-10 overflow-hidden mt-20 py-12 px-10">
                    {[
                      { title: "ELDORIA", img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400" },
                      { title: "NEON RIOT", img: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=400" },
@@ -521,11 +581,12 @@ const AdvancedLabs = () => {
                    ].map((poster, i) => (
                      <motion.div 
                         key={i}
-                        whileHover={{ scale: 1.1, zIndex: 30, rotateY: 5 }}
-                        className="min-w-[220px] aspect-[2/3] rounded-2xl bg-white/5 border border-white/10 overflow-hidden relative shadow-2xl cursor-pointer"
+                        whileHover={{ scale: 1.15, zIndex: 30, rotateY: 10 }}
+                        className="min-w-[280px] aspect-[2/3] rounded-[2rem] bg-black border border-white/10 overflow-hidden relative shadow-[0_30px_100px_rgba(0,0,0,0.6)] cursor-pointer transition-all duration-700"
                      >
-                        <img src={poster.img} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt={poster.title} />
-                        <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black to-transparent text-[10px] font-black uppercase tracking-widest text-white">
+                        <img src={poster.img} className="absolute inset-0 w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" alt={poster.title} />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+                        <div className="absolute inset-x-0 bottom-0 p-8 text-center text-[11px] font-black uppercase tracking-[0.4em] text-white group-hover:text-primary transition-colors">
                            {poster.title}
                         </div>
                      </motion.div>
@@ -540,34 +601,36 @@ const AdvancedLabs = () => {
 };
 
 const FinalCTA = () => {
+  const { t } = useTranslation();
   return (
-    <section className="py-48 text-center relative overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[600px] bg-primary/10 blur-[200px] rounded-full z-0" />
-      <div className="container-responsive relative z-10 space-y-12">
+    <section className="py-72 text-center relative overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[800px] bg-primary/10 blur-[250px] rounded-full z-0 opacity-40 animate-pulse" />
+      <div className="container-responsive relative z-10 space-y-20">
         <motion.div
            initial={{ opacity: 0, scale: 0.95 }}
            whileInView={{ opacity: 1, scale: 1 }}
            viewport={{ once: true }}
-           className="space-y-6"
+           className="space-y-10"
         >
-          <h2 className="text-5xl md:text-8xl font-serif font-black tracking-tight">
-            This is not just a story.<br/>
-            <span className="text-gradient">This is your universe.</span>
+          <h2 className="text-6xl md:text-[10rem] font-serif font-black tracking-tight leading-[0.85] drop-shadow-[0_20px_50px_rgba(0,0,0,1)]">
+            {t("studioPage.final.title")}<br/>
+            <span className="text-gradient drop-shadow-2xl">{t("studioPage.final.titleHighlight")}</span>
           </h2>
-          <p className="text-muted-foreground text-xl max-w-2xl mx-auto">
-            Ready to give your narrative the cinematic treatment it deserves? Join the elite creators at Hekayaty Studio.
+          <p className="text-white/60 text-2xl md:text-3xl max-w-3xl mx-auto leading-relaxed italic font-medium">
+            {t("studioPage.final.subtitle")}
           </p>
         </motion.div>
         
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
+          className="pt-10"
         >
-          <Button size="lg" className="h-20 px-16 rounded-[2rem] bg-white text-black hover:bg-white/90 hover:scale-105 transition-all text-xl font-black group overflow-hidden relative">
-            <span className="relative z-10">Enter Hekayaty Studio</span>
-            <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-20 transition-opacity" />
+          <Button size="lg" className="h-24 px-20 rounded-[3rem] bg-white text-black hover:bg-white/90 hover:scale-[1.15] transition-all text-2xl font-black group overflow-hidden relative shadow-[0_30px_100px_rgba(255,255,255,0.15)] border-none">
+            <span className="relative z-10">{t("studioPage.final.cta")}</span>
+            <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-30 transition-opacity duration-700" />
           </Button>
         </motion.div>
       </div>
@@ -576,8 +639,12 @@ const FinalCTA = () => {
 };
 
 const HekayatyStudio = () => {
+  const { i18n } = useTranslation();
   return (
-    <div className="min-h-screen bg-[#0a0a0b] text-white font-sans selection:bg-primary/30">
+    <div className={cn(
+        "min-h-screen bg-[#050506] text-white font-sans selection:bg-primary/40 selection:text-white",
+        i18n.language === 'ar' ? 'font-arabic' : 'font-sans'
+    )}>
       <Navbar />
       <Hero />
       <JourneyBar />
@@ -587,16 +654,16 @@ const HekayatyStudio = () => {
       <FinalCTA />
       
       {/* Footer / Contact */}
-      <footer className="py-20 border-t border-white/5">
-        <div className="container-responsive flex flex-col md:flex-row justify-between items-center gap-8 text-muted-foreground">
-          <div className="font-serif font-bold text-2xl text-gradient">Hekayaty Studio</div>
-          <div className="flex gap-12 text-sm font-medium">
+      <footer className="py-32 border-t border-white/5 bg-[#030304]">
+        <div className="container-responsive flex flex-col md:flex-row justify-between items-center gap-16 text-muted-foreground">
+          <div className="font-serif font-black text-4xl text-gradient tracking-tighter">Hekayaty Studio</div>
+          <div className="flex gap-20 text-xs font-black uppercase tracking-[0.3em]">
              <a href="#" className="hover:text-primary transition-colors">Instagram</a>
              <a href="#" className="hover:text-primary transition-colors">TikTok</a>
              <a href="#" className="hover:text-primary transition-colors">Twitter</a>
              <a href="#" className="hover:text-primary transition-colors">Support</a>
           </div>
-          <div className="text-xs tracking-widest uppercase opacity-20">© 2026 Hekayaty Collective</div>
+          <div className="text-[10px] tracking-[0.5em] font-black uppercase opacity-20">© 2026 Hekayaty Collective</div>
         </div>
       </footer>
     </div>

@@ -920,5 +920,79 @@
             "trackingLogistics": "Tracking & Logistics",
             "waitingCreator": "Waiting for creator to dispatch..."
         }
+    },
+    "studioPage": {
+        "hero": {
+            "tagline": "The Hub of Imagination",
+            "title1": "Turn Your Story",
+            "title2": "Into a Universe",
+            "subtitle": "From writing to branding, from imagination to reality. Transform your narrative into an immersive brand experience.",
+            "ctaPrimary": "Start Your Journey",
+            "ctaSecondary": "Explore Services"
+        },
+        "arsenal": {
+            "title": "Creative Arsenal",
+            "subtitle": "Every tool you need to transform a single spark into a global phenomenon.",
+            "merch": {
+                "title": "Product & Merch Design",
+                "desc": "Tangible pieces of your world, crafted for your fans.",
+                "items": ["Story T-shirts", "Box Collections", "Posters & Art", "Special Edition Covers"]
+            },
+            "media": {
+                "title": "Marketing & Media",
+                "desc": "Visual storytelling that captivates and attracts audiences.",
+                "items": ["Cinematic Trailers", "Reels & TikTok UI", "Social Media Mockups", "Campaign Visuals"]
+            },
+            "music": {
+                "title": "Music & Sound",
+                "desc": "The sonic soul of your universe, composed with passion.",
+                "items": ["Theme Songs", "Background Score", "Character Sound Identity", "Atmospheric SFX"]
+            },
+            "branding": {
+                "title": "Advertising & Branding",
+                "desc": "Building an author brand that stands the test of time.",
+                "items": ["Campaign Dashboards", "Branding Kits", "Author Identity Cards", "Strategy Roadmap"]
+            }
+        },
+        "forge": {
+            "title": "The Forge: Advanced Labs",
+            "subtitle": "Push the boundaries of storytelling with our experimental high-end service pods.",
+            "world": {
+                "title": "World Building Lab",
+                "desc": "Map your thoughts into reality. Define the topography, culture, and architecture of your imagination.",
+                "preview": "Interactive Map Preview",
+                "evolution": "Character Evolution Tree",
+                "cta": "Enter the Lab"
+            },
+            "novel": {
+                "title": "Visual Novel Experiences",
+                "desc": "Transform your narrative into an interactive choice-based epic.",
+                "choice1": "Reclaim the Throne",
+                "choice2": "Exile into the Wasteland"
+            },
+            "brand": {
+                "title": "Author Brand Builder",
+                "desc": "From 'Writer' to 'Icon'. We sculpt your professional identity for the global stage.",
+                "label": "Transforming Identity"
+            },
+            "audio": {
+                "title": "Audiobook Studio",
+                "session": "Studio Session",
+                "narrator": "Narrator: Elena Storm",
+                "mastered": "AI Voice Mastered",
+                "voiceA": "Voice A",
+                "voiceB": "Voice B"
+            },
+            "film": {
+                "title": "Film Pitch Studio",
+                "subtitle": "Prepare your story for the silver screen with industry-standard pitch decks and visual narratives."
+            }
+        },
+        "final": {
+            "title": "This is not just a story.",
+            "titleHighlight": "This is your universe.",
+            "subtitle": "Ready to give your narrative the cinematic treatment it deserves? Join the elite creators at Hekayaty Studio.",
+            "cta": "Enter Hekayaty Studio"
+        }
     }
 }
