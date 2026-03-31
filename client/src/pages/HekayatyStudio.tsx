@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Sparkles,
   Shirt,
@@ -19,36 +19,50 @@ import {
   Video,
   PenTool,
   Trophy,
-  Package
+  Package,
+  Cpu,
+  Zap,
+  Activity,
+  Layers as LayersIcon
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
-// --- Components ---
+// --- Advanced UI Components ---
 
-const FloatingParticles = () => {
+const HUDElement = ({ className, children }: { className?: string; children?: React.ReactNode }) => (
+    <div className={cn("absolute pointer-events-none opacity-20 group-hover:opacity-60 transition-opacity duration-1000", className)}>
+        <div className="flex items-center gap-3 font-mono text-[9px] tracking-[0.3em] text-primary">
+            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+            {children}
+        </div>
+    </div>
+);
+
+const FloatingParticles = ({ color = "primary" }: { color?: "primary" | "cyan" | "violet" }) => {
+  const bgColor = color === "primary" ? "bg-primary/30" : color === "cyan" ? "bg-cyan-400/30" : "bg-violet-500/30";
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {[...Array(40)].map((_, i) => (
         <motion.div
            key={i}
-           className="absolute w-1 h-1 bg-primary/20 rounded-full"
+           className={cn("absolute w-[2px] h-[2px] rounded-full", bgColor)}
            initial={{ 
              x: Math.random() * 100 + "%", 
              y: Math.random() * 100 + "%",
              opacity: 0 
            }}
            animate={{ 
-             y: [null, "-40%"],
-             opacity: [0, 0.3, 0],
-             scale: [1, 2.5, 1]
+             y: [null, "-50%"],
+             opacity: [0, 0.5, 0],
+             scale: [1, 3, 1]
            }}
            transition={{ 
              duration: Math.random() * 10 + 10, 
              repeat: Infinity, 
              ease: "linear",
-             delay: Math.random() * 20
+             delay: Math.random() * 15
            }}
         />
       ))}
@@ -56,180 +70,178 @@ const FloatingParticles = () => {
   );
 };
 
-const SectionHeader = ({ title, subtitle, layer }: { title: string; subtitle?: string; layer?: string }) => (
-  <div className="mb-24 text-center space-y-6">
-    {layer && (
-        <motion.span 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          className="text-[11px] font-black uppercase tracking-[0.6em] text-primary block mb-4"
-        >
-          {layer}
-        </motion.span>
-    )}
-    <motion.h2 
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="text-5xl md:text-8xl font-serif font-black text-gradient leading-tight"
-    >
-      {title}
-    </motion.h2>
-    {subtitle && (
-      <motion.p 
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.15 }}
-        className="text-muted-foreground text-xl md:text-2xl max-w-4xl mx-auto font-sans leading-relaxed opacity-60"
-      >
-        {subtitle}
-      </motion.p>
-    )}
-    <motion.div 
-      initial={{ width: 0 }}
-      whileInView={{ width: "120px" }}
-      viewport={{ once: true }}
-      className="h-1 bg-primary/30 rounded-full mt-10 mx-auto"
-    />
-  </div>
-);
-
-const ServiceCard = ({ icon: Icon, title, items, variant = "brown" }: { icon: any; title: string; items: string[]; variant?: "brown" | "gold" }) => {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className={cn(
-          "p-12 rounded-[4rem] border transition-all duration-700 relative overflow-hidden group",
-          variant === "brown" 
-            ? "bg-[#24160a]/40 border-[#d4af37]/10 hover:border-primary/30" 
-            : "bg-gradient-to-br from-primary/10 via-transparent to-transparent border-primary/20 hover:border-primary/50"
-      )}
-    >
-      <div className="absolute -top-12 -right-12 p-8 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-1000 scale-150">
-        <Icon size={200} />
-      </div>
-      
-      <div className="relative z-10 space-y-10">
-        <div className={cn(
-            "w-20 h-20 rounded-3xl flex items-center justify-center ring-1 transition-all duration-700 shadow-2xl group-hover:scale-110",
-            variant === "brown" ? "bg-primary/10 text-primary ring-primary/20" : "bg-primary text-primary-foreground ring-primary"
-        )}>
-          <Icon size={36} />
+const CinematicSectionHeader = ({ layer, title, subtitle, variant = "gold" }: { layer: string; title: string; subtitle?: string; variant?: "gold" | "cyan" | "violet" }) => {
+    const gradientClass = variant === "gold" ? "text-gradient" : variant === "cyan" ? "bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-600 drop-shadow-[0_0_20px_rgba(34,211,238,0.5)]" : "bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-600 drop-shadow-[0_0_20px_rgba(139,92,246,0.5)]";
+    return (
+        <div className="mb-32 space-y-6 text-center lg:text-left">
+            <motion.div
+                initial={{ width: 0 }}
+                whileInView={{ width: "80px" }}
+                className={cn("h-[2px] mb-8 mx-auto lg:mx-0", variant === "gold" ? "bg-primary" : variant === "cyan" ? "bg-cyan-400" : "bg-violet-400")}
+            />
+            <motion.span 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className={cn("text-[12px] font-black uppercase tracking-[0.8em] block mb-4", variant === "gold" ? "text-primary/60" : variant === "cyan" ? "text-cyan-400/60" : "text-violet-400/60")}
+            >
+              {layer}
+            </motion.span>
+            <motion.h2 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className={cn("text-6xl md:text-[8rem] font-serif font-black leading-[0.9] tracking-tighter", gradientClass)}
+            >
+              {title}
+            </motion.h2>
+            {subtitle && (
+              <motion.p 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.15 }}
+                className="text-white/40 text-xl md:text-3xl max-w-4xl font-sans font-light italic leading-relaxed"
+              >
+                {subtitle}
+              </motion.p>
+            )}
         </div>
-        
-        <h3 className="text-3xl font-serif font-black text-white group-hover:text-primary transition-colors">{title}</h3>
-        
-        <ul className="space-y-5">
-          {items.map((item, idx) => (
-            <li key={idx} className="flex items-center gap-4 text-sm font-bold text-white/40 group-hover:text-white/70 transition-all font-sans">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary shadow-[0_0_10px_rgba(255,215,0,0.5)]" />
-              {item}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </motion.div>
-  );
+    );
+};
+
+const PremiumServiceCard = ({ icon: Icon, title, items, variant = "gold" }: { icon: any; title: string; items: string[]; variant?: "gold" | "cyan" | "violet" }) => {
+    const borderColor = variant === "gold" ? "border-primary/20 hover:border-primary/60 hover:shadow-[0_0_50px_rgba(212,175,55,0.2)]" : variant === "cyan" ? "border-cyan-400/20 hover:border-cyan-400/60 hover:shadow-[0_0_50px_rgba(34,211,238,0.2)]" : "border-violet-400/20 hover:border-violet-400/60 hover:shadow-[0_0_50px_rgba(139,92,246,0.2)]";
+    const iconColor = variant === "gold" ? "text-primary" : variant === "cyan" ? "text-cyan-400" : "text-violet-400";
+    const glowColor = variant === "gold" ? "bg-primary/5" : variant === "cyan" ? "bg-cyan-400/5" : "bg-violet-400/5";
+
+    return (
+        <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className={cn(
+                "p-14 rounded-[4rem] bg-[#1a110a]/40 backdrop-blur-2xl border transition-all duration-1000 relative overflow-hidden group h-full flex flex-col",
+                borderColor
+            )}
+        >
+            <HUDElement className="top-8 right-8">DATA_SYNC_ACTIVE</HUDElement>
+            <HUDElement className="bottom-8 left-8">CRYSTAL_NODE_[{Math.floor(Math.random() * 999)}]</HUDElement>
+            
+            <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000", glowColor)} />
+            
+            <div className="relative z-10 flex flex-col h-full space-y-12">
+                <div className={cn("w-24 h-24 rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-1000 group-hover:scale-110", iconColor)}>
+                    <Icon size={44} strokeWidth={1} className="relative z-10" />
+                    <div className={cn("absolute inset-0 blur-2xl opacity-0 group-hover:opacity-40 transition-opacity", iconColor === "text-primary" ? "bg-primary" : iconColor === "text-cyan-400" ? "bg-cyan-400" : "bg-violet-400")} />
+                </div>
+                
+                <h3 className="text-4xl font-serif font-black text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/40 transition-all">{title}</h3>
+                
+                <ul className="space-y-6 flex-1">
+                    {items.map((item, idx) => (
+                        <li key={idx} className="flex items-center gap-5 text-base font-bold text-white/30 group-hover:text-white/80 transition-all font-sans">
+                            <Zap size={14} className={cn("shrink-0", iconColor)} />
+                            {item}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            
+            <div className={cn("absolute bottom-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000", iconColor === "text-primary" ? "bg-primary" : iconColor === "text-cyan-400" ? "bg-cyan-400" : "bg-violet-400")} />
+        </motion.div>
+    );
 };
 
 // --- Page Sections ---
 
-const Hero = () => {
-  const { t } = useTranslation();
-  return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#120a05] via-transparent to-[#120a05] z-10 opacity-90" />
-        <div className="absolute inset-0 bg-[#120a05]/60 z-10" />
-        <motion.div 
-            initial={{ scale: 1.05 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 3, ease: "easeOut" }}
-            className="w-full h-full"
-        >
-            <img 
-                src="/images/studio-bg.png" 
-                alt="Studio Universe" 
-                className="w-full h-full object-cover object-center grayscale-[0.3] sepia-[0.2]"
-            />
-        </motion.div>
-        <FloatingParticles />
-      </div>
-      
-      <div className="container-responsive relative z-20 text-center space-y-16">
-        <motion.div
-           initial={{ opacity: 0, scale: 0.9 }}
-           animate={{ opacity: 1, scale: 1 }}
-           transition={{ duration: 1.5 }}
-        >
-          <span className="px-10 py-4 rounded-full border border-primary/40 bg-[#2d1b0d]/80 text-primary text-[11px] font-black uppercase tracking-[0.6em] backdrop-blur-3xl shadow-2xl ring-1 ring-[#d4af37]/20">
-            {t("studioPage.hero.tagline")}
-          </span>
-        </motion.div>
-        
-        <motion.h1 
-          className="text-7xl md:text-[11rem] font-serif font-black tracking-tighter leading-[0.85] drop-shadow-[0_30px_60px_rgba(0,0,0,0.9)]"
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 1.2, ease: "easeOut" }}
-        >
-          <span className="block text-white mb-2">{t("studioPage.hero.title1")}</span>
-          <span className="block text-gradient">{t("studioPage.hero.title2")}</span>
-        </motion.h1>
-        
-        <motion.p 
-          className="text-2xl md:text-4xl text-white/60 max-w-5xl mx-auto font-sans leading-relaxed font-light italic"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 1.2 }}
-        >
-          {t("studioPage.hero.subtitle")}
-        </motion.p>
-
-        <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 2 }}
-            className="pt-24 flex flex-col items-center gap-10"
-        >
-            <div className="w-[1px] h-32 bg-gradient-to-b from-primary/60 to-transparent" />
-            <span className="text-[10px] font-black uppercase tracking-[0.8em] text-white/30 animate-pulse">Scroll to Discover</span>
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
-const LayerCore = () => {
+const PortfolioHero = () => {
     const { t } = useTranslation();
-    const coreServices = [
-        { title: t("studioPage.services.merch.title"), icon: Shirt, items: t("studioPage.services.merch.items", { returnObjects: true }) as string[] },
-        { title: t("studioPage.services.marketing.title"), icon: Megaphone, items: t("studioPage.services.marketing.items", { returnObjects: true }) as string[] },
-        { title: t("studioPage.services.music.title"), icon: Music, items: t("studioPage.services.music.items", { returnObjects: true }) as string[] },
-        { title: t("studioPage.services.branding.title"), icon: Layout, items: t("studioPage.services.branding.items", { returnObjects: true }) as string[] },
-        { title: t("studioPage.services.youtube.title"), icon: Youtube, items: t("studioPage.services.youtube.items", { returnObjects: true }) as string[] }
-    ];
-
+    const { scrollYProgress } = useScroll();
+    const y = useTransform(scrollYProgress, [0, 0.5], [0, 200]);
+    
     return (
-        <section className="container-responsive py-48">
-            <SectionHeader 
-                layer={t("studioPage.layers.core.title")}
-                title="The Foundation"
-                subtitle={t("studioPage.layers.core.subtitle")}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                {coreServices.map((s, i) => (
-                    <ServiceCard key={i} {...s} />
-                ))}
+        <section className="relative h-[110vh] flex items-center justify-center overflow-hidden">
+            <div className="absolute inset-0 z-0">
+                <div className="absolute inset-0 bg-gradient-to-b from-[#120a05] via-transparent to-[#120a05] z-10" />
+                <motion.div style={{ y }} className="w-full h-full">
+                    <img src="/images/studio-bg.png" className="w-full h-full object-cover object-center grayscale-[0.2] sepia-[0.4]" alt="Epic Background" />
+                </motion.div>
+                <div className="absolute inset-0 bg-black/40 z-10" />
+                <FloatingParticles color="primary" />
+            </div>
+            
+            <div className="container-responsive relative z-20 text-center space-y-16">
+                <motion.div
+                   initial={{ opacity: 0, letterSpacing: "0.2em" }}
+                   animate={{ opacity: 1, letterSpacing: "0.8em" }}
+                   transition={{ duration: 2 }}
+                   className="text-[12px] font-black uppercase text-primary mb-12 block"
+                >
+                    {t("studioPage.hero.tagline")}
+                </motion.div>
+                
+                <motion.h1 
+                    className="text-8xl md:text-[14rem] font-serif font-black tracking-tighter leading-[0.8] drop-shadow-[0_40px_80px_rgba(0,0,0,1)]"
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                >
+                    <span className="block text-white/90">{t("studioPage.hero.title1")}</span>
+                    <span className="block text-gradient mt-4">{t("studioPage.hero.title2")}</span>
+                </motion.h1>
+                
+                <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1, duration: 2 }}
+                    className="text-2xl md:text-5xl text-white/40 max-w-6xl mx-auto font-sans leading-relaxed font-extralight italic"
+                >
+                    {t("studioPage.hero.subtitle")}
+                </motion.p>
+            </div>
+            
+            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-8 opacity-40">
+                <div className="w-[1px] h-24 bg-gradient-to-b from-primary to-transparent" />
+                <span className="text-[10px] font-black uppercase tracking-[1em] text-white/40">SYSTEM_INIT</span>
             </div>
         </section>
     );
 };
 
-const LayerHighValue = () => {
+const LayerCorePortfolio = () => {
+    const { t } = useTranslation();
+    const coreServices = [
+        { title: t("studioPage.services.merch.title"), icon: Shirt, items: t("studioPage.services.merch.items", { returnObjects: true }) as string[] },
+        { title: t("studioPage.services.marketing.title"), icon: Megaphone, items: t("studioPage.services.marketing.items", { returnObjects: true }) as string[] },
+        { title: t("studioPage.services.youtube.title"), icon: Youtube, items: t("studioPage.services.youtube.items", { returnObjects: true }) as string[] }
+    ];
+
+    return (
+        <section className="relative py-72 overflow-hidden">
+            <div className="absolute top-0 right-0 w-2/3 h-full z-0 opacity-40 group overflow-hidden">
+                <img src="/images/studio-core.png" className="w-full h-full object-cover object-center rounded-l-[10rem] grayscale-[0.5] hover:grayscale-0 transition-all duration-2000" alt="Core Craft" />
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#120a05]/80 to-[#120a05]" />
+            </div>
+            
+            <div className="container-responsive relative z-10">
+                <CinematicSectionHeader 
+                    layer={t("studioPage.layers.core.title")}
+                    title="THE ORIGIN"
+                    subtitle={t("studioPage.layers.core.subtitle")}
+                    variant="gold"
+                />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:pr-32">
+                    {coreServices.map((s, i) => (
+                        <PremiumServiceCard key={i} {...s} variant="gold" />
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+const LayerHighValuePortfolio = () => {
     const { t } = useTranslation();
     const highValueServices = [
         { title: t("studioPage.services.audiobook.title"), icon: Mic, items: t("studioPage.services.audiobook.items", { returnObjects: true }) as string[] },
@@ -238,24 +250,32 @@ const LayerHighValue = () => {
     ];
 
     return (
-        <section className="bg-[#1a0f05]/60 backdrop-blur-3xl py-48 border-y border-[#d4af37]/10">
-            <div className="container-responsive">
-                <SectionHeader 
+        <section className="relative py-72 overflow-hidden bg-[#1a110a]/50">
+            <div className="absolute top-0 left-0 w-1/2 h-full z-0 opacity-40 group overflow-hidden">
+                <img src="/images/studio-audio.png" className="w-full h-full object-cover object-center rounded-r-[10rem] border-r-4 border-cyan-400/20" alt="Audio Craft" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#120a05]/80 to-[#120a05]" />
+            </div>
+            
+            <div className="container-responsive relative z-10 flex flex-col items-end text-right">
+                <CinematicSectionHeader 
                     layer={t("studioPage.layers.highValue.title")}
-                    title="The Elite Craft"
+                    title="THE ASCENSION"
                     subtitle={t("studioPage.layers.highValue.subtitle")}
+                    variant="cyan"
                 />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:pl-32 w-full">
                     {highValueServices.map((s, i) => (
-                        <ServiceCard key={i} {...s} variant="gold" />
+                        <PremiumServiceCard key={i} {...s} variant="cyan" />
                     ))}
                 </div>
             </div>
+            <FloatingParticles color="cyan" />
         </section>
     );
 };
 
-const LayerPremium = () => {
+const LayerPremiumPortfolio = () => {
     const { t } = useTranslation();
     const premiumServices = [
         { title: t("studioPage.services.world.title"), icon: Map, items: t("studioPage.services.world.items", { returnObjects: true }) as string[] },
@@ -263,69 +283,73 @@ const LayerPremium = () => {
     ];
 
     return (
-        <section className="container-responsive py-48">
-            <SectionHeader 
-                layer={t("studioPage.layers.premium.title")}
-                title="The Future Horizon"
-                subtitle={t("studioPage.layers.premium.subtitle")}
-            />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                {premiumServices.map((s, i) => (
-                    <div key={i} className="bg-[#2d1b0d]/40 p-20 rounded-[5rem] border border-[#d4af37]/20 flex flex-col md:flex-row gap-16 items-center group overflow-hidden relative transition-all duration-1000 hover:border-primary/40">
-                         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                         <div className="w-40 h-40 rounded-[3rem] bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/30 shrink-0 group-hover:scale-110 shadow-2xl transition-transform duration-700">
-                             <s.icon size={80} />
-                         </div>
-                         <div className="space-y-8 flex-1">
-                             <h4 className="text-4xl font-serif font-black text-white group-hover:text-primary transition-colors">{s.title}</h4>
-                             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                {s.items.map((item, idx) => (
-                                    <li key={idx} className="text-base font-bold text-white/30 group-hover:text-white/60 transition-all font-sans flex items-center gap-4">
-                                        <div className="w-2 h-2 rounded-full bg-primary/20" />
-                                        {item}
-                                    </li>
-                                ))}
-                             </ul>
-                         </div>
-                    </div>
-                ))}
+        <section className="relative py-72 overflow-hidden">
+             <div className="absolute bottom-0 right-0 w-1/2 h-full z-0 opacity-40 group overflow-hidden">
+                <img src="/images/studio-world.png" className="w-full h-full object-cover object-center rounded-l-[10rem] border-l-4 border-violet-500/20" alt="World Craft" />
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#120a05]/80 to-[#120a05]" />
             </div>
             
-            {/* Subscriber Website Teaser */}
-            <motion.div 
-               whileHover={{ scale: 1.01 }}
-               className="mt-20 p-20 rounded-[5rem] bg-gradient-to-r from-[#d4af37]/20 to-transparent border border-primary/20 text-center space-y-6 group transition-all duration-700"
-            >
-                <Globe className="mx-auto text-primary group-hover:rotate-[360deg] transition-transform duration-[2000ms]" size={64} />
-                <h4 className="text-4xl font-serif font-black text-gradient">Custom Subscriber Ecosystems</h4>
-                <p className="text-white/40 text-xl font-sans max-w-2xl mx-auto">Each creator receives a bespoke, high-performance portal to host their universe's home base.</p>
-            </motion.div>
+            <div className="container-responsive relative z-10">
+                <CinematicSectionHeader 
+                    layer={t("studioPage.layers.premium.title")}
+                    title="THE INFINITY"
+                    subtitle={t("studioPage.layers.premium.subtitle")}
+                    variant="violet"
+                />
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:pr-32">
+                    {premiumServices.map((s, i) => (
+                        <PremiumServiceCard key={i} {...s} variant="violet" />
+                    ))}
+                </div>
+                
+                <motion.div 
+                   whileHover={{ scale: 1.02 }}
+                   className="mt-24 p-24 rounded-[5rem] bg-gradient-to-br from-violet-500/10 via-transparent to-transparent border border-violet-500/20 relative overflow-hidden group"
+                >
+                    <HUDElement className="top-10 left-10">ECOSYSTEM_GEN_[7.3.0]</HUDElement>
+                    <div className="absolute -right-20 -bottom-20 opacity-[0.03] group-hover:opacity-[0.1] transition-all duration-2000 rotate-12 scale-150">
+                        <Globe size={400} className="text-violet-500" />
+                    </div>
+                    
+                    <div className="relative z-10 space-y-10">
+                        <Globe className="text-violet-400" size={64} strokeWidth={1} />
+                        <h4 className="text-5xl font-serif font-black text-white">Custom Subscriber Empires</h4>
+                        <p className="text-white/40 text-2xl font-sans max-w-3xl font-light italic leading-relaxed">
+                            Every subscriber is granted a bespoke high-performance portal—a digital fortress that serves as the command center for their ever-expanding universe.
+                        </p>
+                    </div>
+                </motion.div>
+            </div>
+            <FloatingParticles color="violet" />
         </section>
     );
 };
 
-const MarketplaceAndCommunity = () => {
+const MarketplaceCommunityPortfolio = () => {
     const { t } = useTranslation();
     return (
-        <section className="bg-[#120a05] py-48 border-t border-white/5">
+        <section className="bg-[#120a05] py-72 border-t border-white/5 relative">
             <div className="container-responsive">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-32">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-40">
                     {/* Marketplace */}
-                    <div className="space-y-16">
-                        <SectionHeader layer="Supporting" title={t("studioPage.marketplace.title")} subtitle={t("studioPage.marketplace.subtitle")} />
-                        <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-24">
+                        <CinematicSectionHeader layer="Supporting Talent" title="The Guild" subtitle={t("studioPage.marketplace.subtitle")} />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                             {(t("studioPage.marketplace.items", { returnObjects: true }) as string[]).map((item, i) => (
-                                <div key={i} className="flex items-center gap-6 p-8 bg-white/5 rounded-3xl border border-white/5 transition-all hover:bg-white/10 hover:border-white/10 font-sans font-bold text-white/50 group">
-                                    <div className="w-3 h-3 bg-primary/20 rounded-full group-hover:bg-primary transition-colors" />
-                                    {item}
+                                <div key={i} className="flex items-center gap-8 p-10 bg-white/[0.02] rounded-[2.5rem] border border-white/5 hover:border-primary/30 hover:bg-white/[0.05] transition-all duration-700 group">
+                                    <div className="p-4 rounded-xl bg-primary/10 text-primary-foreground group-hover:bg-primary transition-all">
+                                        <LayersIcon size={20} className="group-hover:scale-125 transition-transform" />
+                                    </div>
+                                    <span className="text-xl font-sans font-bold text-white/40 group-hover:text-white transition-colors">{item}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Community */}
-                    <div className="space-y-16">
-                        <SectionHeader layer="Engagement" title={t("studioPage.community.title")} />
+                    <div className="space-y-24">
+                        <CinematicSectionHeader layer="Engagement Echo" title="The Nexus" />
                         <div className="space-y-8">
                             {[
                                 { title: t("studioPage.community.merch"), icon: Package },
@@ -333,11 +357,11 @@ const MarketplaceAndCommunity = () => {
                                 { title: t("studioPage.community.challenges"), icon: PenTool },
                                 { title: t("studioPage.community.events"), icon: Users }
                             ].map((c, i) => (
-                                <div key={i} className="flex items-center gap-10 p-10 bg-[#2d1b0d]/30 rounded-3xl border border-[#d4af37]/5 group hover:border-primary/20 transition-all">
-                                    <div className="p-4 rounded-xl bg-primary/10 text-primary transition-all group-hover:rotate-12">
-                                        <c.icon size={28} />
+                                <div key={i} className="flex items-center gap-12 p-12 bg-[#2d1b0d]/20 rounded-[3rem] border border-[#d4af37]/5 hover:border-primary/40 hover:scale-[1.02] transition-all duration-700 group">
+                                    <div className="p-6 rounded-2xl bg-primary/5 text-primary ring-1 ring-primary/20 group-hover:ring-primary shadow-2xl">
+                                        <c.icon size={32} strokeWidth={1} />
                                     </div>
-                                    <span className="text-xl font-serif font-black text-white/60 group-hover:text-primary transition-colors">{c.title}</span>
+                                    <span className="text-3xl font-serif font-black text-white/40 group-hover:text-primary transition-all tracking-tighter">{c.title}</span>
                                 </div>
                             ))}
                         </div>
@@ -351,39 +375,43 @@ const MarketplaceAndCommunity = () => {
 const FinalPortfolioTag = () => {
     const { t } = useTranslation();
     return (
-        <section className="py-80 text-center relative overflow-hidden flex flex-col items-center justify-center">
-            <div className="absolute inset-0 bg-gradient-to-b from-[#120a05] to-[#0c0703] z-0" />
-            <motion.div
-               animate={{ opacity: [0.2, 0.4, 0.2] }}
-               transition={{ duration: 5, repeat: Infinity }}
-               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 blur-[200px] z-0" 
-            />
+        <section className="relative py-96 overflow-hidden min-h-screen flex items-center justify-center">
+            <div className="absolute inset-0 z-0">
+                <img src="/images/studio-final.png" className="w-full h-full object-cover object-center grayscale-[0.2]" alt="Final Portal" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0c0703] via-[#120a05]/90 to-transparent" />
+                <div className="absolute inset-0 bg-black/60" />
+            </div>
             
-            <div className="container-responsive relative z-10 space-y-16">
+            <div className="container-responsive relative z-10 text-center space-y-24">
                 <motion.h2 
-                    initial={{ opacity: 0, scale: 0.9 }}
+                    initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    className="text-6xl md:text-[13rem] font-serif font-black tracking-tighter leading-[0.8] drop-shadow-2xl"
+                    className="text-8xl md:text-[18rem] font-serif font-black tracking-tighter leading-[0.7] text-white drop-shadow-[0_0_80px_rgba(255,215,0,0.4)]"
                 >
                     {t("studioPage.final.title")}<br/>
                     <span className="text-gradient leading-relaxed">{t("studioPage.final.titleHighlight")}</span>
                 </motion.h2>
                 
-                <p className="text-white/40 text-2xl md:text-5xl max-w-5xl mx-auto leading-relaxed italic font-light font-sans opacity-60">
+                <p className="text-white/30 text-3xl md:text-6xl max-w-7xl mx-auto font-sans leading-relaxed font-extralight italic opacity-80">
                     {t("studioPage.final.subtitle")}
                 </p>
 
                 <motion.div 
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.5 }}
-                    className="pt-24 space-y-10"
+                    transition={{ delay: 0.5, duration: 2 }}
+                    className="pt-48 flex flex-col items-center gap-16"
                 >
-                    <div className="text-[12px] font-black uppercase tracking-[1em] text-primary animate-pulse flex flex-col items-center gap-8">
-                        <div className="w-1 h-32 bg-gradient-to-b from-primary to-transparent" />
+                    <div className="w-[1px] h-48 bg-gradient-to-b from-primary to-transparent" />
+                    <span className="text-[12px] md:text-xl font-black uppercase tracking-[1.5em] text-primary animate-pulse drop-shadow-[0_0_20px_rgba(255,215,0,0.8)]">
                         {t("studioPage.final.footerTag")}
+                    </span>
+                    <div className="flex gap-16 text-[9px] font-black uppercase tracking-[0.6em] text-white/20">
+                        <Activity size={24} className="animate-pulse" />
+                        <Cpu size={24} className="hover:text-primary transition-colors cursor-help" />
+                        <Zap size={24} className="animate-ping" />
                     </div>
                 </motion.div>
             </div>
@@ -395,27 +423,28 @@ const HekayatyStudio = () => {
   const { i18n } = useTranslation();
   return (
     <div className={cn(
-        "min-h-screen bg-[#120a05] text-white selection:bg-primary/40 selection:text-white pb-0",
+        "min-h-screen bg-[#120a05] text-white selection:bg-primary/40 selection:text-white pb-0 scroll-smooth",
         i18n.language === 'ar' ? 'font-arabic' : 'font-sans'
     )}>
       <Navbar />
-      <Hero />
-      <LayerCore />
-      <LayerHighValue />
-      <LayerPremium />
-      <MarketplaceAndCommunity />
+      <PortfolioHero />
+      <LayerCorePortfolio />
+      <LayerHighValuePortfolio />
+      <LayerPremiumPortfolio />
+      <MarketplaceCommunityPortfolio />
       <FinalPortfolioTag />
       
       {/* Cinematic Simple Footer */}
-      <footer className="py-24 border-t border-white/5 bg-[#0c0703]">
-        <div className="container-responsive flex flex-col md:flex-row justify-between items-center gap-12">
-            <div className="text-2xl font-serif font-black text-gradient">Hekayaty Studio</div>
-            <div className="flex gap-16 text-[9px] font-black uppercase tracking-[0.4em] text-white/20">
-                <span>IMAGINATION</span>
-                <span>PRODUCTION</span>
-                <span>LEGACY</span>
+      <footer className="py-32 border-t border-white/5 bg-[#0c0703] relative overflow-hidden">
+        <HUDElement className="top-10 left-10">TERMINAL_SECURE</HUDElement>
+        <div className="container-responsive flex flex-col md:flex-row justify-between items-center gap-16">
+            <div className="text-4xl font-serif font-black text-gradient tracking-tighter">Hekayaty Studio</div>
+            <div className="flex gap-24 text-[10px] font-black uppercase tracking-[0.5em] text-white/20">
+                <span className="hover:text-primary transition-colors cursor-help">CORE_DNA</span>
+                <span className="hover:text-cyan-400 transition-colors cursor-help">HIGH_VLTG</span>
+                <span className="hover:text-violet-400 transition-colors cursor-help">INF_LUP</span>
             </div>
-            <div className="text-[9px] font-black uppercase tracking-[0.4em] text-white/10 italic">Est. 2026 Collective</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.5em] text-white/10 italic">© 2026 Collective Intelligence</div>
         </div>
       </footer>
     </div>
