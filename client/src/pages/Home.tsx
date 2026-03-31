@@ -2,7 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, BookOpen, PenTool, Info, Layers, LayoutGrid, ShoppingBag } from "lucide-react";
+import { ArrowRight, Sparkles, BookOpen, PenTool, Info, Layers, LayoutGrid, ShoppingBag, Palette } from "lucide-react";
 import { useWriters } from "@/hooks/use-users";
 import { useBestSellerProducts, useSerializedProducts, useProducts } from "@/hooks/use-products";
 import { useCollections } from "@/hooks/use-collections";
