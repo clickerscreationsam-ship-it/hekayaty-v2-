@@ -288,11 +288,11 @@
 /* Arabic Font Overrides - Luxury Edition */
 .font-arabic {
   font-family: 'Cairo', sans-serif !important;
-  line-height: 2;
+  line-height: 1.8;
   /* Enhanced spacing for Arabic clarity */
-  font-size: 1.15rem;
-  /* Bigger default text */
-  letter-spacing: 0.02em;
+  font-size: 1rem;
+  /* Standardized default text */
+  letter-spacing: 0.01em;
   /* Subtle letter spacing for better readability */
 }
 
@@ -304,41 +304,41 @@
 .font-arabic h6 {
   font-family: 'Amiri', serif !important;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   /* Better spacing for Arabic headers */
-  line-height: 1.6;
+  line-height: 1.5;
   /* More breathing room */
-  word-spacing: 0.1em;
+  word-spacing: 0.05em;
   /* Space between words */
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
 }
 
 .font-arabic h1 {
-  font-size: 1.4em;
+  font-size: 1.35em;
   /* Grand title */
-  line-height: 1.5;
-  letter-spacing: 0.04em;
-  word-spacing: 0.15em;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  word-spacing: 0.1em;
   text-shadow: 0 4px 15px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 215, 0, 0.4);
 }
 
 .font-arabic h2 {
-  font-size: 1.25em;
+  font-size: 1.2em;
 }
 
-/* Adjust navbar specifically for luxury look */
+/* Adjust navbar specifically for luxury look - Reduced for spacing */
 .font-arabic nav a,
 .font-arabic .mobile-menu-item {
   font-weight: 700;
   /* Bolder for visibility */
-  font-size: 1.15rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-size: 0.85rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .font-arabic button {
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
 }
 
 /* Fix for small icons next to Arabic text */
