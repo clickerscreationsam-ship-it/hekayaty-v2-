@@ -991,42 +991,76 @@
         "final": {
             "title": "This is not just a story.",
             "titleHighlight": "This is your universe.",
-            "subtitle": "Ready to give your narrative the cinematic treatment it deserves? Join the elite creators at Hekayaty Studio.",
-            "cta": "Enter Hekayaty Studio"
+            "subtitle": "Transform your narrative into a professional brand with the most advanced creative hub in the Middle East.",
+            "footerTag": "Try Hekayaty Studio now"
         },
-        "journey": {
-            "idea": "Idea",
-            "writing": "Writing",
-            "design": "Design",
-            "marketing": "Marketing",
-            "universe": "Universe",
-            "genesis": "The Genesis",
-            "scripture": "The Scripture",
-            "visuals": "The Visuals",
-            "echo": "The Echo",
-            "legacy": "The Legacy"
+        "layers": {
+            "core": {
+                "title": "Layer I: Core Services",
+                "subtitle": "The essential foundation for every creator's journey."
+            },
+            "highValue": {
+                "title": "Layer II: High-Value Craft",
+                "subtitle": "Premium production to elevate your world to the elite status."
+            },
+            "premium": {
+                "title": "Layer III: Future & Infinity",
+                "subtitle": "The horizon of immersive storytelling and personalized empires."
+            }
         },
-        "council": {
-            "tagline": "The Council",
-            "title": "The Creator Council",
-            "desc": "Access an exclusive network of high-tier architects, sound designers, and visual wizards to manifest your world.",
-            "browse": "Browse Marketplace"
+        "services": {
+            "merch": {
+                "title": "Product & Merch Design",
+                "items": ["Story T-Shirts Design", "Box Collections Design", "Posters & Art Design", "Special Edition Book Covers"]
+            },
+            "marketing": {
+                "title": "Marketing & Media",
+                "items": ["Cinematic Trailer Production", "Short-form Videos (Reels / TikTok)", "Social Media Feed Design", "Social Media Content Creation"]
+            },
+            "music": {
+                "title": "Music & Sound",
+                "items": ["Custom Theme Song", "Cinematic Background Score", "Character Sound Identity"]
+            },
+            "branding": {
+                "title": "Advertising & Branding",
+                "items": ["Paid Ads Campaign Setup", "Book Launch Strategy", "Author Branding Identity", "Branding Kits Design"]
+            },
+            "youtube": {
+                "title": "YouTube & Content",
+                "items": ["YouTube Video Production", "Podcast Production", "Storytelling Video Series", "Content Channel Management"]
+            },
+            "world": {
+                "title": "World Building Lab",
+                "items": ["World Map Design", "Character Tree Creation", "Story Timeline Design"]
+            },
+            "interactive": {
+                "title": "Interactive Experience",
+                "items": ["Visual Novel Creation", "Choice-Based Story UI Design"]
+            },
+            "audiobook": {
+                "title": "Audiobook Studio",
+                "items": ["Audiobook Recording", "Multi-character Voice Acting", "Character Voice Design"]
+            },
+            "identity": {
+                "title": "Author Brand Builder",
+                "items": ["Personal Brand Identity", "Author Profile Transformation", "Content Strategy for Author"]
+            },
+            "film": {
+                "title": "Film Pitch Studio",
+                "items": ["Film Pitch Deck Creation", "Cinematic Poster Design", "Story-to-Script Conversion"]
+            }
         },
-        "arena": {
-            "tagline": "Battle Royale",
-            "title": "The Arena",
-            "desc": "Compete with the elite. Win funding, exclusive production drops, and a featured spot in the Hekayaty Pantheon.",
-            "activeChallenge": "Active Challenge",
-            "daysLeft": "{{count}} Days Left",
-            "challengeTitle": "Genesis of the Fallen",
-            "challengeDesc": "Design a character sound identity for a fallen celestial being. Top 3 entries get showcased in the Studio.",
-            "join": "Join the Arena"
+        "marketplace": {
+            "title": "Marketplace Services",
+            "subtitle": "Empowering creators through our specialized local talent.",
+            "items": ["Graphic Design", "Video Editing", "Music Production", "Voice Acting", "Writing & Editing"]
         },
-        "labsExtras": {
-            "liveAnalytics": "LIVE ANALYTICS",
-            "region": "REGION",
-            "stability": "STABILITY",
-            "audioExample": "The Lost Prophet - Chapter 12"
+        "community": {
+            "title": "Drops & Events",
+            "merch": "Exclusive Merch Drops",
+            "competitions": "Writing Competitions",
+            "challenges": "Creator Challenges",
+            "events": "Community Events"
         }
     }
 }
