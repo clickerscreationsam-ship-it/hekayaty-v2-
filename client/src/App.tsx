@@ -32,6 +32,7 @@ const ReadBook = lazy(() => import("@/pages/ReadBook"));
 const Legal = lazy(() => import("@/pages/Legal"));
 const HekayatyGuide = lazy(() => import("@/pages/HekayatyGuide"));
 const NotificationsPage = lazy(() => import("@/pages/NotificationsPage"));
+const HekayatyStudio = lazy(() => import("@/pages/HekayatyStudio"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 function Router() {
@@ -60,6 +61,7 @@ function Router() {
         <Route path="/legal" component={Legal} />
         <Route path="/guide" component={HekayatyGuide} />
         <Route path="/notifications" component={NotificationsPage} />
+        <Route path="/hekayaty-studio" component={HekayatyStudio} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
@@ -103,6 +105,7 @@ function AppContent() {
   useEffect(() => {
     document.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = i18n.language;
+    document.documentElement.setAttribute('translate', 'no');
     if (i18n.language === 'ar') {
       document.documentElement.classList.add('font-arabic');
     } else {

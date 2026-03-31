@@ -25,6 +25,7 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
     { label: t("nav.marketplace"), href: "/marketplace", icon: ShoppingBag },
     { label: t("nav.merchandise"), href: "/merchandise", icon: Store },
     { label: t("nav.worldbuilders"), href: "/worldbuilders" },
+    { label: t("nav.hekayatyStudio"), href: "/hekayaty-studio", icon: Palette },
     { label: t("nav.guide"), href: "/guide", icon: HelpCircle },
   ];
 

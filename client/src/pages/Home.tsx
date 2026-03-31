@@ -131,6 +131,33 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Hekayaty Studio Teaser */}
+      <section className="py-32 relative overflow-hidden group">
+         <div className="absolute inset-0 bg-black/60 z-10" />
+         <img 
+           src="https://images.unsplash.com/photo-1497015289639-54688650d173?q=80&w=2000" 
+           className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" 
+           alt="Studio"
+         />
+         <div className="container-responsive relative z-20">
+            <div className="max-w-3xl space-y-8">
+               <span className="px-4 py-1.5 rounded-full bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest ring-1 ring-primary/30 backdrop-blur-sm">Premium Services</span>
+               <h2 className="text-5xl md:text-7xl font-serif font-black text-white leading-tight">
+                  Elevate Your Story to <span className="text-primary">Universal Status</span>
+               </h2>
+               <p className="text-xl text-white/70 leading-relaxed max-w-2xl">
+                  Transform your writing into a professional brand. From cinematic trailers and custom merch to world-building maps and global marketing.
+               </p>
+               <Link href="/hekayaty-studio">
+                 <button className="h-16 px-10 rounded-2xl bg-primary text-black font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-primary/20 flex items-center gap-4 group">
+                    Enter the Studio
+                    <Palette size={20} className="group-hover:rotate-12 transition-transform" />
+                 </button>
+               </Link>
+            </div>
+         </div>
+      </section>
+
       {/* Merchandise Section */}
       <section className="py-24 relative overflow-hidden bg-amber-500/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
