@@ -100,7 +100,7 @@ const CinematicSectionHeader = ({ layer, title, subtitle, variant = "gold" }: { 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.15 }}
-                className="text-white/40 text-xl md:text-3xl max-w-4xl font-sans font-light italic leading-relaxed"
+                className="text-white text-xl md:text-3xl max-w-4xl font-sans font-light italic leading-relaxed drop-shadow-lg"
               >
                 {subtitle}
               </motion.p>
@@ -194,7 +194,7 @@ const PortfolioHero = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1, duration: 2 }}
-                    className="text-2xl md:text-5xl text-white/40 max-w-6xl mx-auto font-sans leading-relaxed font-extralight italic"
+                    className="text-2xl md:text-5xl text-white max-w-6xl mx-auto font-sans leading-relaxed font-extralight italic drop-shadow-2xl"
                 >
                     {t("studioPage.hero.subtitle")}
                 </motion.p>
@@ -393,7 +393,7 @@ const FinalPortfolioTag = () => {
                     <span className="text-gradient leading-relaxed">{t("studioPage.final.titleHighlight")}</span>
                 </motion.h2>
                 
-                <p className="text-white/30 text-3xl md:text-6xl max-w-7xl mx-auto font-sans leading-relaxed font-extralight italic opacity-80">
+                <p className="text-white text-3xl md:text-6xl max-w-7xl mx-auto font-sans leading-relaxed font-extralight italic drop-shadow-xl">
                     {t("studioPage.final.subtitle")}
                 </p>
 
