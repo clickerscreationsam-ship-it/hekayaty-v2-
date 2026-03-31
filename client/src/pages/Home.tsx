@@ -135,8 +135,8 @@ export default function Home() {
       <section className="py-32 relative overflow-hidden group">
          <div className="absolute inset-0 bg-black/60 z-10" />
          <img 
-           src="https://images.unsplash.com/photo-1497015289639-54688650d173?q=80&w=2000" 
-           className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" 
+           src="/images/studio-home-hero.png" 
+           className="absolute inset-0 w-full h-full object-cover group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" 
            alt="Studio"
          />
          <div className="container-responsive relative z-20">
