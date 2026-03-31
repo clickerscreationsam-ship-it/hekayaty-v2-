@@ -993,6 +993,40 @@
             "titleHighlight": "This is your universe.",
             "subtitle": "Ready to give your narrative the cinematic treatment it deserves? Join the elite creators at Hekayaty Studio.",
             "cta": "Enter Hekayaty Studio"
+        },
+        "journey": {
+            "idea": "Idea",
+            "writing": "Writing",
+            "design": "Design",
+            "marketing": "Marketing",
+            "universe": "Universe",
+            "genesis": "The Genesis",
+            "scripture": "The Scripture",
+            "visuals": "The Visuals",
+            "echo": "The Echo",
+            "legacy": "The Legacy"
+        },
+        "council": {
+            "tagline": "The Council",
+            "title": "The Creator Council",
+            "desc": "Access an exclusive network of high-tier architects, sound designers, and visual wizards to manifest your world.",
+            "browse": "Browse Marketplace"
+        },
+        "arena": {
+            "tagline": "Battle Royale",
+            "title": "The Arena",
+            "desc": "Compete with the elite. Win funding, exclusive production drops, and a featured spot in the Hekayaty Pantheon.",
+            "activeChallenge": "Active Challenge",
+            "daysLeft": "{{count}} Days Left",
+            "challengeTitle": "Genesis of the Fallen",
+            "challengeDesc": "Design a character sound identity for a fallen celestial being. Top 3 entries get showcased in the Studio.",
+            "join": "Join the Arena"
+        },
+        "labsExtras": {
+            "liveAnalytics": "LIVE ANALYTICS",
+            "region": "REGION",
+            "stability": "STABILITY",
+            "audioExample": "The Lost Prophet - Chapter 12"
         }
     }
 }
