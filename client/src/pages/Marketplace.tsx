@@ -21,6 +21,12 @@ export default function Marketplace() {
   const isArabic = i18n.language === 'ar';
 
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(timer);
+  }, [search]);
   const [type, setType] = useState<MarketplaceType>("ebook");
   const [isSerialized, setIsSerialized] = useState<boolean | undefined>(
     new URLSearchParams(window.location.search).get('isSerialized') === 'true'
@@ -49,7 +55,7 @@ export default function Marketplace() {
   };
 
   const { data: productData, isLoading: productsLoading } = useProducts({
-    search,
+    search: debouncedSearch,
     type: type === 'collection' ? 'ebook' : type,
     isSerialized
   });
@@ -61,7 +67,7 @@ export default function Marketplace() {
   const isLoading = productsLoading || (type === 'collection' && collectionsLoading);
 
   const initialDisplayItems = type === 'collection'
-    ? collections.filter(c => !search || c.title.toLowerCase().includes(search.toLowerCase()))
+    ? collections.filter(c => !debouncedSearch || c.title.toLowerCase().includes(debouncedSearch.toLowerCase()))
     : products;
 
   const { sortBy, setSortBy, sortedItems: displayItems } = useSort<any>(initialDisplayItems);
@@ -83,8 +89,6 @@ export default function Marketplace() {
       default: return t("marketplace.subtitle");
     }
   };
-
-  if (isLoading) return <PageSkeleton />;
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
