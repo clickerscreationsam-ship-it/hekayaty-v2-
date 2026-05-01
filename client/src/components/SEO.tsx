@@ -13,7 +13,7 @@ interface SEOProps {
 export function SEO({
     title,
     description,
-    image = '/og-image.png',
+    image,
     url,
     type = 'website',
     schema
@@ -62,6 +62,15 @@ export function SEO({
         ].filter(Boolean)
     };
 
+    // Use absolute URL for the image
+    const getAbsoluteImageUrl = (img?: string) => {
+        if (!img) return `${domain}/og-image.png`;
+        if (img.startsWith('http')) return img;
+        return `${domain}${img.startsWith('/') ? '' : '/'}${img}`;
+    };
+
+    const ogImage = getAbsoluteImageUrl(image);
+
     return (
         <Helmet>
             <html lang={i18n.language} />
@@ -82,15 +91,18 @@ export function SEO({
             <meta property="og:site_name" content="Hekayaty" />
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={description || defaultDescription} />
-            <meta property="og:image" content={image.startsWith('http') ? image : `${domain}${image}`} />
+            <meta property="og:image" content={ogImage} />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
             <meta property="og:url" content={canonical} />
 
             {/* Twitter */}
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:site" content="@Hekayaty" />
+            <meta name="twitter:creator" content="@Hekayaty" />
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description || defaultDescription} />
-            <meta name="twitter:image" content={image.startsWith('http') ? image : `${domain}${image}`} />
+            <meta name="twitter:image" content={ogImage} />
 
             {/* Structured Data */}
             <script type="application/ld+json">

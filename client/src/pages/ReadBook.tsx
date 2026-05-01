@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { SEO } from "@/components/SEO";
 
 export default function ReadBook() {
     const [, params] = useRoute("/read/:id");
@@ -200,6 +201,12 @@ export default function ReadBook() {
 
     return (
         <div className={`min-h-screen transition-all duration-500 relative overflow-hidden ${gTheme.base}`}>
+            <SEO 
+                title={`${product.title}${chapters && chapters.length > 0 ? ` - ${chapters[activeChapterIndex]?.title}` : ''}`}
+                description={product.description}
+                image={product.coverUrl}
+                type="book"
+            />
             {/* Atmospheric Overlay */}
             {gTheme.overlay && <div className={`fixed inset-0 pointer-events-none z-0 ${gTheme.overlay}`} />}
 

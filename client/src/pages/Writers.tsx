@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import writersBg from "@/assets/WhatsApp Image 2026-01-07 at 8.17.48 PM.jpeg";
 
 import { PageSkeleton } from "@/components/ui/skeleton-loader";
+import { SEO } from "@/components/SEO";
 
 export default function Writers() {
     const { t } = useTranslation();
@@ -26,6 +27,11 @@ export default function Writers() {
 
     return (
         <div className="min-h-screen relative overflow-hidden bg-black text-white font-sans">
+            <SEO 
+                title={t('writers.title')}
+                description={t('writers.subtitle')}
+                type="website"
+            />
             <div
                 className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-40"
                 style={{ backgroundImage: `url(${writersBg})` }}
