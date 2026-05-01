@@ -1,0 +1,1138 @@
+{
+    "welcome": "Welcome to Hekayaty",
+    "about": {
+        "title": "Who Are We",
+        "subtitle": "The Heart of Storytelling",
+        "heroText": "We are not just a platform; we are a universe where every writer finds their world, and every story finds its wings.",
+        "ourStory": "Our Story",
+        "storyContent": "Hekayaty didn’t start as just a platform…\nIt started as a belief.\n\nA belief that stories in the Arab world deserve more.\nMore reach. More power. More life.\n\nBehind this vision were two individuals:\nMN and AH.\n\nNot just partners… but best friends.\n\nMN was the dreamer — the one who saw beyond reality.\nThe one who didn’t just build a platform,\nbut created worlds… stories… emotions.\n\nHe was the mind behind the ideas,\nthe creator of the songs, the music,\nthe cinematic vision of Hekayaty.\n\nEvery beat, every concept, every experience…\nstarted from imagination and turned into something real.\n\nBut no dream survives alone.\n\nThat’s where AH comes in.\n\nAH wasn’t just a partner.\nHe was the one who believed — from day one.\n\nWhen things were uncertain… he stayed.\nWhen the vision was still just an idea… he saw it.\nAnd until today… he’s still standing beside it.\n\nTogether, they didn’t just build a project.\n\nThey built something bigger than themselves.\n\nA place where writers are no longer invisible.\nA place where stories are not just written…\nbut experienced, shared, and transformed into something powerful.\n\nHekayaty is not just a platform.\n\nIt’s a universe.\nA movement.\nA new beginning for every storyteller who was once unheard.\n\nAnd this… is only the beginning.",
+        "mission": "Our Mission",
+        "missionContent": "To empower every writer, storyteller, and creator in the Arab world with the tools, community, and platform they need to share their unique vision with the world.",
+        "offer": "What We Offer",
+        "offerPublishing": "Story Publishing",
+        "offerPublishingDesc": "A premium reading and writing experience designed for long-form immersion.",
+        "offerMarketplace": "Marketplace",
+        "offerMarketplaceDesc": "Sell physical books, ebooks, and creative assets directly to your fans.",
+        "offerAI": "AI Tools",
+        "offerAIDesc": "Accelerate your creativity with AI-powered drafting and worldbuilding assistance.",
+        "offerCommunity": "Community",
+        "offerCommunityDesc": "Connect with a global network of readers and fellow storytellers.",
+        "vision": "Our Vision",
+        "visionContent": "To become the #1 storytelling platform in the Middle East and a global leader in the creator economy.",
+        "visionSub": "We envision a future where borders don't limit imagination, and where every creative voice from the MENA region has a seat at the global table.",
+        "different": "Why Hekayaty is Different",
+        "diffEcosystem": "Unique Ecosystem",
+        "diffEcosystemDesc": "The only platform that seamlessly combines stories, a marketplace, and community.",
+        "diffMonetization": "Direct Monetization",
+        "diffMonetizationDesc": "Writers keep the lion's share of their earnings through our transparent model.",
+        "diffAI": "AI-First Approach",
+        "diffAIDesc": "We integrate technology to augment human creativity, not replace it.",
+        "ctaTitle": "Ready to expand your universe?",
+        "ctaJoin": "Join Hekayaty",
+        "ctaExplore": "Explore Stories"
+    },
+    "contact": {
+        "title": "Get in Touch",
+        "subtitle": "We're here to help you build your universe. Reach out for support, partnerships, or just to say hello.",
+        "email": "Email Us",
+        "chat": "Live Chat",
+        "chatDesc": "Available in your dashboard",
+        "location": "Location",
+        "locationDesc": "Based in the Arab World, Global Soul",
+        "formName": "Your Name",
+        "formEmail": "Email Address",
+        "formMessage": "Message",
+        "formPlaceholder": "How can we help you?",
+        "send": "Send Message"
+    },
+    "blog": {
+        "title": "Stories & Guides",
+        "subtitle": "Your destination for storytelling wisdom, community highlights, and the best of the Arab literary world.",
+        "readMore": "Read More",
+        "posts": {
+            "post1": {
+                "title": "Best Arabic Stories of 2026",
+                "excerpt": "Discover the most captivating and trending stories from the Arab world this year.",
+                "category": "Curation"
+            },
+            "post2": {
+                "title": "How to Write a Novel: A Step-by-Step Guide",
+                "excerpt": "Learn the essential techniques for drafting your first novel, from character development to plot structure.",
+                "category": "Education"
+            },
+            "post3": {
+                "title": "Fantasy Story Ideas that Spark Imagination",
+                "excerpt": "Unlock your creative potential with these unique fantasy prompts designed for worldbuilders.",
+                "category": "Inspiration"
+            }
+        }
+    },
+    "common": {
+        "egp": "EGP",
+        "cancel": "Cancel",
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "processing": "Processing...",
+        "read": "Read",
+        "listen": "Listen",
+        "download": "Download",
+        "minutes": "min",
+        "all": "All",
+        "delete": "Delete",
+        "viewDetails": "View Details",
+        "high": "Urgent",
+        "loading": "Loading...",
+        "beReadyVibe": "Symphony of Stories",
+        "preparingMagic": "Magic is being woven",
+        "sortBy": "Sort By",
+        "priceLowHigh": "Price: Low to High",
+        "priceHighLow": "Price: High to Low",
+        "topRated": "Top Rated"
+    },
+    "loading": "Loading...",
+    "nav": {
+        "marketplace": "Marketplace",
+        "mediaHub": "Media Hub",
+        "assets": "Design Assets",
+        "merchandise": "Creator Merch",
+        "worldbuilders": "World Builders",
+        "writers": "For Writers",
+        "admin": "Admin Panel",
+        "about": "Who Are We",
+        "blog": "Stories & Guides",
+        "contact": "Contact Us",
+        "myStore": "My Store",
+        "dashboard": "Dashboard",
+        "profile": "Profile",
+        "logout": "Log out",
+        "login": "Log in",
+        "getStarted": "Get Started",
+        "cart": "Cart",
+        "studio": "Writer Studio",
+        "hekayatyStudio": "Hekayaty Studio",
+        "guide": "Platform Guide",
+        "writerWorld": "Writer World"
+    },
+    "cart": {
+        "title": "Your Cart",
+        "subtitle": "Review your magical findings",
+        "empty": "Your cart is empty",
+        "emptySubtitle": "Start adding some amazing stories!",
+        "browseTitles": "Browse Titles",
+        "items": "item",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "total": "Total",
+        "checkout": "Checkout",
+        "continueShopping": "Continue Shopping",
+        "remove": "Remove",
+        "quantity": "Quantity",
+        "physicalProducts": "Physical Products",
+        "digitalProducts": "Digital Products",
+        "requiresShipping": "Requires shipping address",
+        "instantAccess": "Instant access after payment",
+        "physicalSummary": "Physical Order Summary",
+        "digitalSummary": "Digital Order Summary",
+        "checkoutPhysical": "Checkout Physical Products",
+        "checkoutDigital": "Checkout Digital Products",
+        "includesShipping": "Includes shipping & platform fees",
+        "includesFee": "Includes platform fees",
+        "mixedCart": "Mixed Cart – Two Separate Payments",
+        "calculatingShipping": "Calculating shipping...",
+        "calculatedAtCheckout": "Calculated at checkout",
+        "yourCart": "Your Cart",
+        "emptyMessage": "You haven't added any stories yet.",
+        "browseStories": "Browse Stories"
+    },
+    "checkout": {
+        "title": "Checkout",
+        "shipping": {
+            "title": "Shipping Information",
+            "fullName": "Full Name",
+            "phone": "Phone Number",
+            "city": "City",
+            "address": "Address",
+            "required": "Required for physical products"
+        },
+        "payment": {
+            "title": "Payment Method",
+            "method": "Select payment method",
+            "card": "Credit Card",
+            "instapay": "InstaPay",
+            "vodafone": "Vodafone Cash",
+            "proof": "Payment Proof",
+            "reference": "Reference Number",
+            "upload": "Upload Image",
+            "uploadProof": "Upload payment proof image"
+        },
+        "summary": "Order Summary",
+        "placeOrder": "Confirm Order",
+        "processing": "Processing...",
+        "shippingDetails": "Shipping Details",
+        "whereToSend": "Where should we send your physical items?",
+        "completePhysical": "Complete payment for your physical order.",
+        "completeDigital": "Complete payment for your digital order – Instant access!",
+        "fullName": "Full Name",
+        "receiverName": "Receiver Name",
+        "phoneNumber": "Phone Number",
+        "cityGovernorat": "City / Governorate",
+        "cityPlaceholder": "e.g., Cairo",
+        "detailedAddress": "Detailed Address",
+        "addressPlaceholder": "Street, Building, Apartment...",
+        "calculating": "Calculating...",
+        "nextPayment": "Next: Payment",
+        "selectMethod": "1. Select Payment Method",
+        "paymentInstructions": "Payment Instructions",
+        "transferAmount": "Transfer {{amount}} EGP to:",
+        "exactAmount": "* Please transfer the exact amount.",
+        "verifyPayment": "2. Verify Payment",
+        "transactionRef": "Transaction Ref / Number",
+        "refPlaceholder": "e.g., 2349823423",
+        "uploadScreenshot": "Upload payment screenshot (Optional but recommended)",
+        "confirmPayment": "Confirm Payment",
+        "shippingTo": "Shipping to",
+        "physicalOrder": "Physical Order",
+        "digitalOrder": "Digital Order",
+        "deliveryNote": "Please provide the delivery address for your physical products.",
+        "secureCheckout": "Secure Checkout"
+    },
+    "hero": {
+        "tagline": "The universe for storytellers",
+        "production": "A Clickers Company Production",
+        "title_line1": "Every Writer",
+        "title_line2": "Deserves a World",
+        "subtitle": "Build your own digital bookstore, connect with readers, and sell your stories directly. No gatekeepers, just magic.",
+        "cta_explore": "Explore Stories",
+        "cta_write": "Start Writing"
+    },
+    "dashboard": {
+        "title": "Creator Dashboard",
+        "subtitle": "Manage your empire: Stories, Assets, and Identity.",
+        "tabs": {
+            "overview": "Overview",
+            "products": "Products",
+            "orders": "Orders",
+            "wallet": "Wallet",
+            "shipping": "Shipping",
+            "branding": "Store Settings",
+            "chat": "Store Chat",
+            "admin_messages": "Admin Messages",
+            "portfolio": "Portfolio",
+            "commissions": "Track Your Treasure",
+            "library": "My Library",
+            "private_messages": "Private Messages",
+            "profile_settings": "Profile Settings"
+        },
+        "reader_subtitle": "Manage your account and preferences.",
+        "welcome_reader": "👋 Welcome to Your Profile!",
+        "welcome_reader_desc": "Manage your account settings and personalize your reading experience.",
+        "welcome_creator": "✨ Welcome to Your Creator Dashboard!",
+        "welcome_creator_desc": "Customize your store below to create a unique brand identity. Choose your theme colors, fonts, and layout to make your store stand out!",
+        "financial": "Financial Overview",
+        "stats": {
+            "totalProducts": "Total Products",
+            "totalUnitsSold": "Total Units Sold",
+            "grossSales": "Gross Sales",
+            "netEarnings": "Net Earnings",
+            "lifetimeEarnings": "Lifetime Earnings",
+            "lifetimeEarnings_desc": "Gross revenue after platform fee",
+            "availableBalance": "Available Balance",
+            "availableBalance_desc": "Ready for payout",
+            "platformFees": "Platform Fees",
+            "platformFees_desc": "Commission Deducted",
+            "platformEconomics": "💡 Platform Economics: Our platform thrives with a community-first approach. Your success is our mission!"
+        },
+        "activity": {
+            "loading": "Loading your activity...",
+            "storeOrders": "Store Orders",
+            "storeOrdersDesc": "Track your physical and digital purchases",
+            "noOrders": "No store orders yet.",
+            "orderNumber": "ORDER #",
+            "paymentVerified": "✅ Payment Verified",
+            "awaitingApproval": "⏳ Awaiting Approval",
+            "qty": "Qty:",
+            "unit": "EGP / unit",
+            "maker": "Maker:",
+            "billTitle": "Official Order Bill & Status",
+            "acceptedDate": "Accepted Date",
+            "arrivalEstimation": "Arrival Estimation",
+            "workingDays": "Working Days",
+            "carrierTracking": "Carrier Tracking",
+            "awaitingVerification": "Awaiting admin verification of your payment proof...",
+            "awaitingMaker": "Payment verified! Awaiting maker to accept and set delivery date...",
+            "designRequests": "Design Treasure Requests",
+            "designRequestsDesc": "Custom design projects and commissions"
+        },
+        "adminMessages": {
+            "title": "Direct Message from Admin",
+            "subtitle": "Secure messages between you and the platform administration.",
+            "noMessages": "No messages from Admin yet.",
+            "you": "You",
+            "admin": "The Admin",
+            "replyPlaceholder": "Reply to the admin...",
+            "sending": "Sending...",
+            "sendReply": "Send Reply",
+            "announcementsTitle": "Platform Announcements",
+            "announcementsDesc": "Important updates and news for creators.",
+            "noAnnouncements": "No announcements yet.",
+            "team": "Creator Relations Team"
+        },
+        "library": {
+            "title": "My Library",
+            "subtitle": "Your collection of stories and assets.",
+            "empty": "Your library is empty",
+            "empty_desc": "You haven't purchased any stories yet. Explore the marketplace to find your next adventure.",
+            "start_exploring": "Start Exploring",
+            "track_orders": "Track Orders",
+            "browse_store": "Browse Store",
+            "loading": "Loading library...",
+            "now_playing": "Now Playing from Library"
+        },
+        "wallet": {
+            "title": "Wallet & Payouts",
+            "balance": "Available Balance",
+            "requestPayout": "Request Payout",
+            "payoutHistory": "Payout History",
+            "noPayouts": "No payout history found.",
+            "recent": "Recent Earnings",
+            "noRecent": "No earnings found yet.",
+            "payoutMethod": "Payout Method",
+            "submitRequest": "Submit Request",
+            "payoutNote": "Withdrawals are processed within 2-5 business days. Minimum payout is 200 EGP.",
+            "errors": {
+                "invalidAmount": "Please enter a valid amount.",
+                "insufficient": "Insufficient balance.",
+                "minimum": "Minimum payout is 200 EGP",
+                "noDetails": "Please provide payment details."
+            },
+            "methods": {
+                "vodafoneCash": "Vodafone Cash",
+                "instapay": "InstaPay",
+                "bankTransfer": "Bank Transfer (Visa/Mastercard)",
+                "orangeMoney": "Orange Money",
+                "etisalatCash": "Etisalat Cash"
+            },
+            "details": {
+                "instapay": "InstaPay Address (IPA)",
+                "bank": "Bank Details (IBAN & Full Name)",
+                "phone": "Phone Number (Vodafone/Orange/Etisalat Cash)",
+                "placeholder": "Enter details here",
+                "instapayHint": "username@instapay"
+            }
+        },
+        "makerOrders": {
+            "title": "Fulfillment Dashboard",
+            "subtitle": "Manage your physical shipments",
+            "loading": "Loading orders...",
+            "filterAll": "All Orders",
+            "noOrders": "No fulfillment requests",
+            "noStatusOrders": "No {{status}} orders at the moment",
+            "emptyState": "You don't have any physical product orders to fulfill yet.",
+            "qty": "Qty",
+            "price": "Price",
+            "shippingInfo": "Shipping Info",
+            "accept": "Accept",
+            "reject": "Reject",
+            "shipOrder": "Ship Order",
+            "tracking": "Tracking:",
+            "rejectedLabel": "Rejected:",
+            "modals": {
+                "acceptTitle": "Accept Order",
+                "estDelivery": "Estimated Delivery (days)",
+                "estDeliveryDesc": "Tell the customer when to expect their order (1-90 days)",
+                "rejectionReason": "Reason for Rejection",
+                "rejectionPlaceholder": "e.g., Out of stock, Cannot ship to location, etc.",
+                "rejectionDesc": "Provide a clear reason to help the customer understand (minimum 5 characters)",
+                "shipTitle": "Ship Order",
+                "trackingNumber": "Tracking Number",
+                "carrier": "Carrier (Optional)",
+                "deliveryDetails": "Delivery Details",
+                "buyerInfo": "Buyer Info",
+                "productInfo": "Product Info",
+                "customizationDetails": "Customization Details",
+                "shippingAddress": "Shipping Address",
+                "contactNumber": "Contact Number",
+                "shippingTip": "Make sure to print these details clearly on your shipping label. Double check the phone number before dispatching.",
+                "confirmAcceptance": "Confirm Acceptance",
+                "accepting": "Accepting...",
+                "rejecting": "Rejecting...",
+                "updating": "Updating...",
+                "markAsShipped": "Mark as Shipped",
+                "close": "Close"
+            }
+        },
+        "products": {
+            "title": "Your Products",
+            "createNew": "Create New",
+            "noProducts": "No products created yet. Start by creating your first masterpiece!",
+            "editProduct": "Edit Product",
+            "deleteProduct": "Delete Product",
+            "publishTitle": "Publish New Item",
+            "publishDescription": "Create a new product to sell in your store. Choose between E-books, Physical Books, or Design Assets.",
+            "type": "Product Type",
+            "types": {
+                "ebook": "E-Book / Novel",
+                "audiobook": "Audiobook",
+                "physical": "Physical Book",
+                "merchandise": "Merchandise",
+                "asset": "Design Asset",
+                "promotional": "Promotional Content"
+            },
+            "audioFile": "Main Audio File",
+            "audioPreview": "Sample / Preview",
+            "audioDuration": "Duration (seconds)",
+            "category": "Merchandise Category",
+            "categories": {
+                "clothing": "Clothing",
+                "accessories": "Accessories",
+                "collectibles": "Collectibles",
+                "other": "Other"
+            },
+            "customization": "Customization Options",
+            "customizationLabel": "e.g. Color, Size, or 'Enter your name'",
+            "gallery": "Product Gallery",
+            "stock": "Stock Quantity",
+            "weight": "Weight (grams)",
+            "requiresShipping": "Requires Shipping",
+            "shippingNote": "💡 Don't forget to set your delivery zones and rates in the Shipping tab after publishing.",
+            "uploadChapters": "Upload Story Content",
+            "immersiveMode": "Immersive Writer Mode",
+            "extracting": "Extracting text from chapters...",
+            "contentPreview": "Content Preview & Editor:",
+            "contentPlaceholder": "Extracted text will appear here. You can also paste your story directly.",
+            "workTitle": "Title",
+            "workTitlePlaceholder": "Title of your work",
+            "genre": "Genre / Category",
+            "genrePlaceholder": "e.g. Fantasy, Sci-Fi...",
+            "price": "Price (EGP)",
+            "free": "Free Product",
+            "freeNote": "This product will be free due to 'Free Product' selection.",
+            "priceExample": "Example: 50 = 50 EGP",
+            "license": "Default License",
+            "licenseOptions": {
+                "personal": "Personal Use",
+                "commercial": "Commercial Use",
+                "extended": "Extended Commercial"
+            },
+            "cover": "Cover Image",
+            "description": "Description",
+            "descriptionPlaceholder": "Describe your masterpiece...",
+            "saveDraft": "Save as Draft",
+            "publishItem": "Publish Item",
+            "deleteConfirm": "Are you sure you want to delete this product?",
+            "cannotDeletePurchased": "You cannot delete this product because it has already been purchased by users. You can take it offline instead.",
+            "sold": "Sold",
+            "revenue": "Rev",
+            "ebookGuide": "Manage your e-book content directly in the Writer Studio for maximum security and anti-theft protection.",
+            "echoesComing": "Ancient Whispers are Awakening...",
+            "audioComingVibe": "The scrolls of sound are being enchanted. Very soon, your stories will echo through the realms in a grand symphony of voices."
+        },
+        "shipping": {
+            "title": "Shipping Settings",
+            "subtitle": "Manage your delivery zones and rates."
+        },
+        "studio_overlay": {
+            "back": "Back to Dashboard",
+            "title": "Hekayaty Writer Studio",
+            "save": "Save Changes",
+            "footer": "Magic happens when you write. Keep going.",
+            "placeholder": "Once upon a time in a world far away..."
+        },
+        "branding": {
+            "title": "Store Branding",
+            "profileTitle": "Profile Settings",
+            "displayName": "Display Name",
+            "themeColor": "Theme Color",
+            "storeFont": "Store Font",
+            "headerLayout": "Header Layout",
+            "bio": "Store Bio",
+            "bioPlaceholder": "Tell your readers who you are...",
+            "welcomeMessage": "Welcome Message",
+            "welcomePlaceholder": "Welcome to my world!",
+            "images": "Store Images",
+            "imagesInfo": "Recommended: Logo (500x500px), Banner (1200x400px). Max size 5MB.",
+            "avatarLabel": "Store Logo / Avatar",
+            "bannerLabel": "Store Banner",
+            "layouts": {
+                "standard": "Standard (Banner + Avatar)",
+                "hero": "Hero (Full Image)",
+                "minimal": "Minimal (Text Only)"
+            },
+            "accountType": "Account Type",
+            "roles": {
+                "reader": "Reader (Browse & Read)",
+                "writer": "Writer / Publisher (Publish & Sell)",
+                "artist": "Artist (Sell Assets)"
+            }
+        },
+        "productDetails": {
+            "by": "by",
+            "rating": "Rating",
+            "reviewCount": "reviews",
+            "price": "Price",
+            "addToCart": "Add to Cart",
+            "buyNow": "Buy Now",
+            "description": "Description",
+            "details": "Details",
+            "genre": "Genre",
+            "type": "Category",
+            "license": "License",
+            "fileFormat": "File Format",
+            "publishedDate": "Published Date",
+            "reviews": "Reviews",
+            "noReviews": "No reviews yet",
+            "writeReview": "Write a Review",
+            "yourRating": "Your Rating",
+            "yourReview": "Your Review",
+            "submitReview": "Post Review",
+            "stock": "{{count}} Units in Stock",
+            "outOfStock": "Out of Stock",
+            "physicalNote": "Physical Book • Shipping Required",
+            "digitalNote": "Protected Digital Content • Anti-Theft Protection",
+            "customizationPlaceholder": "Enter details here...",
+            "readNowFree": "Read Now (Free)",
+            "addingToCart": "Adding...",
+            "addToCartWithPrice": "Add to Cart • {{price}} EGP",
+            "securePayment": "Secure Payment",
+            "free": "Free",
+            "shippingAvailableTo": "Shipping Available To:",
+            "businessDays": "Business Days",
+            "shippingNote": "Shipping costs are calculated automatically at checkout based on your selection. Delivery times are estimated from the moment of dispatch.",
+            "creatorDeliveryNotes": "Creator's Delivery Notes:",
+            "loginToReview": "Please login to write a review.",
+            "reviewPlaceholder": "What did you think of the story?",
+            "readerReviews": "Reader Reviews ({{count}})",
+            "instantAccess": "Instant Digital Access",
+            "audiobook": "Audiobook",
+            "audioPreview": "Listen to Preview",
+            "sampleNarration": "Sample from the narrator",
+            "physicalProduct": "Physical Product (Shipping Required)"
+        }
+    },
+    "commissions": {
+        "title": "Track Your Treasure",
+        "subtitle_artist": "Manage your incoming design requests.",
+        "subtitle_client": "Track the progress of your ordered designs.",
+        "client_label": "Client",
+        "artist_label": "Artist"
+    },
+    "home": {
+        "bestSellers": {
+            "title": "Best Selling Stories",
+            "subtitle": "The community's favorite adventures.",
+            "viewAll": "View All",
+            "empty": "No best sellers yet. Be the first to break the charts!"
+        },
+        "serialized": {
+            "title": "Ongoing Series",
+            "subtitle": "Stories updated chapter by chapter. Follow the journey.",
+            "empty": "No ongoing series found."
+        },
+        "merchandise": {
+            "title": "Creator Merchandise",
+            "subtitle": "Wear your favorite stories and support your favorite creators.",
+            "empty": "No merchandise found. Stay tuned for upcoming collections!"
+        },
+        "collections": {
+            "title": "Featured Story Collections",
+            "subtitle": "Curated bundles of stories in connected universes with a special discount.",
+            "empty": "No collections found."
+        },
+        "featuredWriters": {
+            "title": "Featured Worldbuilders",
+            "subtitle": "Discover the voices shaping new realities.",
+            "viewAll": "View All"
+        },
+        "welcome": {
+            "title": "Start your journey in the world of stories",
+            "subtitle": "Join thousands of readers, writers and artists who are shaping the future of storytelling",
+            "copyright": "© 2026 Hekayaty. All rights reserved.",
+            "production": "A Clickers Production"
+        },
+        "cta": {
+            "title": "Ready to publish your masterpiece?",
+            "subtitle": "Join thousands of writers who have found their home on Hekayaty. Keep 80% of your earnings and own your audience.",
+            "button": "Create Your Account"
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Welcome Back",
+            "subtitle": "Enter your details to access your account",
+            "email": "Email Address",
+            "password": "Password",
+            "emailPlaceholder": "Enter your email",
+            "passwordPlaceholder": "Enter your password",
+            "button": "Log In",
+            "noAccount": "Don't have an account?",
+            "signUp": "Sign Up Now"
+        },
+        "register": {
+            "title": "Create Account",
+            "subtitle": "Enter your details to get started",
+            "email": "Email Address",
+            "username": "Username",
+            "displayName": "Full Name",
+            "password": "Password",
+            "emailPlaceholder": "hello@example.com",
+            "usernamePlaceholder": "Choose a username",
+            "displayNamePlaceholder": "Your full name",
+            "passwordPlaceholder": "Create a password",
+            "role": "I want to be a:",
+            "reader": "Reader",
+            "writer": "Writer / Publisher",
+            "artist": "Artist",
+            "button": "Create Account",
+            "haveAccount": "Already have an account?",
+            "logIn": "Log In"
+        },
+        "welcome": {
+            "title": "Start your journey in the world of stories",
+            "subtitle": "Join thousands of readers, writers and artists who are shaping the future of storytelling",
+            "copyright": "© 2026 Hekayaty. All rights reserved.",
+            "production": "A Clickers Production"
+        }
+    },
+    "forgotPassword": {
+        "title": "Reset Password",
+        "subtitle": "Enter your email to receive a reset link",
+        "emailLabel": "Email Address",
+        "emailPlaceholder": "name@example.com",
+        "sendButton": "Send Reset Link",
+        "sending": "Sending...",
+        "backToLogin": "Back to Login",
+        "successTitle": "Check your email",
+        "successDesc": "If an account exists for {{email}}, we have sent a password reset link.",
+        "spamNote": "Please check your spam folder if you don't find it within minutes.",
+        "tryAnother": "Try another email",
+        "rateLimitError": "Too many requests. Please try again later.",
+        "emailError": "Please enter a valid email address"
+    },
+    "writers": {
+        "title": "World Builders Gallery",
+        "subtitle": "Meet the architects of imagination. Discover the writers and artists crafting the next generation of legendary stories.",
+        "searchPlaceholder": "Search by name, username, or bio...",
+        "writerWorld": "Writer World",
+        "notFound": "No World Builders found",
+        "notFoundHint": "Try searching with a different name or specialty."
+    },
+    "resetPassword": {
+        "title": "Create New Password",
+        "subtitle": "Enter your new password below",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "button": "Save Password"
+    },
+    "guide": {
+        "pageTitle": "Platform Guide",
+        "title": "📘 Hekayaty Platform Guide",
+        "subtitle": "For Writers and Readers",
+        "disclaimer": "The platform acts only as a technical intermediary and is not a direct party to production or shipping.",
+        "writers": {
+            "title": "✍️ First: Writers Guide",
+            "publishing": {
+                "title": "1️⃣ Publishing Works",
+                "desc": "Every writer can publish their works (digital books, stories, or physical products). The writer is fully responsible for the content, its accuracy, and intellectual property."
+            },
+            "ebooks": {
+                "title": "2️⃣ Digital Books (E-books)",
+                "desc": "Products are delivered digitally via the platform. Hekayaty is responsible for the delivery system only, not the content."
+            },
+            "physical": {
+                "title": "3️⃣ Physical Products",
+                "subtitle": "For physical products (Box Collections - Printed Books):",
+                "writerResponsible": "✅ Writer Responsible For:",
+                "shipping": "Shipping and packaging",
+                "duration": "Adhering to shipping duration",
+                "hekayatyNotResponsible": "❌ Hekayaty Not Responsible For:",
+                "delays": "Shipping or delays",
+                "damage": "Damage during transit"
+            },
+            "shippingData": {
+                "title": "4️⃣ Shipping Data (Mandatory)",
+                "desc": "For physical products, you must specify: Shipping zones, costs, duration, and any special terms. Failure to provide this may lead to account suspension."
+            },
+            "earnings": {
+                "title": "5️⃣ Earnings & Payments",
+                "hold": "Funds are held within the platform to secure the process.",
+                "commission": "The platform deducts a 20% commission.",
+                "instant": "Profits are added to your balance upon confirmation."
+            },
+            "payout": {
+                "title": "6️⃣ Withdrawal (Payout)",
+                "desc": "You can request withdrawal anytime; funds are transferred within 24 hours via chosen payment method."
+            }
+        },
+        "readers": {
+            "title": "📖 Second: Readers Guide",
+            "beforeBuying": {
+                "title": "1️⃣ Before Buying",
+                "desc": "Readers must check product type (digital/physical), shipping cost, duration, and writer policy. Buying denotes agreement."
+            },
+            "payment": {
+                "title": "2️⃣ Payment",
+                "desc": "Payments are made via Hekayaty gateway; funds are held temporarily for security."
+            },
+            "receival": {
+                "title": "3️⃣ Receival",
+                "digital": "Digital: Delivered instantly via site.",
+                "physical": "Physical: Shipped directly from writer.",
+                "delay": "Any shipping delays are resolved with the writer directly."
+            }
+        },
+        "legal": {
+            "title": "⚖️ Important Legal Notes",
+            "desc": "Hekayaty is an intermediary; not responsible for content quality or shipping. Disputes resolved between parties.",
+            "warning": "In case of fraud or violation, account is permanently banned without compensation."
+        },
+        "community": {
+            "title": "🚨 Community & Chat Rules",
+            "chat": {
+                "title": "Chat Rules",
+                "bullying": "Bullying, threats, or offensive language",
+                "racism": "Racism or inciting hate",
+                "sexual": "Sexual content or harmful links"
+            },
+            "content": {
+                "title": "Content Rules",
+                "stolen": "Stolen works (IP violation)",
+                "illegal": "Illegal or violent content",
+                "public": "Violating public taste or law"
+            }
+        },
+        "agreement": {
+            "title": "✅ Agreement",
+            "desc": "By using Hekayaty, you agree to all mentioned rules and warnings and pledge full compliance."
+        }
+    },
+    "orderTracking": {
+        "title": "Track Your Orders",
+        "subtitle": "Follow your wonders' journey",
+        "noOrders": "No orders yet",
+        "noOrdersSubtitle": "Start your journey with your first order!",
+        "orderId": "Order ID",
+        "date": "Date",
+        "status": "Status",
+        "total": "Total",
+        "items": "item",
+        "viewDetails": "View Details",
+        "orderDetails": "Order Details",
+        "arrival": "Expected Arrival",
+        "trackingNumber": "Tracking Number",
+        "shippingTo": "Shipping To",
+        "loadingText": "Uncovering your destiny...",
+        "noOrders2": "No active orders",
+        "noOrders2Desc": "Your library of physical wonders is currently empty. Explore the marketplace to start your next adventure.",
+        "browseMarket": "Browse Marketplace",
+        "yourJourney": "Your Journey",
+        "trackTitle": "Track Your Wonders",
+        "trackSubtitle": "Follow the path of your physical treasures from creator to your door.",
+        "storyOfOrders": "Story of Your Orders",
+        "totalOrders": "Total Orders",
+        "seller": "Seller",
+        "orderSummary": "Order Summary",
+        "paymentStatus": "Payment Status",
+        "verified": "Verified",
+        "pendingVerification": "Pending Verification",
+        "estimatedArrival": "Estimated Arrival",
+        "days": "days",
+        "statuses": {
+            "pending": "Pending",
+            "accepted": "Accepted",
+            "preparing": "Preparing",
+            "pending_verification": "Pending Verification",
+            "paid": "Paid",
+            "shipped": "Shipped",
+            "delivered": "Delivered",
+            "rejected": "Rejected",
+            "cancelled": "Cancelled"
+        },
+        "timeline": {
+            "ordered": "Ordered",
+            "accepted": "Accepted",
+            "preparing": "Preparing",
+            "shipped": "Shipped",
+            "delivered": "Delivered",
+            "reached": "Reached Destination"
+        }
+    },
+    "marketplace": {
+        "title": "Story Marketplace",
+        "subtitle": "Discover stories from independent creators across the multiverse.",
+        "assetsTitle": "Design Assets",
+        "assetsSubtitle": "Premium resources to build your world. Book covers, maps, and character art.",
+        "searchPlaceholder": "Search by title, author...",
+        "assetsSearchPlaceholder": "Search for covers, textures...",
+        "merchandiseSearchPlaceholder": "Search for apparel, gear...",
+        "promotionalDesc": "This item is for showcase only and cannot be purchased.",
+        "allGenres": "All Genres",
+        "allCategories": "All Categories",
+        "noStories": "No stories found",
+        "noAssets": "No assets found",
+        "noMerchandise": "No merchandise found",
+        "tryAdjusting": "Try adjusting your search or filters.",
+        "tabs": {
+            "stories": "Stories",
+            "assets": "Design Assets",
+            "merchandise": "Merchandise",
+            "collections": "Collections",
+            "serialized": "Ongoing Series"
+        },
+        "merchandiseTitle": "Creator Merchandise",
+        "merchandiseSubtitle": "Support your favorite creators with exclusive apparel, collectibles, and more.",
+        "results": "Results"
+    },
+    "writerStore": {
+        "sales": "Sales",
+        "products": "products",
+        "followers": "followers",
+        "follow": "Follow",
+        "following": "Following",
+        "noProducts": "No products available yet",
+        "about": "About",
+        "publishedWorks": "Published Works",
+        "allWorks": "All Works",
+        "noWorks": "This scribe hasn't published any items yet.",
+        "notFoundTitle": "Writer Not Found",
+        "notFoundSubtitle": "The scribe you are looking for has not yet chronicled their tale here.",
+        "ownStoreWelcome": "Welcome to Your Store! 🎨",
+        "ownStoreSubtitle": "Customize your store's appearance, add your logo, and manage your amazing work through your dashboard.",
+        "customizeButton": "Customize Store",
+        "dashboardButton": "Dashboard",
+        "portfolio": "Portfolio",
+        "designAssets": "Design Assets",
+        "noPortfolio": "This artist hasn't organized their portfolio yet.",
+        "noAssets": "No design assets available for purchase.",
+        "visitWorld": "Visit World",
+        "categories": {
+            "All": "All",
+            "Cover": "Cover",
+            "Character": "Character",
+            "Map": "Map",
+            "UI": "UI",
+            "Branding": "Branding",
+            "Other": "Other"
+        }
+    },
+    "studio": {
+        "title": "Writer Studio",
+        "createNew": "Create New Journey",
+        "starting": "Starting Journey...",
+        "masterpieces": "Your Masterpieces",
+        "exit": "Exit Studio",
+        "selectStory": "Select a Story",
+        "selectDescription": "Choose a novel from the sidebar to start writing or refine its appearance.",
+        "returnDashboard": "Return to Dashboard",
+        "draft": "Draft Mode",
+        "draft_simple": "Draft",
+        "public": "Public Marketplace",
+        "published_simple": "Published",
+        "deleteMasterpiece": "Delete Masterpiece",
+        "deleteConfirm": "Are you sure you want to delete this masterpiece? This action cannot be undone.",
+        "tabs": {
+            "write": "Write",
+            "appearance": "Appearance",
+            "market": "Market"
+        },
+        "preview": "Preview",
+        "save": "Save Journey",
+        "saved": "Saved",
+        "placeholder": "Once upon a time...",
+        "words": "Words",
+        "autosave": "Auto-save enabled",
+        "appearance": {
+            "themes": "Reader Themes",
+            "typography": "Typography",
+            "fontFamily": "Font Family",
+            "serif": "Serif (Classic)",
+            "sans": "Sans (Modern)",
+            "fontSize": "Font Size",
+            "previewTitle": "Live Style Preview",
+            "previewText": "This is a preview of how your readers will see your masterpiece. You can customize the font, size, and ambient themes to match the mood of your story."
+        },
+        "market": {
+            "identity": "Market Identity",
+            "title": "Story Title",
+            "genre": "Genre",
+            "price": "Pricing (EGP)",
+            "cover": "Cover Imagery",
+            "coverLabel": "Public Book Cover",
+            "status": {
+                "draftTitle": "Story in Draft Mode",
+                "draftDesc": "Your story is only visible to you. Any reader can find it once you publish.",
+                "publicTitle": "Publicly Listed",
+                "publicDesc": "Your story is visible to thousands of readers in the marketplace."
+            },
+            "publish": "Publish to Market",
+            "offline": "Take Offline"
+        },
+        "guide": {
+            "title": "Writer's Journey Guide",
+            "copyPaste": "Copy and paste your chapters from your original file into the studio. This ensures your content remains within our protected reader, making it impossible for others to download as a PDF or steal your work.",
+            "chapters": "Use the '+' button in the sidebar to add new chapters. Organizing your story by chapters provides a premium reading experience for your audience.",
+            "save": "Don't forget to save your journey! Your work is encrypted and protected by our advanced security system."
+        }
+    },
+    "chat": {
+        "global": {
+            "title": "Community Hub",
+            "live": "Global Chat",
+            "placeholder": "Talk to the universe...",
+            "loginToChat": "Login to join the discussion"
+        },
+        "actions": {
+            "report": "Report Message",
+            "confirmReport": "Submit Report"
+        },
+        "report": {
+            "title": "Safe Community",
+            "description": "Why are you reporting this message?",
+            "reasonPlaceholder": "Reason (e.g. spam, offensive...)"
+        }
+    },
+    "footer": {
+        "aboutText": "Empowering storytellers to build their worlds and share them with the universe.",
+        "quickLinks": "Platform",
+        "legal": "Legal",
+        "followUs": "Follow Us",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "copyright": "All rights reserved."
+    },
+    "legal": {
+        "privacyTitle": "Privacy Policy",
+        "termsTitle": "Terms of Service",
+        "privacyIntro": "Welcome to Hekayaty! We are committed to protecting your privacy and personal data. By using the platform, you agree to the collection and use of your data as described in this policy.",
+        "p1_title": "1. Data We Collect",
+        "p1_1": "Registration data: Name, email, password.",
+        "p1_2": "Content: Stories, novels, images, or any content you upload to the platform.",
+        "p1_3": "Activity: Log of activities, views, and interactions within the site.",
+        "p2_title": "2. How We Use Data",
+        "p2_1": "To manage your account on the platform.",
+        "p2_2": "To facilitate the publishing and selling of your work through the platform's internal account.",
+        "p2_3": "To send important notifications about the account or updates.",
+        "p2_4": "To analyze anonymous data to improve user experience.",
+        "p3_title": "3. Data Protection",
+        "p3_1": "All data is encrypted during transport and storage.",
+        "p3_2": "We do not share your data with any third party unless legally required or necessary to provide the service.",
+        "p3_3": "We have mechanisms to prevent hacking or any unauthorized use.",
+        "p4_title": "4. Your Rights",
+        "p4_1": "Accessing your data and deleting it upon request.",
+        "p4_2": "Withdrawing consent to use your data at any time.",
+        "p4_3": "Objecting to any illegal use of data.",
+        "t1_title": "1. Account & Content",
+        "t1_1": "You are responsible for any content you upload to the platform.",
+        "t1_2": "Your content must not violate the rights of any third party or local and international laws.",
+        "t2_title": "2. Selling on Hekayaty",
+        "t2_1": "After your first sale, you will receive a share of the profits directly according to the platform's internal account system (typically 80% for creators).",
+        "t2_2": "The platform reserves the right to modify profit shares, with prior notice to users before any changes.",
+        "t3_title": "3. Legal Obligations",
+        "t3_1": "Every user must comply with local laws regarding copyright and e-commerce.",
+        "t3_2": "Hekayaty is not responsible for any legal violation committed by the user outside the platform's scope.",
+        "t4_title": "4. Liability",
+        "t4_1": "The platform is available 'as is,' and does not assume any financial losses resulting from the use of the platform by users.",
+        "t4_2": "We reserve the right to suspend or terminate any account that violates laws or terms.",
+        "t5_title": "5. Hekayaty Protection",
+        "t5_1": "All data and assets are protected under intellectual property laws.",
+        "t5_2": "Any attempt to manipulate the system or fraud will lead to immediate legal action.",
+        "t6_title": "6. Amendments",
+        "t6_1": "We reserve the right to modify this policy and terms at any time, with users informed of significant changes."
+    },
+    "notifications": {
+        "title": "Notifications",
+        "pageTitle": "Notifications Center",
+        "pageSubtitle": "Stay updated with your orders, sales, and community interactions.",
+        "markAllRead": "Mark all read",
+        "markAsRead": "Mark as read",
+        "viewAll": "View all notifications",
+        "empty": "No notifications yet",
+        "emptyTitle": "Peace and Quiet",
+        "emptyDescription": "You don't have any notifications in this category right now.",
+        "searchPlaceholder": "Search notifications...",
+        "settings": "Settings",
+        "tipsTitle": "Notification Preferences",
+        "tipsDescription": "You can customize how and when you receive notifications in your settings. Choose between in-app, email, and push alerts.",
+        "configure": "Configure Alerts",
+        "filter": {
+            "all": "All",
+            "unread": "Unread",
+            "commerce": "Commerce",
+            "social": "Social",
+            "creator": "Creator",
+            "store": "Store"
+        },
+        "priority": {
+            "high": "High"
+        }
+    },
+    "errors": {
+        "notFound": "Page Not Found",
+        "notFoundSubtitle": "The page you are looking for does not exist or has been moved.",
+        "backHome": "Back to Home",
+        "serverError": "Server Error",
+        "tryAgain": "Please try again later"
+    },
+    "admin": {
+        "title": "Admin Dashboard",
+        "users": "Users",
+        "orders": "Orders",
+        "products": "Products",
+        "payouts": "Payouts",
+        "settings": "Settings",
+        "pendingOrders": "Pending Orders",
+        "verifyOrder": "Verify Order",
+        "rejectOrder": "Reject Order",
+        "noOrders": "No pending orders",
+        "physicalOrders": {
+            "searchPlaceholder": "Search by product, buyer, seller or order ID...",
+            "noResultsFound": "No physical orders found matching your criteria",
+            "buyer": "Buyer:",
+            "seller": "Seller:",
+            "shippingDestination": "Shipping Destination",
+            "trackingLogistics": "Tracking & Logistics",
+            "waitingCreator": "Waiting for creator to dispatch..."
+        }
+    },
+    "studioPage": {
+        "hero": {
+            "tagline": "The Hub of Imagination",
+            "title1": "Turn Your Story",
+            "title2": "Into a Universe",
+            "subtitle": "From writing to branding, from imagination to reality. Transform your narrative into an immersive brand experience.",
+            "ctaPrimary": "Start Your Journey",
+            "ctaSecondary": "Explore Services"
+        },
+        "arsenal": {
+            "title": "Creative Arsenal",
+            "subtitle": "Every tool you need to transform a single spark into a global phenomenon.",
+            "merch": {
+                "title": "Product & Merch Design",
+                "desc": "Tangible pieces of your world, crafted for your fans.",
+                "items": ["Story T-shirts", "Box Collections", "Posters & Art", "Special Edition Covers"]
+            },
+            "media": {
+                "title": "Marketing & Media",
+                "desc": "Visual storytelling that captivates and attracts audiences.",
+                "items": ["Cinematic Trailers", "Reels & TikTok UI", "Social Media Mockups", "Campaign Visuals"]
+            },
+            "music": {
+                "title": "Music & Sound",
+                "desc": "The sonic soul of your universe, composed with passion.",
+                "items": ["Theme Songs", "Background Score", "Character Sound Identity", "Atmospheric SFX"]
+            },
+            "branding": {
+                "title": "Advertising & Branding",
+                "desc": "Building an author brand that stands the test of time.",
+                "items": ["Campaign Dashboards", "Branding Kits", "Author Identity Cards", "Strategy Roadmap"]
+            }
+        },
+        "forge": {
+            "title": "The Forge: Advanced Labs",
+            "subtitle": "Push the boundaries of storytelling with our experimental high-end service pods.",
+            "world": {
+                "title": "World Building Lab",
+                "desc": "Map your thoughts into reality. Define the topography, culture, and architecture of your imagination.",
+                "preview": "Interactive Map Preview",
+                "evolution": "Character Evolution Tree",
+                "cta": "Enter the Lab"
+            },
+            "novel": {
+                "title": "Visual Novel Experiences",
+                "desc": "Transform your narrative into an interactive choice-based epic.",
+                "choice1": "Reclaim the Throne",
+                "choice2": "Exile into the Wasteland"
+            },
+            "brand": {
+                "title": "Author Brand Builder",
+                "desc": "From 'Writer' to 'Icon'. We sculpt your professional identity for the global stage.",
+                "label": "Transforming Identity"
+            },
+            "audio": {
+                "title": "Audiobook Studio",
+                "session": "Studio Session",
+                "narrator": "Narrator: Elena Storm",
+                "mastered": "AI Voice Mastered",
+                "voiceA": "Voice A",
+                "voiceB": "Voice B"
+            },
+            "film": {
+                "title": "Film Pitch Studio",
+                "subtitle": "Prepare your story for the silver screen with industry-standard pitch decks and visual narratives."
+            }
+        },
+        "final": {
+            "title": "This is not just a story.",
+            "titleHighlight": "This is your universe.",
+            "subtitle": "Transform your narrative into a professional brand with the most advanced creative hub in the Middle East.",
+            "footerTag": "Try Hekayaty Studio now"
+        },
+        "layers": {
+            "core": {
+                "title": "Layer I: Core Services",
+                "subtitle": "The essential foundation for every creator's journey."
+            },
+            "highValue": {
+                "title": "Layer II: High-Value Craft",
+                "subtitle": "Premium production to elevate your world to the elite status."
+            },
+            "premium": {
+                "title": "Layer III: Future & Infinity",
+                "subtitle": "The horizon of immersive storytelling and personalized empires."
+            }
+        },
+        "services": {
+            "merch": {
+                "title": "Product & Merch Design",
+                "items": ["Story T-Shirts Design", "Box Collections Design", "Posters & Art Design", "Special Edition Book Covers"]
+            },
+            "marketing": {
+                "title": "Marketing & Media",
+                "items": ["Cinematic Trailer Production", "Short-form Videos (Reels / TikTok)", "Social Media Feed Design", "Social Media Content Creation"]
+            },
+            "music": {
+                "title": "Music & Sound",
+                "items": ["Custom Theme Song", "Cinematic Background Score", "Character Sound Identity"]
+            },
+            "branding": {
+                "title": "Advertising & Branding",
+                "items": ["Paid Ads Campaign Setup", "Book Launch Strategy", "Author Branding Identity", "Branding Kits Design"]
+            },
+            "youtube": {
+                "title": "YouTube & Content",
+                "items": ["YouTube Video Production", "Podcast Production", "Storytelling Video Series", "Content Channel Management"]
+            },
+            "world": {
+                "title": "World Building Lab",
+                "items": ["World Map Design", "Character Tree Creation", "Story Timeline Design"]
+            },
+            "interactive": {
+                "title": "Interactive Experience",
+                "items": ["Visual Novel Creation", "Choice-Based Story UI Design"]
+            },
+            "audiobook": {
+                "title": "Audiobook Studio",
+                "items": ["Audiobook Recording", "Multi-character Voice Acting", "Character Voice Design"]
+            },
+            "identity": {
+                "title": "Author Brand Builder",
+                "items": ["Personal Brand Identity", "Author Profile Transformation", "Content Strategy for Author"]
+            },
+            "film": {
+                "title": "Film Pitch Studio",
+                "items": ["Film Pitch Deck Creation", "Cinematic Poster Design", "Story-to-Script Conversion"]
+            }
+        },
+        "marketplace": {
+            "title": "Marketplace Services",
+            "subtitle": "Empowering creators through our specialized local talent.",
+            "items": ["Graphic Design", "Video Editing", "Music Production", "Voice Acting", "Writing & Editing"]
+        },
+        "community": {
+            "title": "Drops & Events",
+            "merch": "Exclusive Merch Drops",
+            "competitions": "Writing Competitions",
+            "challenges": "Creator Challenges",
+            "events": "Community Events"
+        }
+    }
+}

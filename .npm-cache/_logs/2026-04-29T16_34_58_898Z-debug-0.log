@@ -1,0 +1,781 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.2
+2 info using node@v22.15.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:E:\Hekayaty new version 2026 april\hekayaty may 2026 final version\hekayaty-v2--main\.npmrc
+5 silly config load:file:C:\Users\hp\.npmrc
+6 silly config load:file:C:\Users\hp\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install" "--cache" ".npm-cache"
+9 verbose logfile logs-max:10 dir:E:\Hekayaty new version 2026 april\hekayaty may 2026 final version\hekayaty-v2--main\.npm-cache\_logs\2026-04-29T16_34_58_898Z-
+10 verbose logfile E:\Hekayaty new version 2026 april\hekayaty may 2026 final version\hekayaty-v2--main\.npm-cache\_logs\2026-04-29T16_34_58_898Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:2197815296 maxSize:549453824 maxEntrySize:274726912
+13 silly idealTree buildDeps
+14 http fetch GET 200 https://registry.npmjs.org/npm 1947ms
+15 silly reify mark retired [
+15 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\autoprefixer'
+15 silly reify ]
+16 silly reify mark retired [
+16 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\caniuse-lite'
+16 silly reify ]
+17 silly reify mark retired [
+17 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\cloudinary'
+17 silly reify ]
+18 silly reify mark retired [
+18 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-array'
+18 silly reify ]
+19 silly reify mark retired [
+19 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-format'
+19 silly reify ]
+20 silly reify mark retired [
+20 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-interpolate'
+20 silly reify ]
+21 silly reify mark retired [
+21 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-shape'
+21 silly reify ]
+22 silly reify mark retired [
+22 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-scale'
+22 silly reify ]
+23 silly reify mark retired [
+23 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-time-format'
+23 silly reify ]
+24 silly reify mark retired [
+24 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\date-fns'
+24 silly reify ]
+25 silly reify mark retired [
+25 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\dom-helpers'
+25 silly reify ]
+26 silly reify mark retired [
+26 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\drizzle-kit'
+26 silly reify ]
+27 silly reify mark retired [
+27 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\embla-carousel'
+27 silly reify ]
+28 silly reify mark retired [
+28 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\enhanced-resolve'
+28 silly reify ]
+29 silly reify mark retired [
+29 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\fast-glob'
+29 silly reify ]
+30 silly reify mark retired [
+30 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\fluent-ffmpeg'
+30 silly reify ]
+31 silly reify mark retired [
+31 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\framer-motion'
+31 silly reify ]
+32 silly reify mark retired [
+32 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\fsevents'
+32 silly reify ]
+33 silly reify mark retired [
+33 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\jiti'
+33 silly reify ]
+34 silly reify mark retired [
+34 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\jszip'
+34 silly reify ]
+35 silly reify mark retired [
+35 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-android-arm64'
+35 silly reify ]
+36 silly reify mark retired [
+36 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-darwin-arm64'
+36 silly reify ]
+37 silly reify mark retired [
+37 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-darwin-x64'
+37 silly reify ]
+38 silly reify mark retired [
+38 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-freebsd-x64'
+38 silly reify ]
+39 silly reify mark retired [
+39 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-linux-arm-gnueabihf'
+39 silly reify ]
+40 silly reify mark retired [
+40 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-linux-arm64-gnu'
+40 silly reify ]
+41 silly reify mark retired [
+41 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-linux-x64-gnu'
+41 silly reify ]
+42 silly reify mark retired [
+42 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-linux-x64-musl'
+42 silly reify ]
+43 silly reify mark retired [
+43 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-linux-arm64-musl'
+43 silly reify ]
+44 silly reify mark retired [
+44 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-win32-arm64-msvc'
+44 silly reify ]
+45 silly reify mark retired [
+45 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lodash'
+45 silly reify ]
+46 silly reify mark retired [
+46 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lop'
+46 silly reify ]
+47 silly reify mark retired [
+47 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lucide-react'
+47 silly reify ]
+48 silly reify mark retired [
+48 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\mammoth'
+48 silly reify ]
+49 silly reify mark retired [
+49 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\object-inspect'
+49 silly reify ]
+50 silly reify mark retired [
+50 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\pako'
+50 silly reify ]
+51 silly reify mark retired [
+51 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\pdfjs-dist'
+51 silly reify ]
+52 silly reify mark retired [
+52 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\postcss'
+52 silly reify ]
+53 silly reify mark retired [
+53 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\postcss-selector-parser'
+53 silly reify ]
+54 silly reify mark retired [
+54 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react'
+54 silly reify ]
+55 silly reify mark retired [
+55 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-dom'
+55 silly reify ]
+56 silly reify mark retired [
+56 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-i18next'
+56 silly reify ]
+57 silly reify mark retired [
+57 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-icons'
+57 silly reify ]
+58 silly reify mark retired [
+58 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-remove-scroll'
+58 silly reify ]
+59 silly reify mark retired [
+59 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-remove-scroll-bar'
+59 silly reify ]
+60 silly reify mark retired [
+60 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-resizable-panels'
+60 silly reify ]
+61 silly reify mark retired [
+61 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-smooth'
+61 silly reify ]
+62 silly reify mark retired [
+62 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-transition-group'
+62 silly reify ]
+63 silly reify mark retired [
+63 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\recharts'
+63 silly reify ]
+64 silly reify mark retired [
+64 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\resolve'
+64 silly reify ]
+65 silly reify mark retired [
+65 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\rollup'
+65 silly reify ]
+66 silly reify mark retired [
+66 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\sucrase'
+66 silly reify ]
+67 silly reify mark retired [
+67 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\tailwindcss'
+67 silly reify ]
+68 silly reify mark retired [
+68 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\tsx'
+68 silly reify ]
+69 silly reify mark retired [
+69 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\typescript'
+69 silly reify ]
+70 silly reify mark retired [
+70 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\underscore'
+70 silly reify ]
+71 silly reify mark retired [
+71 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\use-callback-ref'
+71 silly reify ]
+72 silly reify mark retired [
+72 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\use-sidecar'
+72 silly reify ]
+73 silly reify mark retired [
+73 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\victory-vendor'
+73 silly reify ]
+74 silly reify mark retired [
+74 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\vite'
+74 silly reify ]
+75 silly reify mark retired [
+75 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\yaml'
+75 silly reify ]
+76 silly reify mark retired [
+76 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\zod'
+76 silly reify ]
+77 silly reify mark retired [
+77 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\core'
+77 silly reify ]
+78 silly reify mark retired [
+78 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\generator'
+78 silly reify ]
+79 silly reify mark retired [
+79 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\helpers'
+79 silly reify ]
+80 silly reify mark retired [
+80 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\parser'
+80 silly reify ]
+81 silly reify mark retired [
+81 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\runtime'
+81 silly reify ]
+82 silly reify mark retired [
+82 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\traverse'
+82 silly reify ]
+83 silly reify mark retired [
+83 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\types'
+83 silly reify ]
+84 silly reify mark retired [
+84 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\aix-ppc64'
+84 silly reify ]
+85 silly reify mark retired [
+85 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\android-arm'
+85 silly reify ]
+86 silly reify mark retired [
+86 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\android-arm64'
+86 silly reify ]
+87 silly reify mark retired [
+87 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\android-x64'
+87 silly reify ]
+88 silly reify mark retired [
+88 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\darwin-arm64'
+88 silly reify ]
+89 silly reify mark retired [
+89 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\darwin-x64'
+89 silly reify ]
+90 silly reify mark retired [
+90 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\freebsd-arm64'
+90 silly reify ]
+91 silly reify mark retired [
+91 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\freebsd-x64'
+91 silly reify ]
+92 silly reify mark retired [
+92 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-arm'
+92 silly reify ]
+93 silly reify mark retired [
+93 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-arm64'
+93 silly reify ]
+94 silly reify mark retired [
+94 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-ia32'
+94 silly reify ]
+95 silly reify mark retired [
+95 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-loong64'
+95 silly reify ]
+96 silly reify mark retired [
+96 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-mips64el'
+96 silly reify ]
+97 silly reify mark retired [
+97 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-ppc64'
+97 silly reify ]
+98 silly reify mark retired [
+98 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-riscv64'
+98 silly reify ]
+99 silly reify mark retired [
+99 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-s390x'
+99 silly reify ]
+100 silly reify mark retired [
+100 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-x64'
+100 silly reify ]
+101 silly reify mark retired [
+101 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\netbsd-arm64'
+101 silly reify ]
+102 silly reify mark retired [
+102 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\netbsd-x64'
+102 silly reify ]
+103 silly reify mark retired [
+103 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\openbsd-arm64'
+103 silly reify ]
+104 silly reify mark retired [
+104 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\openbsd-x64'
+104 silly reify ]
+105 silly reify mark retired [
+105 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\openharmony-arm64'
+105 silly reify ]
+106 silly reify mark retired [
+106 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\sunos-x64'
+106 silly reify ]
+107 silly reify mark retired [
+107 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\win32-arm64'
+107 silly reify ]
+108 silly reify mark retired [
+108 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\win32-ia32'
+108 silly reify ]
+109 silly reify mark retired [
+109 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\win32-x64'
+109 silly reify ]
+110 silly reify mark retired [
+110 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@hookform\\resolvers'
+110 silly reify ]
+111 silly reify mark retired [
+111 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-android-arm64'
+111 silly reify ]
+112 silly reify mark retired [
+112 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-darwin-x64'
+112 silly reify ]
+113 silly reify mark retired [
+113 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-darwin-arm64'
+113 silly reify ]
+114 silly reify mark retired [
+114 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-arm-gnueabihf'
+114 silly reify ]
+115 silly reify mark retired [
+115 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-arm64-musl'
+115 silly reify ]
+116 silly reify mark retired [
+116 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-arm64-gnu'
+116 silly reify ]
+117 silly reify mark retired [
+117 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-riscv64-gnu'
+117 silly reify ]
+118 silly reify mark retired [
+118 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-x64-musl'
+118 silly reify ]
+119 silly reify mark retired [
+119 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-win32-arm64-msvc'
+119 silly reify ]
+120 silly reify mark retired [
+120 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-win32-x64-msvc'
+120 silly reify ]
+121 silly reify mark retired [
+121 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-x64-gnu'
+121 silly reify ]
+122 silly reify mark retired [
+122 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-android-arm-eabi'
+122 silly reify ]
+123 silly reify mark retired [
+123 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-darwin-arm64'
+123 silly reify ]
+124 silly reify mark retired [
+124 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-android-arm64'
+124 silly reify ]
+125 silly reify mark retired [
+125 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-darwin-x64'
+125 silly reify ]
+126 silly reify mark retired [
+126 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-freebsd-arm64'
+126 silly reify ]
+127 silly reify mark retired [
+127 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-freebsd-x64'
+127 silly reify ]
+128 silly reify mark retired [
+128 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-arm-gnueabihf'
+128 silly reify ]
+129 silly reify mark retired [
+129 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-arm-musleabihf'
+129 silly reify ]
+130 silly reify mark retired [
+130 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-arm64-gnu'
+130 silly reify ]
+131 silly reify mark retired [
+131 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-arm64-musl'
+131 silly reify ]
+132 silly reify mark retired [
+132 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-ppc64-gnu'
+132 silly reify ]
+133 silly reify mark retired [
+133 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-loong64-gnu'
+133 silly reify ]
+134 silly reify mark retired [
+134 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-riscv64-gnu'
+134 silly reify ]
+135 silly reify mark retired [
+135 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-riscv64-musl'
+135 silly reify ]
+136 silly reify mark retired [
+136 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-s390x-gnu'
+136 silly reify ]
+137 silly reify mark retired [
+137 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-x64-gnu'
+137 silly reify ]
+138 silly reify mark retired [
+138 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-x64-musl'
+138 silly reify ]
+139 silly reify mark retired [
+139 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-openharmony-arm64'
+139 silly reify ]
+140 silly reify mark retired [
+140 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-win32-arm64-msvc'
+140 silly reify ]
+141 silly reify mark retired [
+141 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-win32-ia32-msvc'
+141 silly reify ]
+142 silly reify mark retired [
+142 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@supabase\\auth-js'
+142 silly reify ]
+143 silly reify mark retired [
+143 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-android-arm64'
+143 silly reify ]
+144 silly reify mark retired [
+144 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-darwin-arm64'
+144 silly reify ]
+145 silly reify mark retired [
+145 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-darwin-x64'
+145 silly reify ]
+146 silly reify mark retired [
+146 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-freebsd-x64'
+146 silly reify ]
+147 silly reify mark retired [
+147 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-linux-arm-gnueabihf'
+147 silly reify ]
+148 silly reify mark retired [
+148 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-linux-arm64-gnu'
+148 silly reify ]
+149 silly reify mark retired [
+149 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-linux-arm64-musl'
+149 silly reify ]
+150 silly reify mark retired [
+150 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-linux-x64-gnu'
+150 silly reify ]
+151 silly reify mark retired [
+151 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-linux-x64-musl'
+151 silly reify ]
+152 silly reify mark retired [
+152 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-wasm32-wasi'
+152 silly reify ]
+153 silly reify mark retired [
+153 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-win32-arm64-msvc'
+153 silly reify ]
+154 silly reify mark retired [
+154 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tanstack\\query-core'
+154 silly reify ]
+155 silly reify mark retired [
+155 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tanstack\\react-query'
+155 silly reify ]
+156 silly reify mark retired [
+156 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\drizzle-orm'
+156 silly reify ]
+157 silly reify mark retired [
+157 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@types\\node'
+157 silly reify ]
+158 silly reify mark retired [
+158 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\browserslist',
+158 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\browserslist',
+158 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\browserslist.cmd',
+158 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\browserslist.ps1'
+158 silly reify ]
+159 silly reify mark retired [
+159 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\cssesc',
+159 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\cssesc',
+159 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\cssesc.cmd',
+159 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\cssesc.ps1'
+159 silly reify ]
+160 silly reify mark retired [
+160 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\esbuild',
+160 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\esbuild',
+160 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\esbuild.cmd',
+160 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\esbuild.ps1'
+160 silly reify ]
+161 silly reify mark retired [
+161 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\express'
+161 silly reify ]
+162 silly reify mark retired [
+162 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\glob',
+162 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\glob',
+162 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\glob.cmd',
+162 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\glob.ps1'
+162 silly reify ]
+163 silly reify mark retired [
+163 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\http-response-object\\node_modules\\@types\\node'
+163 silly reify ]
+164 silly reify mark retired [
+164 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\jsesc',
+164 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\jsesc',
+164 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\jsesc.cmd',
+164 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\jsesc.ps1'
+164 silly reify ]
+165 silly reify mark retired [
+165 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\loose-envify',
+165 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\loose-envify',
+165 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\loose-envify.cmd',
+165 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\loose-envify.ps1'
+165 silly reify ]
+166 silly reify mark retired [
+166 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\mime',
+166 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mime',
+166 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mime.cmd',
+166 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mime.ps1'
+166 silly reify ]
+167 silly reify mark retired [
+167 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\mkdirp',
+167 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mkdirp',
+167 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mkdirp.cmd',
+167 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mkdirp.ps1'
+167 silly reify ]
+168 silly reify mark retired [
+168 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\nanoid',
+168 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\nanoid',
+168 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\nanoid.cmd',
+168 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\nanoid.ps1'
+168 silly reify ]
+169 silly reify mark retired [
+169 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\node-gyp-build',
+169 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build',
+169 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build.cmd',
+169 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build.ps1',
+169 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-optional',
+169 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-optional.cmd',
+169 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-optional.ps1',
+169 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-test',
+169 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-test.cmd',
+169 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-test.ps1'
+169 silly reify ]
+170 silly reify mark retired [
+170 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\semver',
+170 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\semver',
+170 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\semver.cmd',
+170 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\semver.ps1'
+170 silly reify ]
+171 silly reify mark retired [
+171 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\update-browserslist-db',
+171 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\update-browserslist-db',
+171 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\update-browserslist-db.cmd',
+171 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\update-browserslist-db.ps1'
+171 silly reify ]
+172 silly reify mark retired [
+172 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\which',
+172 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-which',
+172 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-which.cmd',
+172 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-which.ps1'
+172 silly reify ]
+173 silly reify mark retired [
+173 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@supabase\\realtime-js'
+173 silly reify ]
+174 silly reify mark retired [
+174 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\node\\node_modules\\jiti'
+174 silly reify ]
+175 silly reify mark retired [
+175 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\typography\\node_modules\\postcss-selector-parser'
+175 silly reify ]
+176 silly reify mark retired [
+176 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\json5',
+176 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\json5',
+176 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\json5.cmd',
+176 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\json5.ps1'
+176 silly reify ]
+177 silly reify moves {
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\autoprefixer': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.autoprefixer-vkDi9TRg',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\caniuse-lite': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.caniuse-lite-hFsh2gLl',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\cloudinary': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.cloudinary-iEdUt2gH',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-array': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.d3-array-OQw0gPNc',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-format': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.d3-format-zA8Mlxj8',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-interpolate': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.d3-interpolate-uWHx5dkQ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-shape': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.d3-shape-wysteGz7',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-scale': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.d3-scale-rNW1JBaM',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\d3-time-format': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.d3-time-format-VD2riSd1',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\date-fns': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.date-fns-xye2g31L',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\dom-helpers': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.dom-helpers-vlmKj01K',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\drizzle-kit': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.drizzle-kit-IVuktblT',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\embla-carousel': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.embla-carousel-qHFmhl5E',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\enhanced-resolve': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.enhanced-resolve-EE3VEgXV',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\fast-glob': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.fast-glob-z7XQg5AM',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\fluent-ffmpeg': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.fluent-ffmpeg-3XWcC50v',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\framer-motion': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.framer-motion-kaO0fDr6',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\fsevents': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.fsevents-1GgOexsX',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\jiti': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.jiti-E9OJ7QwS',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\jszip': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.jszip-l2zibmtm',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-android-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lightningcss-android-arm64-3oDJV3Il',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-darwin-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lightningcss-darwin-arm64-nEQHNWCT',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-darwin-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lightningcss-darwin-x64-7o9lqDsw',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-freebsd-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lightningcss-freebsd-x64-OgmO52MF',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-linux-arm-gnueabihf': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lightningcss-linux-arm-gnueabihf-LtXfSaNc',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-linux-arm64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lightningcss-linux-arm64-gnu-qTPOJGlP',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-linux-x64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lightningcss-linux-x64-gnu-mWjZq7iN',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-linux-x64-musl': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lightningcss-linux-x64-musl-fdYss6MU',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-linux-arm64-musl': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lightningcss-linux-arm64-musl-5StqwdV8',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lightningcss-win32-arm64-msvc': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lightningcss-win32-arm64-msvc-qxQ0017d',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lodash': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lodash-SkLLrY3S',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lop': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lop-9SX2SUco',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\lucide-react': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.lucide-react-l0aj5G1Z',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\mammoth': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.mammoth-04mg0EIc',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\object-inspect': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.object-inspect-MRtP9f9V',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\pako': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.pako-Y5vc8vxp',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\pdfjs-dist': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.pdfjs-dist-vqCazBu7',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\postcss': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.postcss-dsRkqOFQ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\postcss-selector-parser': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.postcss-selector-parser-PFTHzP3Q',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.react-zBCNvZNt',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-dom': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.react-dom-PlNnm0kY',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-i18next': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.react-i18next-TRtHNes8',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-icons': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.react-icons-GFaICHdl',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-remove-scroll': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.react-remove-scroll-eXKGmqha',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-remove-scroll-bar': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.react-remove-scroll-bar-gys9R7p0',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-resizable-panels': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.react-resizable-panels-aAiXnJA4',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-smooth': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.react-smooth-SScIw7x1',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\react-transition-group': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.react-transition-group-JvHFvwvu',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\recharts': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.recharts-bvTI5lFX',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\resolve': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.resolve-aFeTVRKT',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\rollup': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.rollup-uyPs0mVX',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\sucrase': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.sucrase-V1jD9Nm8',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\tailwindcss': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.tailwindcss-S2SmHmml',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\tsx': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.tsx-PFE1FjLC',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\typescript': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.typescript-cPHAkUrL',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\underscore': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.underscore-guUKgZ4I',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\use-callback-ref': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.use-callback-ref-B7tIeiHH',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\use-sidecar': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.use-sidecar-Sg56Uh3q',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\victory-vendor': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.victory-vendor-moPlmND9',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\vite': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.vite-8sTjR3dE',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\yaml': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.yaml-dg2pyBBf',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\zod': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.zod-3OjT2ZBN',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\core': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\.core-URzD2H98',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\generator': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\.generator-hQWLanPE',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\helpers': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\.helpers-wDwPxd1E',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\parser': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\.parser-7wrqVPhG',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\runtime': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\.runtime-TpYH9W2y',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\traverse': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\.traverse-nEIIkMbo',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\types': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@babel\\.types-hLduHUb3',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\aix-ppc64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.aix-ppc64-NpuPdql6',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\android-arm': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.android-arm-MiSkovna',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\android-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.android-arm64-IBZVvsWY',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\android-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.android-x64-CrSDn6lt',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\darwin-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.darwin-arm64-fQswqknF',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\darwin-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.darwin-x64-J99Fus8A',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\freebsd-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.freebsd-arm64-MOFpANF1',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\freebsd-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.freebsd-x64-AbnUqGmz',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-arm': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.linux-arm-hP8odq5s',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.linux-arm64-n4uW0LzA',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-ia32': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.linux-ia32-qS5W1b7C',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-loong64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.linux-loong64-GqShC6jT',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-mips64el': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.linux-mips64el-dgNvP6wO',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-ppc64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.linux-ppc64-jxUe8nmU',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-riscv64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.linux-riscv64-aqn1pWkp',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-s390x': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.linux-s390x-YID8bmVx',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\linux-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.linux-x64-BoSq2blv',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\netbsd-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.netbsd-arm64-FIapkyAo',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\netbsd-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.netbsd-x64-xWHEK7w6',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\openbsd-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.openbsd-arm64-7LyDLskC',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\openbsd-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.openbsd-x64-Khm04wfw',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\openharmony-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.openharmony-arm64-LSgtVrCi',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\sunos-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.sunos-x64-t50lKqiP',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\win32-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.win32-arm64-dvPuNMaw',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\win32-ia32': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.win32-ia32-0KCW9fOC',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\win32-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@esbuild\\.win32-x64-ryYsHVPH',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@hookform\\resolvers': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@hookform\\.resolvers-rCb1MiiM',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-android-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\.canvas-android-arm64-ew5FclwS',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-darwin-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\.canvas-darwin-x64-syoYxCQe',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-darwin-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\.canvas-darwin-arm64-aIRZwHOI',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-arm-gnueabihf': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\.canvas-linux-arm-gnueabihf-uB07QB20',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-arm64-musl': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\.canvas-linux-arm64-musl-wGtKvQVx',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-arm64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\.canvas-linux-arm64-gnu-NSqGXtBq',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-riscv64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\.canvas-linux-riscv64-gnu-XaPfmXkx',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-x64-musl': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\.canvas-linux-x64-musl-TvZJGQDq',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-win32-arm64-msvc': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\.canvas-win32-arm64-msvc-uqDdFFOI',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-win32-x64-msvc': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\.canvas-win32-x64-msvc-2uo9ag8f',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\canvas-linux-x64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@napi-rs\\.canvas-linux-x64-gnu-SzMW4BIE',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-android-arm-eabi': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-android-arm-eabi-LFx25PoV',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-darwin-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-darwin-arm64-bxs1mAH4',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-android-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-android-arm64-rjGd3CcF',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-darwin-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-darwin-x64-eG0rLAUE',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-freebsd-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-freebsd-arm64-vXW4sBwm',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-freebsd-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-freebsd-x64-h0DPa0rp',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-arm-gnueabihf': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-linux-arm-gnueabihf-Ueh2qHaM',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-arm-musleabihf': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-linux-arm-musleabihf-6zbzFgVb',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-arm64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-linux-arm64-gnu-qel2dniJ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-arm64-musl': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-linux-arm64-musl-Sf2q8jmo',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-ppc64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-linux-ppc64-gnu-aEjwp0lS',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-loong64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-linux-loong64-gnu-HETwxQWA',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-riscv64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-linux-riscv64-gnu-7hcaNhxx',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-riscv64-musl': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-linux-riscv64-musl-t0CJA2f0',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-s390x-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-linux-s390x-gnu-prxDKfQd',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-x64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-linux-x64-gnu-dFvAODfc',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-linux-x64-musl': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-linux-x64-musl-jOWoWrYi',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-openharmony-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-openharmony-arm64-pVxEBO1Y',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-win32-arm64-msvc': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-win32-arm64-msvc-yIDluBit',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\rollup-win32-ia32-msvc': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@rollup\\.rollup-win32-ia32-msvc-nsFcTMlp',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@supabase\\auth-js': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@supabase\\.auth-js-BvNDOKpL',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-android-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\.oxide-android-arm64-FbtiO1z0',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-darwin-arm64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\.oxide-darwin-arm64-7k3DiyRi',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-darwin-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\.oxide-darwin-x64-QY4SdVKB',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-freebsd-x64': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\.oxide-freebsd-x64-5RXSfMjM',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-linux-arm-gnueabihf': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\.oxide-linux-arm-gnueabihf-sMCfgyYG',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-linux-arm64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\.oxide-linux-arm64-gnu-kwPMKoxo',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-linux-arm64-musl': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\.oxide-linux-arm64-musl-TstOuee1',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-linux-x64-gnu': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\.oxide-linux-x64-gnu-ONcy2Gas',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-linux-x64-musl': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\.oxide-linux-x64-musl-21jnKlDL',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-wasm32-wasi': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\.oxide-wasm32-wasi-nyo9VWBH',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\oxide-win32-arm64-msvc': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\.oxide-win32-arm64-msvc-wnctfNeJ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tanstack\\query-core': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tanstack\\.query-core-EHdrruO2',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tanstack\\react-query': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tanstack\\.react-query-hJnt1Nhk',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\drizzle-orm': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.drizzle-orm-hf9KKSsN',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@types\\node': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@types\\.node-KmSlSprl',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\browserslist': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.browserslist-AaynT9Rk',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\browserslist': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.browserslist-hlfQdXW6',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\browserslist.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.browserslist.cmd-lfodHlSj',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\browserslist.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.browserslist.ps1-4FpzrgTh',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\cssesc': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.cssesc-OrnHMLKa',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\cssesc': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.cssesc-oCzrQm0X',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\cssesc.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.cssesc.cmd-VttXiqHG',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\cssesc.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.cssesc.ps1-NyuMiu25',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\esbuild': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.esbuild-JoEKZevJ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\esbuild': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.esbuild-QcxntMrS',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\esbuild.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.esbuild.cmd-9UAhk82C',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\esbuild.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.esbuild.ps1-snyDt0eS',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\express': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.express-DD4AJWtA',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\glob': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.glob-TZJSpe5e',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\glob': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.glob-fFsizRFI',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\glob.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.glob.cmd-NKf8ZpnS',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\glob.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.glob.ps1-RKdpWT8I',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\http-response-object\\node_modules\\@types\\node': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\http-response-object\\node_modules\\@types\\.node-cZ4iUw1X',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\jsesc': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.jsesc-ofIIw3eK',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\jsesc': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.jsesc-pzEPUs2M',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\jsesc.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.jsesc.cmd-sH8mbkOS',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\jsesc.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.jsesc.ps1-isopYqEG',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\loose-envify': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.loose-envify-aqZ2qurD',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\loose-envify': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.loose-envify-kael6IkJ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\loose-envify.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.loose-envify.cmd-5DUyNYQo',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\loose-envify.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.loose-envify.ps1-ymdnOh8H',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\mime': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.mime-56o7z7ET',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mime': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.mime-5f6YjvZ1',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mime.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.mime.cmd-mPsvMIZY',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mime.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.mime.ps1-R6ERs1UZ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\mkdirp': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.mkdirp-f30FzcFC',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mkdirp': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.mkdirp-znJtfnra',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mkdirp.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.mkdirp.cmd-byRiD184',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\mkdirp.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.mkdirp.ps1-6ts6kxil',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\nanoid': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.nanoid-W55fs6FZ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\nanoid': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.nanoid-PHsX5iCY',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\nanoid.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.nanoid.cmd-Ha6dKXTM',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\nanoid.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.nanoid.ps1-7Mm9LGV9',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\node-gyp-build': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.node-gyp-build-vl2zJsw4',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-gyp-build-IIkDejjs',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-gyp-build.cmd-f0GmMXzG',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-gyp-build.ps1-MRzhRBvN',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-optional': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-gyp-build-optional-CeHEuxCD',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-optional.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-gyp-build-optional.cmd-118SVUTZ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-optional.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-gyp-build-optional.ps1-LHuh6zRA',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-test': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-gyp-build-test-hAX6o9Qb',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-test.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-gyp-build-test.cmd-9OzecbXO',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-gyp-build-test.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-gyp-build-test.ps1-bQJBiIYN',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\semver': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.semver-OvqF9WfD',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\semver': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.semver-B6u0BZf0',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\semver.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.semver.cmd-LhsLxeZF',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\semver.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.semver.ps1-nsI6BT3Q',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\update-browserslist-db': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.update-browserslist-db-OJ0BaqAn',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\update-browserslist-db': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.update-browserslist-db-bCHntvBj',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\update-browserslist-db.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.update-browserslist-db.cmd-RlVHWTuC',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\update-browserslist-db.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.update-browserslist-db.ps1-txGDQE1H',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\which': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.which-YtezBqYd',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-which': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-which-CNsXKROQ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-which.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-which.cmd-Q70EP9aB',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\node-which.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.node-which.ps1-bQwF4gXf',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@supabase\\realtime-js': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@supabase\\.realtime-js-WR0HJrtF',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\node\\node_modules\\jiti': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\node\\node_modules\\.jiti-tUGzDu4m',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\typography\\node_modules\\postcss-selector-parser': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\@tailwindcss\\typography\\node_modules\\.postcss-selector-parser-TsGwwKPt',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\json5': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.json5-xOZ2rGI4',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\json5': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.json5-spW05ASJ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\json5.cmd': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.json5.cmd-QeFCckrJ',
+177 silly reify   'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\json5.ps1': 'E:\\Hekayaty new version 2026 april\\hekayaty may 2026 final version\\hekayaty-v2--main\\node_modules\\.bin\\.json5.ps1-Yy7tuuCm'
+177 silly reify }
+178 verbose stack Error: ENOTEMPTY: directory not empty, rmdir 'E:\Hekayaty new version 2026 april\hekayaty may 2026 final version\hekayaty-v2--main\node_modules\d3-format\locale'
+179 error code ENOTEMPTY
+180 error syscall rmdir
+181 error path E:\Hekayaty new version 2026 april\hekayaty may 2026 final version\hekayaty-v2--main\node_modules\d3-format\locale
+182 error errno -4051
+183 error ENOTEMPTY: directory not empty, rmdir 'E:\Hekayaty new version 2026 april\hekayaty may 2026 final version\hekayaty-v2--main\node_modules\d3-format\locale'
+184 silly unfinished npm timer reify 1777480503828
+185 silly unfinished npm timer reify:retireShallow 1777480506871
+186 verbose cwd E:\Hekayaty new version 2026 april\hekayaty may 2026 final version\hekayaty-v2--main
+187 verbose os Windows_NT 10.0.19045
+188 verbose node v22.15.0
+189 verbose npm  v10.9.2
+190 notice
+190 notice New major version of npm available! 10.9.2 -> 11.13.0
+190 notice Changelog: https://github.com/npm/cli/releases/tag/v11.13.0
+190 notice To update run: npm install -g npm@11.13.0
+190 notice  { force: true, [Symbol(proc-log.meta)]: true }
+191 verbose exit -4051
+192 verbose code -4051
+193 error A complete log of this run can be found in: E:\Hekayaty new version 2026 april\hekayaty may 2026 final version\hekayaty-v2--main\.npm-cache\_logs\2026-04-29T16_34_58_898Z-debug-0.log

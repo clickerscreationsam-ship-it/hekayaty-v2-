@@ -1,0 +1,235 @@
+Project Name: Hekayaty
+Platform Type: Enterprise-level SaaS for Writers, Readers & Digital Publishing
+Main Goal: Build a futuristic, scalable, creator-economy platform where every writer owns a personal digital store to sell books and content.
+
+🧠 CORE CONCEPT
+
+Design and generate a next-generation storytelling SaaS that combines:
+
+Reading platform
+
+Writing & publishing tools
+
+Digital marketplace
+
+Personal storefronts for writers
+
+Hekayaty is a place where every writer becomes a brand and a business.
+
+🏪 WRITER PERSONAL STORE (CRITICAL FEATURE)
+
+Each writer must have:
+
+A dedicated public store page
+hekayaty.com/@writername
+
+Fully customizable storefront including:
+
+Store banner & branding
+
+Profile & story
+
+Featured books
+
+Free samples
+
+Best sellers
+
+Ability to sell:
+
+Digital books (PDF / Web Stories)
+
+Collections / bundles
+
+Exclusive stories
+
+Pricing control per product
+
+Discount & coupon system
+
+Reviews & ratings per product
+
+Sales counter & social proof
+
+Follow & subscribe to writer
+
+The writer store must feel like:
+Gumroad × Shopify × Author Website
+
+🎨 DESIGN & UX STYLE
+
+Magical, fantasy-inspired but professional SaaS
+
+Clean reading-focused typography
+
+Dark / Light mode
+
+Glassmorphism & soft glow effects
+
+Cinematic sections & smooth animations
+
+Fully responsive (mobile, tablet, desktop)
+
+🏠 REQUIRED PAGES
+1️⃣ Landing Page
+
+Hero headline:
+“Every Writer Deserves a World”
+
+CTA:
+
+Start Writing
+
+Start Reading
+
+Open Your Store
+
+Highlight:
+
+Writer Stores
+
+Free Books
+
+Original Stories
+
+Hekayaty Marketplace
+
+2️⃣ Reader Side
+
+Browse:
+
+Free Books
+
+Paid Books
+
+Original Hekayaty Stories
+
+Filters:
+
+Genre
+
+Writer
+
+Language
+
+Free / Paid
+
+Reading Page:
+
+Focus mode
+
+Font controls
+
+Save / Like / Comment
+
+Follow Writer
+
+3️⃣ Writer Dashboard (SaaS CORE)
+
+Create a full Writer Control Panel:
+
+Profile & Store settings
+
+Store branding editor
+
+Upload book (PDF / Web)
+
+Set price & visibility
+
+Create bundles & collections
+
+Earnings & analytics dashboard
+
+Orders & customers
+
+Coupons & promotions
+
+Reviews management
+
+Subscribers list
+
+4️⃣ Hekayaty Main Store
+
+Marketplace featuring:
+
+Top writer stores
+
+Trending books
+
+New releases
+
+Book cards with ratings & pricing
+
+Preview before purchase
+
+Secure checkout UI
+
+5️⃣ Community & Social
+
+Writer followers
+
+Reader profiles
+
+Writer clubs
+
+Comments & discussions
+
+Achievements & badges
+
+🧩 COMPONENTS TO GENERATE
+
+Writer store page template
+
+Book & product cards
+
+Store editor UI
+
+Upload & preview modals
+
+Rating & review system
+
+Earnings charts UI
+
+Checkout & payment UI
+
+Notifications & messages
+
+⚙️ FRONTEND TECH REQUIREMENTS
+
+Next.js / React
+
+TailwindCSS
+
+Reusable components
+
+SEO optimized
+
+Ready for Supabase backend
+
+Ready for Stripe & local payment gateways
+
+High performance & scalability
+
+🚀 FINAL OUTPUT
+
+Generate a production-ready frontend for a massive SaaS platform where:
+
+Every writer owns a store
+
+Readers buy directly from writers
+
+Hekayaty takes a platform commission
+
+The system is ready to scale globally
+
+✨ BRAND SOUL
+
+Hekayaty is:
+
+A kingdom for writers
+
+A marketplace for stories
+
+A future publishing platform
+
+A home where creativity turns into income

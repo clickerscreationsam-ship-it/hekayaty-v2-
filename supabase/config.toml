@@ -1,0 +1,2 @@
+[functions.request-payout]
+verify_jwt = false

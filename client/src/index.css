@@ -1,0 +1,452 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&family=Cairo:wght@200..1000&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  :root {
+    /* Desert/Oriental/Gold Palette - Default (Dark) */
+    --background: 30 20% 5%;
+    /* Very dark deep brown/black */
+    --foreground: 40 30% 96%;
+    /* Cream white */
+
+    --primary: 45 90% 55%;
+    /* Rich Gold */
+    --primary-foreground: 30 40% 10%;
+    /* Dark brown text for gold buttons */
+
+    --secondary: 25 60% 30%;
+    /* Deep Bronze/Copper */
+    --secondary-foreground: 40 30% 96%;
+
+    --muted: 30 20% 15%;
+    /* Muted dark brown */
+    --muted-foreground: 35 20% 70%;
+    /* Sand/Beige text */
+
+    --accent: 35 80% 60%;
+    /* Amber/Orange accent */
+    --accent-foreground: 30 40% 10%;
+
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 30 30% 20%;
+    --input: 30 30% 20%;
+    --ring: 45 90% 55%;
+
+    --card: 30 25% 10%;
+    /* Darker brown card */
+    --card-foreground: 40 30% 96%;
+
+    --font-sans: 'Inter', sans-serif;
+    --font-serif: 'Merriweather', serif;
+  }
+
+  .dark {
+    /* Same as root because user requested a dark theme overall */
+    --background: 30 20% 5%;
+    --foreground: 40 30% 96%;
+
+    --primary: 45 90% 55%;
+    --primary-foreground: 30 40% 10%;
+
+    --secondary: 25 60% 30%;
+    --secondary-foreground: 40 30% 96%;
+
+    --muted: 30 20% 15%;
+    --muted-foreground: 35 20% 70%;
+
+    --accent: 35 80% 60%;
+    --accent-foreground: 30 40% 10%;
+
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 30 30% 20%;
+    --input: 30 30% 20%;
+    --ring: 45 90% 55%;
+
+    --card: 30 25% 10%;
+    --card-foreground: 40 30% 96%;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-foreground;
+    font-family: var(--font-sans);
+    background-color: transparent !important;
+    overflow-x: hidden;
+    /* Safari 100vh fix */
+    min-height: -webkit-fill-available;
+    /* Improve font rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  html {
+    height: -webkit-fill-available;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  /* Performant Fixed Background Layer */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url('./assets/site-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: translateZ(0); /* Hardware Acceleration Trigger */
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  body.is-homepage {
+    background-color: #000000 !important;
+  }
+
+  body.is-homepage::before {
+    display: none !important;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif);
+    @apply tracking-tight font-bold text-foreground text-balance;
+  }
+}
+
+@layer utilities {
+  .gpu {
+    backface-visibility: hidden;
+    perspective: 1000px;
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  .content-visibility-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 500px;
+  }
+
+  /* Updated glass classes to be dark and clearer */
+  .glass {
+    @apply bg-black/40 border border-white/10 shadow-lg;
+    backdrop-filter: blur(12px);
+    transform: translateZ(0);
+  }
+
+  .glass-card {
+    @apply bg-black/50 border border-white/10 shadow-xl transition-all duration-300;
+    backdrop-filter: blur(6px);
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+
+  .glass-card:hover {
+    @apply shadow-primary/20 border-primary/40 -translate-y-1;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#FFD700] via-[#FFC107] to-[#FFB300];
+    /* Vibrant golden yellow gradient */
+    filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
+  }
+
+  .glow {
+    @apply shadow-[0_0_20px_rgba(212, 175, 55, 0.3)];
+    /* Gold glow */
+  }
+
+  /* Responsive container utilities */
+  .container-responsive {
+    @apply w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto;
+  }
+
+  /* Touch-friendly button sizing */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Mobile-first text sizing with fluid typography */
+  .text-responsive-sm {
+    font-size: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  }
+
+  .text-responsive-lg {
+    font-size: clamp(1.125rem, 1rem + 0.625vw, 1.5rem);
+  }
+
+  .text-responsive-xl {
+    font-size: clamp(1.5rem, 1.25rem + 1.25vw, 2.25rem);
+  }
+
+  .text-responsive-2xl {
+    font-size: clamp(2rem, 1.5rem + 2.5vw, 4rem);
+  }
+
+  /* Mobile navigation utilities */
+  .mobile-menu-item {
+    @apply py-3 px-4 text-base font-medium hover:bg-primary/10 active:bg-primary/20 transition-colors;
+  }
+
+  /* Responsive grid utilities */
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6;
+  }
+
+  .grid-responsive-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
+  }
+
+  .grid-responsive-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+  }
+
+  /* Safe area padding for notched devices */
+  .safe-area-padding {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .safe-area-padding-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-padding-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Prevent text selection on touch devices for UI elements */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Specific Touch Protection for Reader */
+  .touch-protect {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -khtml-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    user-drag: none;
+    -webkit-user-drag: none;
+  }
+
+  /* Smooth scrolling for mobile */
+  .smooth-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Premium Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-primary/20 rounded-full hover:bg-primary/40 transition-colors;
+  }
+
+  /* GPU Acceleration & Performance */
+  .gpu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+}
+
+/* Arabic Font Overrides - Luxury Edition */
+.font-arabic {
+  font-family: 'Cairo', sans-serif !important;
+  line-height: 1.8;
+  /* Enhanced spacing for Arabic clarity */
+  font-size: 1rem;
+  /* Standardized default text */
+  letter-spacing: 0.01em;
+  /* Subtle letter spacing for better readability */
+}
+
+.font-arabic h1,
+.font-arabic h2,
+.font-arabic h3,
+.font-arabic h4,
+.font-arabic h5,
+.font-arabic h6 {
+  font-family: 'Amiri', serif !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  /* Better spacing for Arabic headers */
+  line-height: 1.5;
+  /* More breathing room */
+  word-spacing: 0.05em;
+  /* Space between words */
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+}
+
+.font-arabic h1 {
+  font-size: 1.35em;
+  /* Grand title */
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  word-spacing: 0.1em;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 215, 0, 0.4);
+}
+
+.font-arabic h2 {
+  font-size: 1.2em;
+}
+
+/* Adjust navbar specifically for luxury look - Reduced for spacing */
+.font-arabic nav a,
+.font-arabic .mobile-menu-item {
+  font-weight: 700;
+  /* Bolder for visibility */
+  font-size: 0.85rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.font-arabic button {
+  font-weight: 700;
+  letter-spacing: 0;
+  font-size: 0.95rem;
+}
+
+/* Fix for small icons next to Arabic text */
+.font-arabic .lucide {
+  width: 1.2em;
+  height: 1.2em;
+  stroke-width: 2.5px;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+    /* Prevent zoom on input focus in iOS */
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+    /* Prevent zoom on input focus */
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .container-responsive {
+    @apply px-6;
+  }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1920px) {
+  .container-responsive {
+    @apply max-w-[1600px];
+  }
+}
+
+/* Touch device specific styles */
+@media (hover: none) and (pointer: coarse) {
+
+  /* Increase button padding for touch */
+  button, a.button {
+    @apply py-3 px-6 min-h-[44px] flex items-center justify-center;
+  }
+
+  input, select, textarea {
+    @apply min-h-[44px];
+  }
+
+  /* Remove hover effects on touch devices */
+  @media (hover: none) {
+    .hover\:scale-105, .hover\:scale-110, .hover\:-translate-y-1, .hover\:-translate-y-2 {
+      transform: none !important;
+    }
+    .group:hover .group-hover\:scale-110 {
+      transform: none !important;
+    }
+  }
+
+  /* Add active states instead */
+  button:active,
+  a:active {
+    @apply opacity-70 scale-[0.98] transition-transform;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 896px) and (orientation: landscape) {
+  .mobile-landscape-adjust {
+    min-height: 100vh;
+    padding-bottom: 2rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background-image: none !important;
+    background-color: white !important;
+    color: black !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .protected-content-reader {
+    display: none !important;
+  }
+}

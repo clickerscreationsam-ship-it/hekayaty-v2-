@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="google" content="notranslate" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <title>Hekayaty - حكاياتي | Every Writer Deserves a World</title>
+  <meta name="description"
+    content="Build your own digital bookstore, connect with readers, and sell your stories directly. The universe for storytellers and worldbuilders." />
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Hekayaty - حكاياتي | Every Writer Deserves a World" />
+  <meta property="og:description"
+    content="The ultimate universe for storytellers. Publish, sell, and manage your stories directly." />
+  <meta property="og:image" content="/og-image.png" />
+  <meta property="og:site_name" content="Hekayaty" />
+
+  <!-- Resource Hints -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://res.cloudinary.com">
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://res.cloudinary.com">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=Merriweather:ital,wght@0,300..900;1,300..900&family=Cairo:wght@200..1000&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => console.log('Rocket SW registered'))
+          .catch(err => console.log('Rocket SW failed', err));
+      });
+    }
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>
