@@ -51,10 +51,23 @@ export function FeaturedWriter({ writer, showStats = true }: FeaturedWriterProps
       >
         {/* Background Image / Banner with High Visibility */}
         <div className="absolute inset-0 z-0">
-          <img 
+          <motion.img 
             src={writer.bannerUrl || "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop"} 
-            className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-1000 group-hover:scale-110"
+            className="w-full h-full object-cover opacity-0 group-hover:scale-110 transition-transform duration-1000"
             alt="background"
+            onLoad={(e) => {
+              const img = e.currentTarget as HTMLImageElement;
+              img.classList.remove('opacity-0');
+              img.classList.add('opacity-60', 'group-hover:opacity-80');
+            }}
+            onError={(e) => {
+              const img = e.currentTarget as HTMLImageElement;
+              if (img.src !== "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop") {
+                img.src = "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop";
+              }
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#02040A] via-[#02040A]/60 to-black/20" />
         </div>
@@ -66,10 +79,29 @@ export function FeaturedWriter({ writer, showStats = true }: FeaturedWriterProps
           <div className="relative mb-6">
             <div className="absolute inset-[-15px] bg-primary/10 blur-[30px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="w-28 h-28 md:w-32 md:h-32 rounded-full border-2 border-white/10 group-hover:border-primary/50 p-1.5 bg-black/40 backdrop-blur-2xl transition-all duration-700 overflow-hidden shadow-2xl">
-              <img
-                src={optimizeImage(writer.avatarUrl || `https://ui-avatars.com/api/?name=${writer.displayName}&background=random`, 300)}
+              <motion.img
+                src={optimizeImage(writer.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(writer.displayName)}&background=random`, 300)}
                 alt={writer.displayName}
-                className="w-full h-full rounded-full object-cover transform transition-transform duration-1000 group-hover:scale-110"
+                className="w-full h-full rounded-full object-cover transform transition-transform duration-1000 group-hover:scale-110 opacity-0"
+                onLoad={(e) => {
+                  const img = e.currentTarget as HTMLImageElement;
+                  img.classList.remove('opacity-0');
+                  img.classList.add('opacity-100');
+                }}
+                onError={(e) => {
+                  const img = e.currentTarget as HTMLImageElement;
+                  const fallbackSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(writer.displayName)}&background=random`;
+                  if (img.src !== fallbackSrc && writer.avatarUrl) {
+                    // If it's a supabase URL and we optimized it, try the raw url first
+                    if (img.src !== writer.avatarUrl) {
+                       img.src = writer.avatarUrl;
+                    } else {
+                       img.src = fallbackSrc;
+                    }
+                  }
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
               />
             </div>
           </div>
