@@ -37,6 +37,7 @@ export default function ProductDetails() {
   const { data: writer } = useUserById(product?.writerId || "");
   const { data: reviews } = useReviews(id);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
 
   const addToCart = useAddToCart();
 
@@ -227,7 +228,28 @@ export default function ProductDetails() {
             )}
 
             <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 leading-tight">{product.title}</h1>
-            <p className="text-xl text-muted-foreground mb-8 line-clamp-3">{product.description}</p>
+            <div className="relative mb-8">
+              <p className={cn(
+                "text-xl text-muted-foreground transition-all duration-500 whitespace-pre-wrap leading-relaxed",
+                !isDescExpanded && "line-clamp-4 overflow-hidden"
+              )}>
+                {product.description}
+              </p>
+              {product.description && product.description.length > 200 && (
+                <button 
+                  onClick={() => setIsDescExpanded(!isDescExpanded)}
+                  className="mt-3 flex items-center gap-2 text-primary hover:text-primary/80 font-black text-sm uppercase tracking-widest transition-all group"
+                >
+                  <span className="relative">
+                    {isDescExpanded ? t("common.readLess", "Read Less") : t("common.readMore", "Read More")}
+                    <span className="absolute bottom-0 left-0 w-full h-[2px] bg-primary/30 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                  </span>
+                  <div className={cn("transition-transform duration-300", isDescExpanded ? "rotate-180" : "")}>
+                    <ArrowUpRight className="w-4 h-4 opacity-70" />
+                  </div>
+                </button>
+              )}
+            </div>
 
             <div className="flex flex-col gap-6">
               {product.type === "physical" && (

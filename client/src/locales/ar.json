@@ -99,7 +99,9 @@
         "sortBy": "ترتيب حسب",
         "priceLowHigh": "السعر: من الأقل للأعلى",
         "priceHighLow": "السعر: من الأعلى للأقل",
-        "topRated": "الأعلى تقييماً"
+        "topRated": "الأعلى تقييماً",
+        "readMore": "قراءة المزيد",
+        "readLess": "قراءة أقل"
     },
     "reader": {
         "protected": "عرض محمي"

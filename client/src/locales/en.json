@@ -87,7 +87,9 @@
         "sortBy": "Sort By",
         "priceLowHigh": "Price: Low to High",
         "priceHighLow": "Price: High to Low",
-        "topRated": "Top Rated"
+        "topRated": "Top Rated",
+        "readMore": "Read More",
+        "readLess": "Read Less"
     },
     "loading": "Loading...",
     "nav": {
