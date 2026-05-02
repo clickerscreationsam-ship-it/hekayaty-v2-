@@ -645,18 +645,27 @@ export class DatabaseStorage implements IStorage {
       created_by: video.createdBy
     };
 
-    const { data, error } = await supabaseAdmin.from('media_videos').insert(dbVideo).select().single();
-    if (error) throw error;
+    const { data, error } = await supabaseAdmin.from('media_videos').insert(dbVideo).select();
+    if (error) {
+      console.error("[Storage] Supabase insert error:", error);
+      throw error;
+    }
+    
+    if (!data || data.length === 0) {
+      throw new Error("No data returned from media_videos insert");
+    }
+
+    const v = data[0];
     return {
-      ...data,
-      youtubeUrl: data.youtube_url,
-      youtubeVideoId: data.youtube_video_id,
-      thumbnailUrl: data.thumbnail_url,
-      relatedStoryId: data.related_story_id,
-      isFeatured: data.is_featured,
-      createdBy: data.created_by,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at
+      ...v,
+      youtubeUrl: v.youtube_url,
+      youtubeVideoId: v.youtube_video_id,
+      thumbnailUrl: v.thumbnail_url,
+      relatedStoryId: v.related_story_id,
+      isFeatured: v.is_featured,
+      createdBy: v.created_by,
+      createdAt: v.created_at,
+      updatedAt: v.updated_at
     } as MediaVideo;
   }
 

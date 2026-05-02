@@ -486,7 +486,9 @@ export const insertDesignMessageSchema = createInsertSchema(designMessages).omit
 
 export const insertNotificationSchema = createInsertSchema(notifications).omit({ id: true, createdAt: true });
 export const insertNotificationSettingsSchema = createInsertSchema(notificationSettings).omit({ id: true, updatedAt: true });
-export const insertMediaVideoSchema = createInsertSchema(mediaVideos).omit({ id: true, createdAt: true, updatedAt: true, youtubeVideoId: true, thumbnailUrl: true, createdBy: true });
+export const insertMediaVideoSchema = createInsertSchema(mediaVideos, {
+  relatedStoryId: z.number().nullable().optional(),
+}).omit({ id: true, createdAt: true, updatedAt: true, youtubeVideoId: true, thumbnailUrl: true, createdBy: true });
 
 
 export type User = typeof users.$inferSelect;

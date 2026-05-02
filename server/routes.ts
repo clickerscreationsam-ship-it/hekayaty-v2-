@@ -1963,7 +1963,12 @@ export async function registerRoutes(
 
       res.status(201).json(video);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("[MediaAdmin] Error creating video:", error);
+      res.status(500).json({ 
+        message: "Internal server error during video creation", 
+        error: error.message,
+        details: error.details || error.hint || null
+      });
     }
   });
 
