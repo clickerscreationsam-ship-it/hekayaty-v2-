@@ -39,15 +39,22 @@ export default function ProductDetails() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
 
-  const addToCart = useAddToCart();
+  // Reset state when navigating between products
+  useEffect(() => {
+    setSelectedImage(null);
+    setQuantity(1);
+    setCustomization("");
+    setIsDescExpanded(false);
+  }, [id]);
 
+  const addToCart = useAddToCart();
 
   if (isLoading) return <PageSkeleton />;
   if (!product) return <div className="min-h-screen flex items-center justify-center bg-background text-white">Product not found</div>;
 
-  const displayImage = selectedImage || (product as any).coverUrl;
+  const displayImage = selectedImage || product.coverUrl || (product as any).cover_url;
   const galleryImages = Array.from(new Set([
-    (product as any).coverUrl,
+    product.coverUrl || (product as any).cover_url,
     ...((product as any).productImages || [])
   ])).filter(Boolean) as string[];
 
@@ -109,34 +116,32 @@ export default function ProductDetails() {
             <div
               className="aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl border border-white/10 relative group bg-white/5"
             >
-              {displayImage ? (
-                <motion.img
-                  key={`${id}-${displayImage}`}
-                  initial={{ opacity: 0, scale: 1.1 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                  src={displayImage}
-                  alt={product.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  loading="eager"
-                  decoding="async"
-                  onLoad={(e) => {
-                    const img = e.currentTarget;
-                    img.classList.remove('opacity-0');
-                  }}
-                  onError={(e) => {
-                    // Force a retry or show fallback if image fails
-                    const img = e.currentTarget;
-                    if (!img.src.includes('retry=')) {
-                      img.src = `${img.src}${img.src.includes('?') ? '&' : '?'}retry=${Date.now()}`;
-                    }
-                  }}
-                />
-              ) : (
-                <div className="w-full h-full animate-pulse bg-white/5 flex items-center justify-center">
-                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                </div>
-              )}
+              <AnimatePresence mode="wait">
+                {displayImage ? (
+                  <motion.img
+                    key={displayImage}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    src={optimizeImage(displayImage, 800)}
+                    alt={product.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    loading="eager"
+                    decoding="async"
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      if (!img.src.includes('retry=')) {
+                        img.src = `${img.src}${img.src.includes('?') ? '&' : '?'}retry=${Date.now()}`;
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                  </div>
+                )}
+              </AnimatePresence>
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
             </div>
 
