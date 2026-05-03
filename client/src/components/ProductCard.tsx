@@ -230,9 +230,6 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
 
           {/* Centered Premium Price Row */}
           <div className="pt-3 mt-auto border-t border-white/5 flex flex-col items-center justify-center gap-0.5">
-             <span className="text-[#aaaaaa] text-[8px] font-black uppercase tracking-[0.2em] opacity-30">
-                {t("common.price") || "PRICE"}
-             </span>
              <div className="flex items-center gap-2">
                 {product?.salePrice && product.salePrice < product.price ? (
                   <>
