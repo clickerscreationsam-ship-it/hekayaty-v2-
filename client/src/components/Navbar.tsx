@@ -30,7 +30,7 @@ export const Navbar = React.memo(function Navbar({ hideNav }: { hideNav?: boolea
     { label: t("nav.marketplace"), href: "/marketplace", icon: ShoppingBag },
     { label: t("nav.about", "من نحن"), href: "/about", icon: Users },
     { label: t("nav.worldbuilders"), href: "/worldbuilders", icon: Palette },
-    { label: "أفضل الحسابات", href: "/leaderboards/accounts", icon: Trophy },
+    { label: "التقييمات", href: "/leaderboards/accounts", icon: Trophy },
   ];
 
   if (user?.role === 'admin') {

@@ -95,7 +95,7 @@ export default function LeaderboardPage() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 leading-tight">
-              أفضل الحسابات
+              التقييمات
             </h1>
             <p className="text-lg text-gray-400 max-w-xl mx-auto leading-relaxed">
               أكثر الكتّاب والمؤلفين تأثيراً على منصة حكايتي — مرتبون حسب عدد المتابعين والكتب
