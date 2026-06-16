@@ -57,7 +57,14 @@ export function useNotifications() {
                 },
                 (payload) => {
                     const newNotif = payload.new as Notification;
-                    queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
+                    
+                    // Optimistically update cache instead of full invalidation
+                    queryClient.setQueryData<Notification[]>(["/api/notifications"], (old) => {
+                        if (!old) return [newNotif];
+                        // Check if already exists to prevent duplicates
+                        if (old.some(n => n.id === newNotif.id)) return old;
+                        return [newNotif, ...old];
+                    });
 
                     if (newNotif.priority === 'high') {
                         toast({

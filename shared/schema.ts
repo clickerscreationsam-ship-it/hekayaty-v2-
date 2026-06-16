@@ -1,4 +1,4 @@
-import { pgTable, text, boolean, timestamp, jsonb, integer, serial, uuid, numeric, real } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, timestamp, jsonb, integer, serial, uuid, numeric, real, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -88,6 +88,13 @@ export const products = pgTable("products", {
   audioDuration: integer("audio_duration"), // In seconds
   audioPreviewUrl: text("audio_preview_url"),
   audioParts: jsonb("audio_parts").$type<{ url: string; title: string; duration: number }[]>().default([]),
+}, (table) => {
+  return {
+    writerIdx: index("products_writer_id_idx").on(table.writerId),
+    publishedIdx: index("products_is_published_idx").on(table.isPublished),
+    genreIdx: index("products_genre_idx").on(table.genre),
+    typeIdx: index("products_type_idx").on(table.type)
+  };
 });
 
 export const chapters = pgTable("chapters", {
@@ -240,6 +247,11 @@ export const follows = pgTable("follows", {
   followerId: text("follower_id").notNull(),
   creatorId: text("creator_id").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
+}, (table) => {
+  return {
+    followerIdx: index("follows_follower_id_idx").on(table.followerId),
+    creatorIdx: index("follows_creator_id_idx").on(table.creatorId)
+  };
 });
 
 export const subscribers = pgTable("subscribers", {
@@ -433,6 +445,11 @@ export const reviews = pgTable("reviews", {
   rating: integer("rating").notNull(),
   comment: text("comment"),
   createdAt: timestamp("created_at").defaultNow(),
+}, (table) => {
+  return {
+    productIdx: index("reviews_product_id_idx").on(table.productId),
+    userIdx: index("reviews_user_id_idx").on(table.userId)
+  };
 });
 
 export const chatMessages = pgTable("chat_messages", {
@@ -443,6 +460,11 @@ export const chatMessages = pgTable("chat_messages", {
   replyToId: text("reply_to_id"), // UUID of the message being replied to
   isPinned: boolean("is_pinned").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow(),
+}, (table) => {
+  return {
+    storeIdx: index("chat_messages_store_id_idx").on(table.storeId),
+    senderIdx: index("chat_messages_sender_id_idx").on(table.senderId)
+  };
 });
 
 // === 4. CART & ORDERS ===
@@ -480,6 +502,10 @@ export const orders = pgTable("orders", {
   }>(),
   shippingCost: integer("shipping_cost").default(0),
   createdAt: timestamp("created_at").defaultNow(),
+}, (table) => {
+  return {
+    userIdx: index("orders_user_id_idx").on(table.userId)
+  };
 });
 
 export const orderItems = pgTable("order_items", {
@@ -663,6 +689,10 @@ export const notifications = pgTable("notifications", {
   isRead: boolean("is_read").default(false),
   metadata: jsonb("metadata").default({}),
   createdAt: timestamp("created_at").defaultNow(),
+}, (table) => {
+  return {
+    userIdx: index("notifications_user_id_idx").on(table.userId)
+  };
 });
 
 export const notificationSettings = pgTable("notification_settings", {

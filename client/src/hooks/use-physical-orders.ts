@@ -41,9 +41,7 @@ export function useMakerOrders(status?: string) {
             return data.orders || [];
         },
         enabled: !!user && (user.role === 'writer' || user.role === 'artist'),
-        staleTime: 0,
-        gcTime: 0,
-        refetchOnMount: 'always'
+        staleTime: 5 * 60 * 1000, // 5 minutes cache
     });
 }
 

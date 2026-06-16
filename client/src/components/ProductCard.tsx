@@ -77,6 +77,8 @@ export function ProductCard({ product, collection, variant = "default" }: Produc
             src={optimizeImage(item.coverUrl, 200)}
             alt={item.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-0"
+            loading="lazy"
+            decoding="async"
             onLoad={(e) => {
               const img = e.currentTarget as HTMLImageElement;
               img.classList.remove('opacity-0');

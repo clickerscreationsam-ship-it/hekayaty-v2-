@@ -6,11 +6,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useState } from "react";
+import React from "react";
 import { useAdminPrivateMessages } from "@/hooks/use-admin-system";
 import { useMakerOrders } from "@/hooks/use-physical-orders";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
+export const Navbar = React.memo(function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
   if (hideNav) return null;
   const [location] = useLocation();
   const { data: cartItems } = useCart();
@@ -257,8 +258,8 @@ export function Navbar({ hideNav }: { hideNav?: boolean } = {}) {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
-    </div>
-  </nav>
-);
-}
+        </AnimatePresence>
+      </div>
+    </nav>
+  );
+});
