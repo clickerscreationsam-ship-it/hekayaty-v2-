@@ -5,12 +5,13 @@ import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, Feather, BookOpen, PenTool, Info, Layers, LayoutGrid,
-  ShoppingBag, ChevronLeft, ChevronRight, Play, Sparkles, Users,
+  ShoppingBag, ChevronLeft, ChevronRight, Play, Sparkles, Users, Crown, Trophy
 } from "lucide-react";
 import { useTopWriters, useUserById, usePlatformStats } from "@/hooks/use-users";
 import { useBestSellerProducts, useSerializedProducts, useProducts } from "@/hooks/use-products";
 import { useCollections } from "@/hooks/use-collections";
 import { useMediaVideos } from "@/hooks/use-media";
+import { usePublishedAwards, useHallOfFame } from "@/hooks/use-awards";
 import { FeaturedWriter } from "@/components/FeaturedWriter";
 import { ProductCard } from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
@@ -250,6 +251,8 @@ export default function Home() {
   const { data: allBooksRaw } = useProducts({ isPublished: true });
   const allBooks = React.useMemo(() => (allBooksRaw || []), [allBooksRaw]);
   const { data: stats } = usePlatformStats();
+  const { data: awards } = usePublishedAwards();
+  const { data: hallOfFame } = useHallOfFame();
 
   const writersMap = React.useMemo(
     () => Object.fromEntries(writers?.map((w) => [w.id, w.displayName]) || []),
@@ -442,6 +445,88 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ===== AWARDS PREVIEW ===== */}
+      {awards && awards.length > 0 && (
+        <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] border-t border-white/5 section-offscreen">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F5C000]/5 blur-[120px] rounded-full pointer-events-none" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="flex justify-between items-end mb-8 sm:mb-12">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-2 sm:p-3 rounded-2xl bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">
+                  <Trophy className="w-5 h-5 sm:w-8 sm:h-8" />
+                </div>
+                <div>
+                  <h2 className="text-2xl sm:text-4xl font-serif font-bold mb-1 sm:mb-2">{awards[0].title} {awards[0].year}</h2>
+                  <p className="text-muted-foreground text-sm sm:text-base">تتويج لأفضل الإبداعات السنوية في منصة حكايتي</p>
+                </div>
+              </div>
+              <Link href="/awards">
+                <button className="text-yellow-500 font-medium hover:underline flex items-center gap-1 sm:gap-2 text-sm">
+                  {t("home.bestSellers.viewAll")} <ArrowRight className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", i18n.language === "ar" ? "rotate-180" : "")} />
+                </button>
+              </Link>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <Link href="/awards">
+                <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-yellow-500/10 to-transparent border border-yellow-500/20 p-6 sm:p-8 hover:border-yellow-500/50 transition-all duration-300">
+                  <div className="absolute -right-10 -top-10 w-40 h-40 bg-yellow-500/20 blur-3xl rounded-full" />
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <h3 className="text-xl sm:text-3xl font-bold text-white mb-2">جوائز العام</h3>
+                      <p className="text-yellow-100/60 max-w-sm text-sm sm:text-base">
+                        شاهد الفائزين بالمراكز الأولى في فئات أفضل الروايات، والكتاب، ودور النشر.
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <Trophy className="w-6 h-6 text-yellow-500" />
+                    </div>
+                  </div>
+                  <Button variant="outline" className="rounded-full bg-yellow-500 text-black border-none font-bold hover:bg-yellow-400">
+                    استكشف الفائزين
+                  </Button>
+                </div>
+              </Link>
+
+              {hallOfFame && hallOfFame.length > 0 && (
+                <Link href="/hall-of-fame">
+                  <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 p-6 sm:p-8 hover:border-white/30 transition-all duration-300">
+                    <div className="flex justify-between items-start mb-6">
+                      <div>
+                        <h3 className="text-xl sm:text-3xl font-bold text-white mb-2">قاعة الشهرة</h3>
+                        <p className="text-white/60 max-w-sm text-sm sm:text-base">
+                          نخبة الكتاب والمؤلفين الذين سطروا أسماءهم بأحرف من ذهب في تاريخ المنصة.
+                        </p>
+                      </div>
+                      <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <Crown className="w-6 h-6 text-yellow-500" />
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-[-10px] mb-6">
+                      {hallOfFame.slice(0, 5).map((hof, i) => (
+                        <div key={hof.id} className="relative w-10 h-10 rounded-full border-2 border-[#050505] overflow-hidden" style={{ zIndex: 10 - i, marginLeft: i > 0 ? '-12px' : '0' }}>
+                          <img src={hof.writer?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(hof.writer?.displayName || "U")}&background=1c1c2e&color=fff`} className="w-full h-full object-cover" alt="" />
+                        </div>
+                      ))}
+                      {hallOfFame.length > 5 && (
+                        <div className="relative w-10 h-10 rounded-full border-2 border-[#050505] bg-white/10 flex items-center justify-center text-xs font-bold text-white" style={{ zIndex: 0, marginLeft: '-12px' }}>
+                          +{hallOfFame.length - 5}
+                        </div>
+                      )}
+                    </div>
+
+                    <Button variant="outline" className="rounded-full bg-transparent text-white border-white/20 font-bold hover:bg-white/10">
+                      زيارة قاعة الشهرة
+                    </Button>
+                  </div>
+                </Link>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ===== MEDIA HUB ===== */}
       <section className="py-20 sm:py-32 relative overflow-hidden bg-[#000000] section-offscreen">
