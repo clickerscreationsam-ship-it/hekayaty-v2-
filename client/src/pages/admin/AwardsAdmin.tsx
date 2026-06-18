@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import {
   useAllAwards, useAwardWinners, useCreateAward, useUpdateAward,
-  usePublishAward, useDeleteAward, useUpsertWinners, useDeleteWinner,
+  usePublishAward, useDeleteAward, useUpsertAwardWinners, useRemoveAwardWinner,
   useHallOfFame, useAddToHallOfFame, useRemoveFromHallOfFame, useUpdateHallOfFame,
   type AwardWinner, type HekayatyAward
 } from "@/hooks/use-awards";
@@ -204,8 +204,8 @@ function WinnerSlot({
 function AwardYearEditor({ award, onClose }: { award: HekayatyAward; onClose: () => void }) {
   const { toast } = useToast();
   const { data: winners, isLoading: winnersLoading } = useAwardWinners(award.id);
-  const upsertWinners = useUpsertWinners();
-  const deleteWinner = useDeleteWinner();
+  const upsertWinners = useUpsertAwardWinners();
+  const deleteWinner = useRemoveAwardWinner();
 
   const { data: allWriters = [] } = useQuery({
     queryKey: ["admin-all-writers-for-awards"],

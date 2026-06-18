@@ -214,13 +214,21 @@ export function useCreateAward() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: { year: number; title: string; description?: string }) => {
-      const res = await fetch("/api/awards", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      return res.json();
+      const { data: userSession } = await supabase.auth.getSession();
+      if (!userSession.session?.user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from("hekayaty_awards")
+        .insert({ 
+          year: payload.year, 
+          title: payload.title || `جوائز حكايتي ${payload.year}`, 
+          description: payload.description, 
+          created_by: userSession.session.user.id 
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["awards"] });
@@ -232,13 +240,18 @@ export function useUpdateAward() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...payload }: { id: number; title?: string; description?: string }) => {
-      const res = await fetch(`/api/awards/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      return res.json();
+      const { data, error } = await supabase
+        .from("hekayaty_awards")
+        .update({ 
+          title: payload.title, 
+          description: payload.description, 
+          updated_at: new Date().toISOString() 
+        })
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["awards"] });
@@ -250,13 +263,20 @@ export function usePublishAward() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, publish }: { id: number; publish: boolean }) => {
-      const res = await fetch(`/api/awards/${id}/publish`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ publish }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      return res.json();
+      const updates: any = {
+        status: publish ? "published" : "draft",
+        updated_at: new Date().toISOString(),
+      };
+      if (publish) updates.published_at = new Date().toISOString();
+
+      const { data, error } = await supabase
+        .from("hekayaty_awards")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["awards"] });
@@ -268,8 +288,8 @@ export function useDeleteAward() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`/api/awards/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error(await res.text());
+      const { error } = await supabase.from("hekayaty_awards").delete().eq("id", id);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["awards"] });
@@ -277,17 +297,26 @@ export function useDeleteAward() {
   });
 }
 
-export function useUpsertWinners() {
+export function useUpsertAwardWinners() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ awardId, winners }: { awardId: number; winners: Partial<AwardWinner>[] }) => {
-      const res = await fetch(`/api/awards/${awardId}/winners`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ winners }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      return res.json();
+    mutationFn: async ({ awardId, winners }: { awardId: number; winners: any[] }) => {
+      const toUpsert = winners.map((w: any) => ({
+        award_id: awardId,
+        category: w.category,
+        rank: w.rank,
+        winner_user_id: w.winnerUserId || null,
+        winner_product_id: w.winnerProductId || null,
+        special_note: w.specialNote || null,
+        badge_label: w.badgeLabel || null,
+      }));
+
+      const { data, error } = await supabase
+        .from("hekayaty_award_winners")
+        .upsert(toUpsert, { onConflict: "award_id,category,rank" })
+        .select();
+      if (error) throw error;
+      return data;
     },
     onSuccess: (_data, { awardId }) => {
       queryClient.invalidateQueries({ queryKey: ["award-winners", awardId] });
@@ -295,12 +324,15 @@ export function useUpsertWinners() {
   });
 }
 
-export function useDeleteWinner() {
+export function useRemoveAwardWinner() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ winnerId, awardId }: { winnerId: number; awardId: number }) => {
-      const res = await fetch(`/api/awards/winners/${winnerId}`, { method: "DELETE" });
-      if (!res.ok) throw new Error(await res.text());
+      const { error } = await supabase
+        .from("hekayaty_award_winners")
+        .delete()
+        .eq("id", winnerId);
+      if (error) throw error;
     },
     onSuccess: (_data, { awardId }) => {
       queryClient.invalidateQueries({ queryKey: ["award-winners", awardId] });
@@ -363,13 +395,22 @@ export function useAddToHallOfFame() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: { writerId: string; featuredReason?: string; achievementNote?: string; badgeLabel?: string }) => {
-      const res = await fetch("/api/hall-of-fame", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      return res.json();
+      const { data: userSession } = await supabase.auth.getSession();
+      if (!userSession.session?.user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from("hall_of_fame_writers")
+        .insert({
+          writer_id: payload.writerId,
+          featured_reason: payload.featuredReason || null,
+          achievement_note: payload.achievementNote || null,
+          badge_label: payload.badgeLabel || "كاتب نخبة",
+          added_by: userSession.session.user.id,
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hall-of-fame"] });
@@ -381,8 +422,11 @@ export function useRemoveFromHallOfFame() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`/api/hall-of-fame/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error(await res.text());
+      const { error } = await supabase
+        .from("hall_of_fame_writers")
+        .delete()
+        .eq("id", id);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hall-of-fame"] });
@@ -394,13 +438,20 @@ export function useUpdateHallOfFame() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...payload }: { id: number; featuredReason?: string; achievementNote?: string; badgeLabel?: string; displayOrder?: number }) => {
-      const res = await fetch(`/api/hall-of-fame/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      return res.json();
+      const updates: any = { updated_at: new Date().toISOString() };
+      if (payload.featuredReason !== undefined) updates.featured_reason = payload.featuredReason;
+      if (payload.achievementNote !== undefined) updates.achievement_note = payload.achievementNote;
+      if (payload.badgeLabel !== undefined) updates.badge_label = payload.badgeLabel;
+      if (payload.displayOrder !== undefined) updates.display_order = payload.displayOrder;
+
+      const { data, error } = await supabase
+        .from("hall_of_fame_writers")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hall-of-fame"] });

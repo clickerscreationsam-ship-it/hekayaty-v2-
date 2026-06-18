@@ -2,6 +2,7 @@ import { useState, useEffect, Suspense, lazy, useMemo } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, useDownloadFile } from "@/hooks/use-products";
 import { useUser, useUpdateUser } from "@/hooks/use-users";
+import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema } from "@shared/schema";
@@ -1389,6 +1390,7 @@ function StatCard({ icon: Icon, label, value, color, bg }: any) {
 
 function AdminMessagingTab() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const { t } = useTranslation();
   const { data: messages, isLoading: loadingMsgs } = useAdminPrivateMessages();
   const { data: announcements, isLoading: loadingAnns } = useAdminAnnouncements();
@@ -1400,9 +1402,17 @@ function AdminMessagingTab() {
   const handleReply = () => {
     if (!reply || !user) return;
     const adminMsg = messages?.find(m => m.senderId !== user.id);
-    const receiverId = adminMsg?.senderId;
+    // Fallback to the first announcement's adminId if no direct messages exist yet
+    const receiverId = adminMsg?.senderId || announcements?.[0]?.adminId;
 
-    if (!receiverId) return;
+    if (!receiverId) {
+      toast({
+        title: "Error",
+        description: "Cannot initiate message. Please wait for an admin announcement or message first.",
+        variant: "destructive"
+      });
+      return;
+    }
 
     sendMessage.mutate({
       senderId: user.id,
