@@ -80,7 +80,7 @@ function WinnerSlot({
   };
 
   const displayName = winner
-    ? (winner.user?.displayName || winner.user?.display_name || winner.product?.title || "—")
+    ? (winner.user?.displayName || winner.product?.title || "—")
     : null;
 
   return (
@@ -93,8 +93,8 @@ function WinnerSlot({
           <div className="shrink-0">{getRankIcon(rank)}</div>
           {winner ? (
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              {(winner.user?.avatar_url || winner.user?.avatarUrl) && (
-                <img src={winner.user.avatar_url || winner.user.avatarUrl} className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0" alt="" />
+              {winner.user?.avatarUrl && (
+                <img src={winner.user.avatarUrl} className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0" alt="" />
               )}
               {winner.product?.coverUrl && (
                 <img src={winner.product.coverUrl} className="w-8 h-10 rounded object-cover border border-white/10 shrink-0" alt="" />
@@ -656,11 +656,11 @@ function HallOfFameTab() {
                 <div className="flex items-center gap-4">
                   <div className="text-gray-600 font-bold text-sm w-5 text-center shrink-0">#{idx + 1}</div>
                   <img
-                    src={entry.writer?.avatarUrl || entry.writer?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(entry.writer?.displayName || entry.writer?.display_name || "U")}&background=1c1c2e&color=fff&size=80`}
+                    src={entry.writer?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(entry.writer?.displayName || "U")}&background=1c1c2e&color=fff&size=80`}
                     className="w-12 h-12 rounded-full object-cover border border-yellow-500/20 shrink-0" alt="" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-white">{entry.writer?.displayName || entry.writer?.display_name}</span>
+                      <span className="font-bold text-white">{entry.writer?.displayName}</span>
                       {entry.writer?.isVerified && <CheckCircle2 className="w-3.5 h-3.5 text-yellow-400" />}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
@@ -680,7 +680,7 @@ function HallOfFameTab() {
                       <Edit3 className="w-3 h-3" /> تعديل
                     </Button>
                     <Button size="sm" variant="ghost"
-                      onClick={() => handleRemove(entry.id, entry.writer?.displayName || entry.writer?.display_name || "الكاتب")}
+                      onClick={() => handleRemove(entry.id, entry.writer?.displayName || "الكاتب")}
                       className="h-7 w-7 p-0 text-destructive hover:bg-destructive/10">
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
