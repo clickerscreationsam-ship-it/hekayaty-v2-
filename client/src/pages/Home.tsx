@@ -485,7 +485,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
                 >
-                  <Link href={`/store/${hof.writer?.username}`}>
+                  <Link href={`/writer/${hof.writer?.username}`}>
                     <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] hover:border-yellow-500/40 transition-all duration-300 cursor-pointer aspect-[3/4] flex flex-col">
                       {/* Avatar area */}
                       <div className="relative flex-1 overflow-hidden">
