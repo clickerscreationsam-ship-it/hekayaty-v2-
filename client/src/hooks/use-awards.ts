@@ -151,7 +151,19 @@ export function usePublishedAwards() {
         .eq("status", "published")
         .order("year", { ascending: false });
       if (error) throw error;
-      return (data || []).map((a: any) => ({
+      if (!data || data.length === 0) return [];
+
+      // Eagerly fetch winners for the most recent award (for home page preview)
+      const mostRecent = data[0];
+      const { data: winnerRows } = await supabase
+        .from("hekayaty_award_winners")
+        .select("*")
+        .eq("award_id", mostRecent.id)
+        .order("rank", { ascending: true });
+
+      const enrichedWinners = await enrichWinners(winnerRows || []);
+
+      return data.map((a: any) => ({
         id: a.id,
         year: a.year,
         title: a.title,
@@ -161,11 +173,14 @@ export function usePublishedAwards() {
         publishedAt: a.published_at,
         createdAt: a.created_at,
         updatedAt: a.updated_at,
+        // Only attach winners to the first (most recent) award
+        winners: a.id === mostRecent.id ? enrichedWinners : undefined,
       })) as HekayatyAward[];
     },
     staleTime: 5 * 60 * 1000,
   });
 }
+
 
 export function useAllAwards() {
   return useQuery({

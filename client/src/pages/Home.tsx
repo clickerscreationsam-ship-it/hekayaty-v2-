@@ -446,85 +446,231 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== AWARDS PREVIEW ===== */}
+      {/* ===== HALL OF FAME ===== */}
       <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] border-t border-white/5 section-offscreen">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F5C000]/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-yellow-500/4 blur-[160px] rounded-full pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex justify-between items-end mb-8 sm:mb-12">
+
+          {/* Header */}
+          <div className="flex justify-between items-end mb-10 sm:mb-14">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-2xl bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">
+                <Crown className="w-5 h-5 sm:w-8 sm:h-8" />
+              </div>
+              <div>
+                <h2 className="text-2xl sm:text-4xl font-serif font-bold mb-1 sm:mb-2">قاعة الشهرة</h2>
+                <p className="text-muted-foreground text-sm sm:text-base">نخبة الكتّاب الذين سطروا أسماءهم بأحرف من ذهب</p>
+              </div>
+            </div>
+            <Link href="/hall-of-fame">
+              <button className="text-yellow-500 font-medium hover:underline flex items-center gap-1 sm:gap-2 text-sm">
+                عرض الكل <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 rotate-180" />
+              </button>
+            </Link>
+          </div>
+
+          {/* Writer Cards Grid */}
+          {hallOfFame && hallOfFame.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              {hallOfFame.slice(0, 5).map((hof, i) => (
+                <motion.div
+                  key={hof.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                >
+                  <Link href={`/store/${hof.writer?.username}`}>
+                    <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] hover:border-yellow-500/40 transition-all duration-300 cursor-pointer aspect-[3/4] flex flex-col">
+                      {/* Banner / avatar area */}
+                      <div className="relative flex-1 overflow-hidden">
+                        {hof.writer?.bannerUrl ? (
+                          <img src={hof.writer.bannerUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-yellow-500/10 to-transparent" />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                        {/* Rank badge */}
+                        {i === 0 && (
+                          <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-yellow-500 flex items-center justify-center shadow-lg">
+                            <Crown className="w-3.5 h-3.5 text-black" />
+                          </div>
+                        )}
+                      </div>
+                      {/* Info */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <img
+                            src={hof.writer?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(hof.writer?.displayName || "U")}&background=1c1c2e&color=fff`}
+                            className="w-8 h-8 rounded-full border-2 border-yellow-500/50 object-cover shrink-0"
+                            alt=""
+                          />
+                          <div className="min-w-0">
+                            <p className="text-white font-bold text-sm truncate">{hof.writer?.displayName}</p>
+                            <p className="text-yellow-500/70 text-[10px] truncate">@{hof.writer?.username}</p>
+                          </div>
+                        </div>
+                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/15 border border-yellow-500/25">
+                          <Trophy className="w-2.5 h-2.5 text-yellow-400" />
+                          <span className="text-yellow-400 text-[10px] font-bold truncate">{hof.badgeLabel || "كاتب نخبة"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            /* Placeholder cards when no data */
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              {Array(5).fill(0).map((_, i) => (
+                <div key={i} className="aspect-[3/4] rounded-3xl bg-white/[0.03] border border-dashed border-white/10 flex flex-col items-center justify-center gap-3 p-4">
+                  <Crown className="w-8 h-8 text-yellow-500/20" />
+                  <p className="text-white/20 text-xs text-center">سيتم الإعلان عنهم قريباً</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* CTA strip */}
+          <div className="mt-8 sm:mt-12 text-center">
+            <Link href="/hall-of-fame">
+              <button className="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-yellow-500/30 bg-yellow-500/5 text-yellow-500 font-bold hover:bg-yellow-500/15 hover:border-yellow-500/60 transition-all duration-300">
+                <Crown className="w-4 h-4" />
+                زيارة قاعة الشهرة كاملةً
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== AWARDS ===== */}
+      <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] border-t border-white/5 section-offscreen">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-yellow-600/5 blur-[140px] rounded-full pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+          {/* Header */}
+          <div className="flex justify-between items-end mb-10 sm:mb-14">
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="p-2 sm:p-3 rounded-2xl bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">
                 <Trophy className="w-5 h-5 sm:w-8 sm:h-8" />
               </div>
               <div>
-                <h2 className="text-2xl sm:text-4xl font-serif font-bold mb-1 sm:mb-2">{awards?.[0]?.title || "جوائز حكايتي"} {awards?.[0]?.year || new Date().getFullYear()}</h2>
+                <h2 className="text-2xl sm:text-4xl font-serif font-bold mb-1 sm:mb-2">
+                  {awards?.[0]?.title || "جوائز حكايتي"} {awards?.[0]?.year || new Date().getFullYear()}
+                </h2>
                 <p className="text-muted-foreground text-sm sm:text-base">تتويج لأفضل الإبداعات السنوية في منصة حكايتي</p>
               </div>
-              </div>
-              <Link href="/awards">
-                <button className="text-yellow-500 font-medium hover:underline flex items-center gap-1 sm:gap-2 text-sm">
-                  {t("home.bestSellers.viewAll")} <ArrowRight className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", i18n.language === "ar" ? "rotate-180" : "")} />
-                </button>
-              </Link>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              <Link href="/awards">
-                <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-yellow-500/10 to-transparent border border-yellow-500/20 p-6 sm:p-8 hover:border-yellow-500/50 transition-all duration-300">
-                  <div className="absolute -right-10 -top-10 w-40 h-40 bg-yellow-500/20 blur-3xl rounded-full" />
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <h3 className="text-xl sm:text-3xl font-bold text-white mb-2">جوائز العام</h3>
-                      <p className="text-yellow-100/60 max-w-sm text-sm sm:text-base">
-                        شاهد الفائزين بالمراكز الأولى في فئات أفضل الروايات، والكتاب، ودور النشر.
-                      </p>
-                    </div>
-                    <div className="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <Trophy className="w-6 h-6 text-yellow-500" />
-                    </div>
-                  </div>
-                  <Button variant="outline" className="rounded-full bg-yellow-500 text-black border-none font-bold hover:bg-yellow-400">
-                    استكشف الفائزين
-                  </Button>
-                </div>
-              </Link>
+            <Link href="/awards">
+              <button className="text-yellow-500 font-medium hover:underline flex items-center gap-1 sm:gap-2 text-sm">
+                عرض الكل <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 rotate-180" />
+              </button>
+            </Link>
+          </div>
 
-            <Link href="/hall-of-fame">
-              <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 p-6 sm:p-8 hover:border-white/30 transition-all duration-300">
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <h3 className="text-xl sm:text-3xl font-bold text-white mb-2">قاعة الشهرة</h3>
-                    <p className="text-white/60 max-w-sm text-sm sm:text-base">
-                      نخبة الكتاب والمؤلفين الذين سطروا أسماءهم بأحرف من ذهب في تاريخ المنصة.
-                    </p>
+          {/* Category cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
+            {[
+              { key: "best_novel", label: "أفضل رواية", icon: <BookOpen className="w-5 h-5" />, color: "from-yellow-500/15 to-yellow-600/5", border: "border-yellow-500/25", accent: "text-yellow-400" },
+              { key: "best_writer", label: "أفضل كاتب", icon: <Feather className="w-5 h-5" />, color: "from-amber-500/15 to-amber-600/5", border: "border-amber-500/25", accent: "text-amber-400" },
+              { key: "best_publisher", label: "أفضل دار نشر", icon: <Layers className="w-5 h-5" />, color: "from-orange-500/15 to-orange-600/5", border: "border-orange-500/25", accent: "text-orange-400" },
+            ].map((cat) => {
+              const winner = awards?.[0] && awards[0].winners
+                ? awards[0].winners.find((w: any) => w.category === cat.key && w.rank === 1)
+                : null;
+              return (
+                <motion.div
+                  key={cat.key}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className={`group relative overflow-hidden rounded-3xl bg-gradient-to-br ${cat.color} border ${cat.border} p-6 hover:scale-[1.02] transition-all duration-300`}
+                >
+                  <div className="absolute -right-8 -top-8 w-32 h-32 bg-yellow-500/10 blur-2xl rounded-full" />
+                  {/* Category title */}
+                  <div className="flex items-center gap-2 mb-5">
+                    <div className={`${cat.accent} opacity-80`}>{cat.icon}</div>
+                    <span className={`font-black text-sm uppercase tracking-wider ${cat.accent}`}>{cat.label}</span>
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <Crown className="w-6 h-6 text-yellow-500" />
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-[-10px] mb-6 min-h-[40px]">
-                  {hallOfFame && hallOfFame.length > 0 ? (
-                    <>
-                      {hallOfFame.slice(0, 5).map((hof, i) => (
-                        <div key={hof.id} className="relative w-10 h-10 rounded-full border-2 border-[#050505] overflow-hidden" style={{ zIndex: 10 - i, marginLeft: i > 0 ? '-12px' : '0' }}>
-                          <img src={hof.writer?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(hof.writer?.displayName || "U")}&background=1c1c2e&color=fff`} className="w-full h-full object-cover" alt="" />
-                        </div>
-                      ))}
-                      {hallOfFame.length > 5 && (
-                        <div className="relative w-10 h-10 rounded-full border-2 border-[#050505] bg-white/10 flex items-center justify-center text-xs font-bold text-white" style={{ zIndex: 0, marginLeft: '-12px' }}>
-                          +{hallOfFame.length - 5}
+                  {/* Rank 1 winner preview */}
+                  {winner ? (
+                    <div className="flex items-center gap-3">
+                      {winner.user?.avatarUrl || winner.product?.coverUrl ? (
+                        <img
+                          src={winner.user?.avatarUrl || winner.product?.coverUrl}
+                          className="w-14 h-14 rounded-2xl object-cover border border-white/10"
+                          alt=""
+                        />
+                      ) : (
+                        <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                          <Trophy className="w-6 h-6 text-yellow-400/40" />
                         </div>
                       )}
-                    </>
+                      <div>
+                        <div className="flex items-center gap-1 mb-0.5">
+                          <Crown className="w-3 h-3 text-yellow-400" />
+                          <span className="text-[10px] text-yellow-400/80 font-bold">المركز الأول</span>
+                        </div>
+                        <p className="text-white font-bold text-sm leading-snug">
+                          {winner.user?.displayName || winner.product?.title || "—"}
+                        </p>
+                        {winner.badgeLabel && (
+                          <p className={`text-[10px] mt-0.5 ${cat.accent} opacity-70`}>{winner.badgeLabel}</p>
+                        )}
+                      </div>
+                    </div>
                   ) : (
-                    <div className="text-white/40 text-sm">سيتم إضافة الكتاب قريباً...</div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 rounded-2xl bg-white/5 border border-dashed border-white/10 flex items-center justify-center">
+                        <Trophy className="w-6 h-6 text-white/20" />
+                      </div>
+                      <div>
+                        <p className="text-white/30 text-sm font-medium">سيتم الإعلان قريباً</p>
+                        <p className="text-white/20 text-xs mt-0.5">ترقّب نتائج الجوائز</p>
+                      </div>
+                    </div>
                   )}
-                </div>
 
-                <Button variant="outline" className="rounded-full bg-transparent text-white border-white/20 font-bold hover:bg-white/10">
-                  زيارة قاعة الشهرة
-                </Button>
-              </div>
+                  {/* Divider + runner-up avatars */}
+                  {awards?.[0]?.winners && awards[0].winners.filter((w: any) => w.category === cat.key).length > 1 && (
+                    <div className="mt-4 pt-4 border-t border-white/5 flex items-center gap-1.5">
+                      {awards[0].winners
+                        .filter((w: any) => w.category === cat.key && w.rank > 1)
+                        .slice(0, 3)
+                        .map((w: any, wi: number) => (
+                          <div key={wi} className="relative">
+                            {w.user?.avatarUrl ? (
+                              <img src={w.user.avatarUrl} className="w-7 h-7 rounded-full object-cover border border-white/10" alt="" />
+                            ) : (
+                              <div className="w-7 h-7 rounded-full bg-white/5 border border-white/10" />
+                            )}
+                            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-black text-[8px] text-white/50 flex items-center justify-center border border-white/10">
+                              {w.rank}
+                            </span>
+                          </div>
+                        ))}
+                      <span className="text-white/30 text-[10px] mr-1">المراكز التالية</span>
+                    </div>
+                  )}
+
+                  <Link href="/awards">
+                    <button className={`mt-5 text-xs font-bold ${cat.accent} hover:underline flex items-center gap-1`}>
+                      عرض الفائزين <ArrowRight className="w-3 h-3 rotate-180" />
+                    </button>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* CTA */}
+          <div className="mt-8 sm:mt-12 text-center">
+            <Link href="/awards">
+              <button className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-yellow-500 text-black font-bold hover:bg-yellow-400 transition-all duration-300 shadow-[0_0_30px_rgba(245,192,0,0.2)]">
+                <Trophy className="w-4 h-4" />
+                استكشف جميع الجوائز والفائزين
+              </button>
             </Link>
           </div>
         </div>
