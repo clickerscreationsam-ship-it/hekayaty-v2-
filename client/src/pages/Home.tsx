@@ -487,13 +487,13 @@ export default function Home() {
                 >
                   <Link href={`/store/${hof.writer?.username}`}>
                     <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] hover:border-yellow-500/40 transition-all duration-300 cursor-pointer aspect-[3/4] flex flex-col">
-                      {/* Banner / avatar area */}
+                      {/* Avatar area */}
                       <div className="relative flex-1 overflow-hidden">
-                        {hof.writer?.bannerUrl ? (
-                          <img src={hof.writer.bannerUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="" />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-yellow-500/10 to-transparent" />
-                        )}
+                        <img 
+                          src={hof.writer?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(hof.writer?.displayName || "U")}&background=1c1c2e&color=fff`} 
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                          alt="" 
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
                         {/* Rank badge */}
                         {i === 0 && (
@@ -504,16 +504,9 @@ export default function Home() {
                       </div>
                       {/* Info */}
                       <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <img
-                            src={hof.writer?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(hof.writer?.displayName || "U")}&background=1c1c2e&color=fff`}
-                            className="w-8 h-8 rounded-full border-2 border-yellow-500/50 object-cover shrink-0"
-                            alt=""
-                          />
-                          <div className="min-w-0">
-                            <p className="text-white font-bold text-sm truncate">{hof.writer?.displayName}</p>
-                            <p className="text-yellow-500/70 text-[10px] truncate">@{hof.writer?.username}</p>
-                          </div>
+                        <div className="mb-2">
+                          <p className="text-white font-bold text-sm leading-snug drop-shadow-md">{hof.writer?.displayName}</p>
+                          <p className="text-yellow-500/70 text-[10px] truncate mt-0.5 drop-shadow-md">@{hof.writer?.username}</p>
                         </div>
                         <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/15 border border-yellow-500/25">
                           <Trophy className="w-2.5 h-2.5 text-yellow-400" />
