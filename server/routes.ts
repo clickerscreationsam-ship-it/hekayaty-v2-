@@ -3334,6 +3334,293 @@ export async function registerRoutes(
     }
   });
 
+  // === HEKAYATY AWARDS ===
+
+  // GET /api/awards - public: list published awards
+  app.get("/api/awards", async (req, res) => {
+    try {
+      const { data, error } = await supabase
+        .from("hekayaty_awards")
+        .select("*")
+        .eq("status", "published")
+        .order("year", { ascending: false });
+      if (error) throw error;
+      res.json(data || []);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // GET /api/awards/all - admin: list all awards including drafts
+  app.get("/api/awards/all", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") return res.sendStatus(403);
+    try {
+      const { data, error } = await supabase
+        .from("hekayaty_awards")
+        .select("*")
+        .order("year", { ascending: false });
+      if (error) throw error;
+      res.json(data || []);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // GET /api/awards/:id/winners - public: get winners for an award
+  app.get("/api/awards/:id/winners", async (req, res) => {
+    try {
+      const awardId = Number(req.params.id);
+      const { data: winners, error } = await supabase
+        .from("hekayaty_award_winners")
+        .select("*")
+        .eq("award_id", awardId)
+        .order("rank", { ascending: true });
+      if (error) throw error;
+
+      if (!winners || winners.length === 0) return res.json([]);
+
+      const userIds = winners.filter((w: any) => w.winner_user_id).map((w: any) => w.winner_user_id);
+      const productIds = winners.filter((w: any) => w.winner_product_id).map((w: any) => w.winner_product_id);
+
+      const [usersRes, productsRes] = await Promise.all([
+        userIds.length > 0
+          ? supabase.from("users").select("id, username, display_name, avatar_url, is_verified, role").in("id", userIds)
+          : { data: [] },
+        productIds.length > 0
+          ? supabase.from("products").select("id, title, cover_url, writer_id, genre").in("id", productIds)
+          : { data: [] },
+      ]);
+
+      const writerIds = (productsRes.data || []).map((p: any) => p.writer_id).filter(Boolean);
+      const writersRes = writerIds.length > 0
+        ? await supabase.from("users").select("id, display_name, username").in("id", writerIds)
+        : { data: [] };
+
+      const userMap: Record<string, any> = {};
+      (usersRes.data || []).forEach((u: any) => { userMap[u.id] = u; });
+      const writerMap: Record<string, any> = {};
+      (writersRes.data || []).forEach((u: any) => { writerMap[u.id] = u; });
+      const productMap: Record<number, any> = {};
+      (productsRes.data || []).forEach((p: any) => { productMap[p.id] = { ...p, writer: writerMap[p.writer_id] }; });
+
+      const enriched = winners.map((w: any) => ({
+        ...w,
+        user: w.winner_user_id ? userMap[w.winner_user_id] : null,
+        product: w.winner_product_id ? productMap[w.winner_product_id] : null,
+      }));
+      res.json(enriched);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST /api/awards - admin: create new award year
+  app.post("/api/awards", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") return res.sendStatus(403);
+    try {
+      const { year, title, description } = req.body;
+      if (!year) return res.status(400).json({ error: "Year is required" });
+      const { data, error } = await supabase
+        .from("hekayaty_awards")
+        .insert({ year, title: title || `جوائز حكايتي ${year}`, description, created_by: (req.user as any).id })
+        .select()
+        .single();
+      if (error) throw error;
+      res.status(201).json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // PATCH /api/awards/:id - admin: update award metadata
+  app.patch("/api/awards/:id", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") return res.sendStatus(403);
+    try {
+      const { title, description } = req.body;
+      const { data, error } = await supabase
+        .from("hekayaty_awards")
+        .update({ title, description, updated_at: new Date().toISOString() })
+        .eq("id", Number(req.params.id))
+        .select()
+        .single();
+      if (error) throw error;
+      res.json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // PATCH /api/awards/:id/publish - admin: publish or unpublish
+  app.patch("/api/awards/:id/publish", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") return res.sendStatus(403);
+    try {
+      const { publish } = req.body;
+      const updates: any = {
+        status: publish ? "published" : "draft",
+        updated_at: new Date().toISOString(),
+      };
+      if (publish) updates.published_at = new Date().toISOString();
+      const { data, error } = await supabase
+        .from("hekayaty_awards")
+        .update(updates)
+        .eq("id", Number(req.params.id))
+        .select()
+        .single();
+      if (error) throw error;
+      res.json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // DELETE /api/awards/:id - admin: delete award
+  app.delete("/api/awards/:id", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") return res.sendStatus(403);
+    try {
+      const { error } = await supabase.from("hekayaty_awards").delete().eq("id", Number(req.params.id));
+      if (error) throw error;
+      res.sendStatus(204);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST /api/awards/:id/winners - admin: upsert winners for an award
+  app.post("/api/awards/:id/winners", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") return res.sendStatus(403);
+    try {
+      const awardId = Number(req.params.id);
+      const { winners } = req.body;
+      if (!Array.isArray(winners)) return res.status(400).json({ error: "Winners must be an array" });
+
+      const toUpsert = winners.map((w: any) => ({
+        award_id: awardId,
+        category: w.category,
+        rank: w.rank,
+        winner_user_id: w.winnerUserId || null,
+        winner_product_id: w.winnerProductId || null,
+        special_note: w.specialNote || null,
+        badge_label: w.badgeLabel || null,
+      }));
+
+      const { data, error } = await supabase
+        .from("hekayaty_award_winners")
+        .upsert(toUpsert, { onConflict: "award_id,category,rank" })
+        .select();
+      if (error) throw error;
+      res.json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // DELETE /api/awards/winners/:id - admin: remove a single winner
+  app.delete("/api/awards/winners/:id", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") return res.sendStatus(403);
+    try {
+      const { error } = await supabase
+        .from("hekayaty_award_winners")
+        .delete()
+        .eq("id", Number(req.params.id));
+      if (error) throw error;
+      res.sendStatus(204);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // === HALL OF FAME ===
+
+  // GET /api/hall-of-fame - public: list all HOF writers
+  app.get("/api/hall-of-fame", async (req, res) => {
+    try {
+      const { data, error } = await supabase
+        .from("hall_of_fame_writers")
+        .select("*")
+        .order("display_order", { ascending: true });
+      if (error) throw error;
+
+      if (!data || data.length === 0) return res.json([]);
+
+      const writerIds = data.map((h: any) => h.writer_id);
+      const { data: writers } = await supabase
+        .from("users")
+        .select("id, username, display_name, avatar_url, banner_url, bio, is_verified, role")
+        .in("id", writerIds);
+
+      const writerMap: Record<string, any> = {};
+      (writers || []).forEach((w: any) => { writerMap[w.id] = w; });
+
+      const enriched = data.map((h: any) => ({ ...h, writer: writerMap[h.writer_id] }));
+      res.json(enriched);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST /api/hall-of-fame - admin: add writer to HOF
+  app.post("/api/hall-of-fame", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") return res.sendStatus(403);
+    try {
+      const { writerId, featuredReason, achievementNote, badgeLabel } = req.body;
+      if (!writerId) return res.status(400).json({ error: "writerId is required" });
+      const { data, error } = await supabase
+        .from("hall_of_fame_writers")
+        .insert({
+          writer_id: writerId,
+          featured_reason: featuredReason || null,
+          achievement_note: achievementNote || null,
+          badge_label: badgeLabel || "كاتب نخبة",
+          added_by: (req.user as any).id,
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      res.status(201).json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // PATCH /api/hall-of-fame/:id - admin: update HOF entry
+  app.patch("/api/hall-of-fame/:id", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") return res.sendStatus(403);
+    try {
+      const { featuredReason, achievementNote, badgeLabel, displayOrder } = req.body;
+      const updates: any = { updated_at: new Date().toISOString() };
+      if (featuredReason !== undefined) updates.featured_reason = featuredReason;
+      if (achievementNote !== undefined) updates.achievement_note = achievementNote;
+      if (badgeLabel !== undefined) updates.badge_label = badgeLabel;
+      if (displayOrder !== undefined) updates.display_order = displayOrder;
+
+      const { data, error } = await supabase
+        .from("hall_of_fame_writers")
+        .update(updates)
+        .eq("id", Number(req.params.id))
+        .select()
+        .single();
+      if (error) throw error;
+      res.json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // DELETE /api/hall-of-fame/:id - admin: remove from HOF
+  app.delete("/api/hall-of-fame/:id", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") return res.sendStatus(403);
+    try {
+      const { error } = await supabase
+        .from("hall_of_fame_writers")
+        .delete()
+        .eq("id", Number(req.params.id));
+      if (error) throw error;
+      res.sendStatus(204);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   return httpServer;
 }
 

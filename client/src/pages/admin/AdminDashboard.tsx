@@ -22,9 +22,10 @@ import { MarketingAdmin } from "./MarketingAdmin";
 import { CommunityAdmin } from "./CommunityAdmin";
 import { SettingsAdmin } from "./SettingsAdmin";
 import { LeaderboardAdmin } from "./LeaderboardAdmin";
+import { AwardsAdmin } from "./AwardsAdmin";
 import { formatDate, cn } from "@/lib/utils";
 import { useAdminPrivateMessages, useSendAdminPrivateMessage, useAdminAnnouncements, useCreateAdminAnnouncement, useDeleteAdminAnnouncement, useMarkMessageRead } from "@/hooks/use-admin-system";
-import { MessageSquare, Send, Megaphone, Trash2, Pin, Shield, Activity, Users as UsersIcon, Flag, BookMarked, DollarSign, Package, Settings, MessageCircle } from "lucide-react";
+import { MessageSquare, Send, Megaphone, Trash2, Pin, Shield, Activity, Users as UsersIcon, Flag, BookMarked, DollarSign, Package, Settings, MessageCircle, Trophy } from "lucide-react";
 import { useDesignRequests } from "@/hooks/use-commissions";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { CommissionThread } from "@/components/creative-hub/CommissionsManager";
@@ -965,6 +966,9 @@ export default function AdminDashboard() {
                         <TabsTrigger value="leaderboard" className="gap-2">
                             <Crown className="w-4 h-4" /> الترتيب العالمي
                         </TabsTrigger>
+                        <TabsTrigger value="awards" className="gap-2">
+                            <Trophy className="w-4 h-4" /> الجوائز والشهرة
+                        </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="overview">
@@ -997,6 +1001,10 @@ export default function AdminDashboard() {
 
                     <TabsContent value="commissions">
                         <CommissionsAdmin requestsResponse={requestsResponse} isLoading={commissionsLoading} />
+                    </TabsContent>
+
+                    <TabsContent value="awards">
+                        <AwardsAdmin />
                     </TabsContent>
 
                     <TabsContent value="subscriptions">

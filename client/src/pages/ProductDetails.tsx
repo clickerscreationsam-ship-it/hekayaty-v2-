@@ -7,7 +7,7 @@ import { useAddToCart } from "@/hooks/use-cart";
 import { useMediaVideos } from "@/hooks/use-media";
 
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, Star, ShieldCheck, Download, ShoppingCart, BookOpen, Truck, MapPin, Info, Sparkles, Palette, Music, Play, ArrowUpRight, ExternalLink, Globe, X, BadgeCheck } from "lucide-react";
+import { Loader2, Star, ShieldCheck, Download, ShoppingCart, BookOpen, Truck, MapPin, Info, Sparkles, Palette, Music, Play, ArrowUpRight, ExternalLink, Globe, X, BadgeCheck, Trophy } from "lucide-react";
 import { useShippingRates } from "@/hooks/use-shipping";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -23,6 +23,7 @@ import { useProducts } from "@/hooks/use-products";
 import { useTranslation } from "react-i18next";
 import { cn, optimizeImage } from "@/lib/utils";
 import { PageSkeleton } from "@/components/ui/skeleton-loader";
+import { useProductAwardBadge } from "@/hooks/use-awards";
 import { useProductAccess } from "@/hooks/use-product-access";
 import { useLibraryStatus, useAddToLibrary } from "@/hooks/use-library";
 import { ReportDialog } from "@/components/ReportDialog";
@@ -57,6 +58,8 @@ export default function ProductDetails() {
   const { hasAccess, reason, planName, subscriptionExpiry, creatorUsername, isLoading: accessLoading, isExpiringSoon, isSubscriptionAccess } = useProductAccess(id);
   const { data: inLibrary, isLoading: libraryLoading } = useLibraryStatus(id);
   const addToLibrary = useAddToLibrary();
+
+  const { data: awardBadge } = useProductAwardBadge(id);
 
   // canAccess combines all access vectors — owner, free, purchased, subscription
   const canAccess = hasAccess;
@@ -255,6 +258,13 @@ export default function ProductDetails() {
                   bookTitle={product.title}
                   writerId={product.writerId}
                 />
+              </div>
+            )}
+
+            {awardBadge && (
+              <div className="mb-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-yellow-500/30 bg-yellow-500/10 shadow-[0_0_15px_rgba(234,179,8,0.15)] text-yellow-500">
+                <Trophy className="w-4 h-4" />
+                <span className="text-xs font-bold">{awardBadge.badgeLabel} {awardBadge.year && `(${awardBadge.year})`}</span>
               </div>
             )}
 

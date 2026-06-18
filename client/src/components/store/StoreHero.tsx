@@ -11,13 +11,15 @@ import {
   MessageCircle,
   MapPin,
   CheckCircle2,
-  Trophy
+  Trophy,
+  Crown
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { useWriterAwardBadges } from "@/hooks/use-awards";
 
 export function StoreHero({ user, settings, isOwnStore, themeColor, fontClass }: StoreProps) {
   const { t } = useTranslation();
@@ -102,6 +104,9 @@ export function StoreHero({ user, settings, isOwnStore, themeColor, fontClass }:
   const followedRank = rankData?.followedRank ?? null;
   const ratedRank = rankData?.ratedRank ?? null;
   const booksRank = rankData?.booksRank ?? null;
+
+  // Fetch Awards and Hall of Fame Badges
+  const { data: badges } = useWriterAwardBadges(user.id);
 
   const { data: isFollowing } = useQuery({
     queryKey: ["follow-status", user.id, currentUser?.id],
@@ -226,6 +231,18 @@ export function StoreHero({ user, settings, isOwnStore, themeColor, fontClass }:
                 <a href="/leaderboards/accounts" className="flex items-center gap-1 bg-amber-700/15 border border-amber-700/30 rounded-full px-2.5 py-0.5 hover:bg-amber-700/25 transition-colors" title="الأكثر كتباً">
                   <BookOpen className="w-3 h-3 text-amber-500" />
                   <span className="text-amber-500 text-[11px] font-bold">#{booksRank} كتباً</span>
+                </a>
+              )}
+              {badges?.isHOF && (
+                <a href="/hall-of-fame" className="flex items-center gap-1 bg-purple-500/15 border border-purple-500/30 rounded-full px-2.5 py-0.5 hover:bg-purple-500/25 transition-colors" title="قاعة الشهرة">
+                  <Crown className="w-3 h-3 text-purple-400" />
+                  <span className="text-purple-400 text-[11px] font-bold">{badges.hofBadge}</span>
+                </a>
+              )}
+              {badges?.awards && badges.awards.length > 0 && (
+                <a href="/awards" className="flex items-center gap-1 bg-yellow-500/15 border border-yellow-500/30 rounded-full px-2.5 py-0.5 hover:bg-yellow-500/25 transition-colors" title="جوائز حكايتي">
+                  <Trophy className="w-3 h-3 text-yellow-400" />
+                  <span className="text-yellow-400 text-[11px] font-bold">{badges.awards.length} جوائز</span>
                 </a>
               )}
             </div>
