@@ -447,19 +447,18 @@ export default function Home() {
       </section>
 
       {/* ===== AWARDS PREVIEW ===== */}
-      {awards && awards.length > 0 && (
-        <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] border-t border-white/5 section-offscreen">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F5C000]/5 blur-[120px] rounded-full pointer-events-none" />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="flex justify-between items-end mb-8 sm:mb-12">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="p-2 sm:p-3 rounded-2xl bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">
-                  <Trophy className="w-5 h-5 sm:w-8 sm:h-8" />
-                </div>
-                <div>
-                  <h2 className="text-2xl sm:text-4xl font-serif font-bold mb-1 sm:mb-2">{awards[0].title} {awards[0].year}</h2>
-                  <p className="text-muted-foreground text-sm sm:text-base">تتويج لأفضل الإبداعات السنوية في منصة حكايتي</p>
-                </div>
+      <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] border-t border-white/5 section-offscreen">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F5C000]/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex justify-between items-end mb-8 sm:mb-12">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-2xl bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">
+                <Trophy className="w-5 h-5 sm:w-8 sm:h-8" />
+              </div>
+              <div>
+                <h2 className="text-2xl sm:text-4xl font-serif font-bold mb-1 sm:mb-2">{awards?.[0]?.title || "جوائز حكايتي"} {awards?.[0]?.year || new Date().getFullYear()}</h2>
+                <p className="text-muted-foreground text-sm sm:text-base">تتويج لأفضل الإبداعات السنوية في منصة حكايتي</p>
+              </div>
               </div>
               <Link href="/awards">
                 <button className="text-yellow-500 font-medium hover:underline flex items-center gap-1 sm:gap-2 text-sm">
@@ -489,22 +488,23 @@ export default function Home() {
                 </div>
               </Link>
 
-              {hallOfFame && hallOfFame.length > 0 && (
-                <Link href="/hall-of-fame">
-                  <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 p-6 sm:p-8 hover:border-white/30 transition-all duration-300">
-                    <div className="flex justify-between items-start mb-6">
-                      <div>
-                        <h3 className="text-xl sm:text-3xl font-bold text-white mb-2">قاعة الشهرة</h3>
-                        <p className="text-white/60 max-w-sm text-sm sm:text-base">
-                          نخبة الكتاب والمؤلفين الذين سطروا أسماءهم بأحرف من ذهب في تاريخ المنصة.
-                        </p>
-                      </div>
-                      <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                        <Crown className="w-6 h-6 text-yellow-500" />
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-[-10px] mb-6">
+            <Link href="/hall-of-fame">
+              <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 p-6 sm:p-8 hover:border-white/30 transition-all duration-300">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="text-xl sm:text-3xl font-bold text-white mb-2">قاعة الشهرة</h3>
+                    <p className="text-white/60 max-w-sm text-sm sm:text-base">
+                      نخبة الكتاب والمؤلفين الذين سطروا أسماءهم بأحرف من ذهب في تاريخ المنصة.
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Crown className="w-6 h-6 text-yellow-500" />
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-[-10px] mb-6 min-h-[40px]">
+                  {hallOfFame && hallOfFame.length > 0 ? (
+                    <>
                       {hallOfFame.slice(0, 5).map((hof, i) => (
                         <div key={hof.id} className="relative w-10 h-10 rounded-full border-2 border-[#050505] overflow-hidden" style={{ zIndex: 10 - i, marginLeft: i > 0 ? '-12px' : '0' }}>
                           <img src={hof.writer?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(hof.writer?.displayName || "U")}&background=1c1c2e&color=fff`} className="w-full h-full object-cover" alt="" />
@@ -515,18 +515,20 @@ export default function Home() {
                           +{hallOfFame.length - 5}
                         </div>
                       )}
-                    </div>
+                    </>
+                  ) : (
+                    <div className="text-white/40 text-sm">سيتم إضافة الكتاب قريباً...</div>
+                  )}
+                </div>
 
-                    <Button variant="outline" className="rounded-full bg-transparent text-white border-white/20 font-bold hover:bg-white/10">
-                      زيارة قاعة الشهرة
-                    </Button>
-                  </div>
-                </Link>
-              )}
-            </div>
+                <Button variant="outline" className="rounded-full bg-transparent text-white border-white/20 font-bold hover:bg-white/10">
+                  زيارة قاعة الشهرة
+                </Button>
+              </div>
+            </Link>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* ===== MEDIA HUB ===== */}
       <section className="py-20 sm:py-32 relative overflow-hidden bg-[#000000] section-offscreen">
