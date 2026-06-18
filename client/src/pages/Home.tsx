@@ -180,12 +180,17 @@ function BookSlider({ books }: BookSliderProps) {
                   loading="eager"
                 />
 
-                {/* Title on center card */}
+                {/* Title + writer name on center card */}
                 {isCurrent && book?.title && (
                   <div className="absolute bottom-0 left-0 right-0 z-20 p-4">
                     <p className="text-white text-sm font-bold leading-tight text-center line-clamp-2 drop-shadow-lg">
                       {book.title}
                     </p>
+                    {book.writerName && (
+                      <p className="text-[#F5C000]/80 text-[11px] font-medium text-center mt-1 drop-shadow-lg truncate">
+                        ✦ {book.writerName}
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

@@ -11,6 +11,7 @@ function mapProduct(p: ProductRow) {
   return {
     id: p.id,
     writerId: p.writer_id,
+    writerName: (p as any).users?.display_name || null,
     title: p.title,
     description: p.description,
     coverUrl: p.cover_url,
