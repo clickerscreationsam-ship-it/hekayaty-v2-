@@ -12,6 +12,7 @@ import { useMediaVideos } from "@/hooks/use-media";
 import { StoreMemberships } from "./StoreMemberships";
 import { useTranslation } from "react-i18next";
 import { BookClaimButton } from "@/components/books/BookClaimButton";
+import { Link } from "wouter";
 
 interface StoreHomeProps extends StoreProps {
   products: any[];
@@ -233,7 +234,7 @@ function ProductRow({ title, products, viewAllLink, onTabChange }: { title: stri
       
       <div className="flex gap-4 sm:gap-5 overflow-x-auto custom-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
         {products.map(product => (
-          <div key={product.id} className="w-[140px] sm:w-[170px] shrink-0">
+          <Link key={product.id} href={`/book/${product.id}`} className="w-[140px] sm:w-[170px] shrink-0 block">
             <div className="group relative rounded-xl overflow-hidden bg-[#1c1c22] border border-white/5 h-full flex flex-col transition-all hover:border-white/20 hover:-translate-y-1">
               <div className="aspect-[2/3] w-full overflow-hidden bg-black/20">
                 <img 
@@ -260,12 +261,12 @@ function ProductRow({ title, products, viewAllLink, onTabChange }: { title: stri
                   </span>
                 </div>
                 
-                <div className="w-full flex justify-center">
+                <div className="w-full flex justify-center" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                   <BookClaimButton bookId={product.id} bookTitle={product.title} writerId={product.writerId || product.writer_id} />
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>
