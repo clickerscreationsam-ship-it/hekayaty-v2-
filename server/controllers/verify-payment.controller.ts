@@ -58,32 +58,70 @@ export const verifyPayment = async (req: any, res: any) => {
 
         // 4. Calculate Earnings
         const earningsByCreator = new Map<string, number>()
-        const writerIds = new Set<string>()
-
-        // First pass: Identify all writers
-        items.forEach((item: any) => {
-            const writerId = item.product?.writer_id || item.collection?.writer_id
-            if (writerId) writerIds.add(writerId)
-        })
 
         // Process each item
         for (const item of items) {
-            const writerId = (item as any).product?.writer_id || (item as any).collection?.writer_id
-            if (!writerId) continue
-
-            // Use the unified centralized 20% platform fee logic
             const quantity = Number(item.quantity) || 1
             const totalPrice = Number(item.price) * quantity
-
             const { fee, earning } = calculateCommission(totalPrice);
 
-            earningsByCreator.set(writerId, (earningsByCreator.get(writerId) || 0) + earning)
+            if (item.collection_id) {
+                // Collection Revenue Distribution
+                const { data: colItems } = await supabaseAdmin
+                    .from('collection_items')
+                    .select('snapshot_price, product:products(writer_id, id)')
+                    .eq('collection_id', item.collection_id);
 
-            // Increment sales count for products (by quantity, not just 1)
-            if (item.product_id) {
-                const qty = Number(item.quantity) || 1
-                for (let i = 0; i < qty; i++) {
-                    await supabaseAdmin.rpc('increment_sales_count', { product_id: item.product_id })
+                if (colItems && colItems.length > 0) {
+                    const totalSnapshotPrice = colItems.reduce((acc: number, ci: any) => acc + (ci.snapshot_price || 0), 0);
+                    for (const ci of colItems) {
+                        const wId = (ci as any).product?.writer_id;
+                        if (!wId) continue;
+                        
+                        let weight = 0;
+                        if (totalSnapshotPrice > 0) {
+                            weight = (ci.snapshot_price || 0) / totalSnapshotPrice;
+                        } else {
+                            weight = 1 / colItems.length; // fallback if no prices
+                        }
+                        const ciEarning = earning * weight;
+                        earningsByCreator.set(wId, (earningsByCreator.get(wId) || 0) + ciEarning);
+                        
+                        // Grant access to individual book by inserting into purchases
+                        await supabaseAdmin.from('purchases').insert({
+                            user_id: order.user_id,
+                            product_id: String((ci as any).product.id),
+                            product_type: 'story'
+                        });
+                    }
+                }
+                
+                // Record collection access
+                await supabaseAdmin.from('purchases').insert({
+                    user_id: order.user_id,
+                    product_id: String(item.collection_id),
+                    product_type: 'collection'
+                });
+
+            } else {
+                // Regular Product
+                const writerId = (item as any).product?.writer_id;
+                if (writerId) {
+                    earningsByCreator.set(writerId, (earningsByCreator.get(writerId) || 0) + earning);
+                    
+                    // Increment sales count
+                    if (item.product_id) {
+                        for (let i = 0; i < quantity; i++) {
+                            await supabaseAdmin.rpc('increment_sales_count', { product_id: item.product_id })
+                        }
+                        
+                        // Record single book access
+                        await supabaseAdmin.from('purchases').insert({
+                            user_id: order.user_id,
+                            product_id: String(item.product_id),
+                            product_type: 'story'
+                        });
+                    }
                 }
             }
         }

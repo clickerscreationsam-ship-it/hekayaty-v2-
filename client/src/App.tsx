@@ -28,6 +28,7 @@ const Cart = lazy(() => import("@/pages/Cart"));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const ProductDetails = lazy(() => import("@/pages/ProductDetails"));
 const CollectionDetails = lazy(() => import("@/pages/CollectionDetails"));
+const CollectionReader = lazy(() => import("@/pages/CollectionReader"));
 const ReadBook = lazy(() => import("@/pages/ReadBook"));
 const Legal = lazy(() => import("@/pages/Legal"));
 const HekayatyGuide = lazy(() => import("@/pages/HekayatyGuide"));
@@ -63,7 +64,8 @@ function Router() {
         <Route path="/cart" component={Cart} />
         <Route path="/admin" component={AdminDashboard} />
         <Route path="/book/:id" component={ProductDetails} />
-        <Route path="/collection/:id" component={CollectionDetails} />
+        <Route path="/collections/:slug" component={CollectionDetails} />
+        <Route path="/collections/:slug/read" component={CollectionReader} />
         <Route path="/read/:id" component={ReadBook} />
         <Route path="/legal" component={Legal} />
         <Route path="/guide" component={HekayatyGuide} />

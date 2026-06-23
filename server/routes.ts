@@ -13,6 +13,7 @@ import edgeRoutes from "./routes/edge.index";
 import { calculateCommission } from "./utils/financial";
 import { enqueueOrRun, payoutQueue, notificationQueue } from "./queue";
 import { canUserAccessProduct, getSubscriptionLibrary } from "./controllers/access.controller";
+import { createCollection, getAdminCollections, updateCollection, getPublicCollections, getCollectionBySlug, deleteCollection } from "./controllers/collections.controller";
 
 import os from "os";
 
@@ -87,6 +88,14 @@ export async function registerRoutes(
 
   // Mount migrated edge functions
   app.use("/api/edge", edgeRoutes);
+
+  // === COLLECTIONS ===
+  app.post("/api/admin/collections", createCollection);
+  app.get("/api/admin/collections", getAdminCollections);
+  app.put("/api/admin/collections/:id", updateCollection);
+  app.delete("/api/admin/collections/:id", deleteCollection);
+  app.get("/api/collections", getPublicCollections);
+  app.get("/api/collections/:slug", getCollectionBySlug);
 
   // === USERS & SOCIAL ===
 

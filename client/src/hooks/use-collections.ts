@@ -1,157 +1,123 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/hooks/use-toast";
 
-export function useCollections(filters?: { writerId?: string; isPublished?: boolean }) {
-    return useQuery({
-        queryKey: ["collections", filters],
-        queryFn: async () => {
-            let query = supabase
-                .from('collections')
-                .select(`
-          *,
-          items:collection_items(
-            id,
-            story_id,
-            order_index,
-            story:products(*)
-          )
-        `)
-                .is('deleted_at', null);
-
-            if (filters?.writerId) query = query.eq('writer_id', filters.writerId);
-            if (filters?.isPublished !== undefined) query = query.eq('is_published', filters.isPublished);
-
-            const { data, error } = await query;
-            if (error) throw error;
-            return data;
-        },
-    });
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (session?.user?.id) {
+    headers['x-user-id'] = session.user.id;
+  }
+  return headers;
 }
 
-export function useCollection(id: string) {
-    return useQuery({
-        queryKey: ["collection", id],
-        queryFn: async () => {
-            const { data, error } = await supabase
-                .from('collections')
-                .select(`
-          *,
-          items:collection_items(
-            id,
-            story_id,
-            order_index,
-            story:products(*)
-          )
-        `)
-                .eq('id', id)
-                .is('deleted_at', null)
-                .single();
+export function useAdminCollections() {
+  return useQuery({
+    queryKey: ['admin-collections'],
+    queryFn: async () => {
+      const headers = await getAuthHeaders();
+      const res = await fetch('/api/admin/collections', { headers });
+      if (!res.ok) throw new Error('Failed to fetch collections');
+      return res.json();
+    }
+  });
+}
 
-            if (error) throw error;
-            return data;
-        },
-        enabled: !!id,
-    });
+export function useCollections(filters?: { isPublished?: boolean; writerId?: string; type?: string }) {
+  return useQuery({
+    queryKey: ['collections', filters],
+    queryFn: async () => {
+      const searchParams = new URLSearchParams();
+      if (filters?.isPublished !== undefined) searchParams.append('isPublished', String(filters.isPublished));
+      if (filters?.writerId) searchParams.append('writerId', filters.writerId);
+      if (filters?.type) searchParams.append('type', filters.type);
+      
+      const res = await fetch(`/api/collections?${searchParams.toString()}`);
+      if (!res.ok) throw new Error('Failed to fetch collections');
+      return res.json();
+    }
+  });
+}
+
+export function usePublicCollections() {
+  return useCollections({ isPublished: true });
+}
+
+export function useCollection(slug: string) {
+  return useQuery({
+    queryKey: ['collection', slug],
+    queryFn: async () => {
+      const res = await fetch(`/api/collections/${slug}`);
+      if (!res.ok) throw new Error('Failed to fetch collection');
+      return res.json();
+    },
+    enabled: !!slug
+  });
 }
 
 export function useCreateCollection() {
-    const queryClient = useQueryClient();
-    const { toast } = useToast();
-
-    return useMutation({
-        mutationFn: async (data: any) => {
-            const { storyIds, ...collectionData } = data;
-
-            const { data: newCollection, error } = await supabase
-                .from('collections')
-                .insert(collectionData)
-                .select()
-                .single();
-
-            if (error) throw error;
-
-            if (storyIds && storyIds.length > 0) {
-                const items = storyIds.map((storyId: number, index: number) => ({
-                    collection_id: newCollection.id,
-                    story_id: storyId,
-                    order_index: index
-                }));
-
-                const { error: itemsError } = await supabase
-                    .from('collection_items')
-                    .insert(items);
-
-                if (itemsError) throw itemsError;
-            }
-
-            return newCollection;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["collections"] });
-            toast({ title: "Collection created successfully" });
-        },
-        onError: (err: any) => {
-            toast({ title: "Failed to create collection", description: err.message, variant: "destructive" });
-        }
-    });
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const headers = await getAuthHeaders();
+      const res = await fetch('/api/admin/collections', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to create collection');
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-collections'] });
+      queryClient.invalidateQueries({ queryKey: ['public-collections'] });
+    }
+  });
 }
 
 export function useUpdateCollection() {
-    const queryClient = useQueryClient();
-    const { toast } = useToast();
-
-    return useMutation({
-        mutationFn: async ({ id, storyIds, ...data }: { id: string, storyIds?: number[] } & any) => {
-            const { data: updated, error } = await supabase
-                .from('collections')
-                .update(data)
-                .eq('id', id)
-                .select()
-                .single();
-
-            if (error) throw error;
-
-            if (storyIds !== undefined) {
-                // Simple strategy: delete and re-insert items for ordering
-                await supabase.from('collection_items').delete().eq('collection_id', id);
-
-                if (storyIds.length > 0) {
-                    const items = storyIds.map((storyId: number, index: number) => ({
-                        collection_id: id,
-                        story_id: storyId,
-                        order_index: index
-                    }));
-
-                    await supabase.from('collection_items').insert(items);
-                }
-            }
-
-            return updated;
-        },
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ["collections"] });
-            queryClient.invalidateQueries({ queryKey: ["collection", variables.id] });
-            toast({ title: "Collection updated" });
-        },
-    });
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      const headers = await getAuthHeaders();
+      const res = await fetch(`/api/admin/collections/${id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('Failed to update collection');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-collections'] });
+      queryClient.invalidateQueries({ queryKey: ['public-collections'] });
+      queryClient.invalidateQueries({ queryKey: ['collection'] });
+      queryClient.invalidateQueries({ queryKey: ['collections'] });
+    }
+  });
 }
 
 export function useDeleteCollection() {
-    const queryClient = useQueryClient();
-    const { toast } = useToast();
-
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const { error } = await supabase
-                .from('collections')
-                .update({ deleted_at: new Date().toISOString() })
-                .eq('id', id);
-            if (error) throw error;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["collections"] });
-            toast({ title: "Collection deleted (moved to trash)" });
-        },
-    });
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const headers = await getAuthHeaders();
+      const res = await fetch(`/api/admin/collections/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+      if (!res.ok) throw new Error('Failed to delete collection');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-collections'] });
+      queryClient.invalidateQueries({ queryKey: ['public-collections'] });
+      queryClient.invalidateQueries({ queryKey: ['collections'] });
+    }
+  });
 }

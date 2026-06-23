@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useTopWriters, useUserById, usePlatformStats } from "@/hooks/use-users";
 import { useBestSellerProducts, useSerializedProducts, useProducts } from "@/hooks/use-products";
-import { useCollections } from "@/hooks/use-collections";
+import { usePublicCollections } from "@/hooks/use-collections";
 import { useMediaVideos } from "@/hooks/use-media";
 import { usePublishedAwards, useHallOfFame } from "@/hooks/use-awards";
 import { FeaturedWriter } from "@/components/FeaturedWriter";
@@ -247,7 +247,7 @@ export default function Home() {
   const { data: writers } = useTopWriters(8);
   const { data: bestSellers } = useBestSellerProducts(8);
   const { data: serializedStories } = useSerializedProducts(8);
-  const { data: collections } = useCollections({ isPublished: true });
+  const { data: collections } = usePublicCollections();
   const { data: mediaHub } = useMediaVideos();
   const { data: merchandise } = useProducts({ type: "merchandise" });
   const { t, i18n } = useTranslation();
@@ -761,6 +761,36 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== COLLECTIONS ===== */}
+      <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] border-b border-white/5 section-offscreen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex justify-between items-end mb-8 sm:mb-12">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-2xl bg-secondary/20 text-secondary border border-secondary/20 shadow-xl shadow-secondary/10">
+                <LayoutGrid className="w-5 h-5 sm:w-8 sm:h-8" />
+              </div>
+              <div>
+                <h2 className="text-2xl sm:text-4xl font-serif font-bold mb-1 sm:mb-2">{t("home.collections.title")}</h2>
+                <p className="text-muted-foreground text-sm sm:text-base">{t("home.collections.subtitle")}</p>
+              </div>
+            </div>
+            <Link href="/marketplace?type=collection">
+              <button className="text-secondary font-bold hover:underline flex items-center gap-1 sm:gap-2 text-sm px-3 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 transition-all hover:bg-secondary/20">
+                {t("home.bestSellers.viewAll")} <ArrowRight className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", i18n.language === "ar" ? "rotate-180" : "")} />
+              </button>
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            {collections?.slice(0, 8).map((c: any) => (
+              <ProductCard key={c.id} collection={c} />
+            )) || <GridSkeleton count={8} />}
+            {collections && collections.length === 0 && (
+              <p className="col-span-4 text-center text-muted-foreground py-10">{t("home.collections.empty")}</p>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* ===== ONGOING SERIES ===== */}
       <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] border-y border-white/5 section-offscreen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -791,35 +821,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== COLLECTIONS ===== */}
-      <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] border-b border-white/5 section-offscreen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex justify-between items-end mb-8 sm:mb-12">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="p-2 sm:p-3 rounded-2xl bg-secondary/20 text-secondary border border-secondary/20 shadow-xl shadow-secondary/10">
-                <LayoutGrid className="w-5 h-5 sm:w-8 sm:h-8" />
-              </div>
-              <div>
-                <h2 className="text-2xl sm:text-4xl font-serif font-bold mb-1 sm:mb-2">{t("home.collections.title")}</h2>
-                <p className="text-muted-foreground text-sm sm:text-base">{t("home.collections.subtitle")}</p>
-              </div>
-            </div>
-            <Link href="/marketplace?type=collection">
-              <button className="text-secondary font-bold hover:underline flex items-center gap-1 sm:gap-2 text-sm px-3 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 transition-all hover:bg-secondary/20">
-                {t("home.bestSellers.viewAll")} <ArrowRight className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", i18n.language === "ar" ? "rotate-180" : "")} />
-              </button>
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-            {collections?.slice(0, 8).map((c) => (
-              <ProductCard key={c.id} collection={c} />
-            )) || <GridSkeleton count={8} />}
-            {collections && collections.length === 0 && (
-              <p className="col-span-4 text-center text-muted-foreground py-10">{t("home.collections.empty")}</p>
-            )}
-          </div>
-        </div>
-      </section>
 
       {/* ===== FEATURED WRITERS ===== */}
       <section className="py-16 sm:py-24 bg-[#000000] relative section-offscreen">

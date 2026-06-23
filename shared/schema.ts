@@ -157,18 +157,25 @@ export const bundleItems = pgTable("bundle_items", {
 
 export const collections = pgTable("collections", {
   id: uuid("id").primaryKey().defaultRandom(),
-  writerId: text("writer_id").notNull(), // UUID ref to users
+  writerId: text("writer_id").notNull(), // UUID ref to users (admin/creator)
   title: text("title").notNull(),
+  slug: text("slug").unique(),
   description: text("description"),
+  collectionType: text("collection_type").default("custom"), // awards, publisher, author, seasonal, custom
   coverImageUrl: text("cover_image_url"),
-  price: numeric("price", { precision: 10, scale: 2 }),
+  bannerImageUrl: text("banner_image_url"),
+  price: integer("price").notNull().default(0), // Using integer to match products.price
+  originalTotalPrice: integer("original_total_price").default(0),
   discountPercentage: numeric("discount_percentage", { precision: 5, scale: 2 }).default("0"),
   isFree: boolean("is_free").default(false),
   isPublished: boolean("is_published").default(false),
   visibility: text("visibility").default("public"), // public, private
+  status: text("status").default("active"), // active, scheduled, expired
   totalSales: integer("total_sales").default(0),
   estimatedTotalParts: integer("estimated_total_parts"),
   featured: boolean("featured").default(false),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   deletedAt: timestamp("deleted_at"),
@@ -178,6 +185,7 @@ export const collectionItems = pgTable("collection_items", {
   id: uuid("id").primaryKey().defaultRandom(),
   collectionId: uuid("collection_id").notNull(), // ref to collections.id
   storyId: integer("story_id").notNull(), // ref to products.id
+  snapshotPrice: integer("snapshot_price").default(0), // The price of the book at the time it was added to the collection
   orderIndex: integer("order_index").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });

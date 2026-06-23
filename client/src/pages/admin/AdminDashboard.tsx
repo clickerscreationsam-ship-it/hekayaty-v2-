@@ -23,9 +23,10 @@ import { CommunityAdmin } from "./CommunityAdmin";
 import { SettingsAdmin } from "./SettingsAdmin";
 import { LeaderboardAdmin } from "./LeaderboardAdmin";
 import { AwardsAdmin } from "./AwardsAdmin";
+import CollectionsAdmin from "./CollectionsAdmin";
 import { formatDate, cn } from "@/lib/utils";
 import { useAdminPrivateMessages, useSendAdminPrivateMessage, useAdminAnnouncements, useCreateAdminAnnouncement, useDeleteAdminAnnouncement, useMarkMessageRead } from "@/hooks/use-admin-system";
-import { MessageSquare, Send, Megaphone, Trash2, Pin, Shield, Activity, Users as UsersIcon, Flag, BookMarked, DollarSign, Package, Settings, MessageCircle, Trophy } from "lucide-react";
+import { MessageSquare, Send, Megaphone, Trash2, Pin, Shield, Activity, Users as UsersIcon, Flag, BookMarked, DollarSign, Package, Settings, MessageCircle, Trophy, Library } from "lucide-react";
 import { useDesignRequests } from "@/hooks/use-commissions";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { CommissionThread } from "@/components/creative-hub/CommissionsManager";
@@ -969,6 +970,9 @@ export default function AdminDashboard() {
                         <TabsTrigger value="awards" className="gap-2">
                             <Trophy className="w-4 h-4" /> الجوائز والشهرة
                         </TabsTrigger>
+                        <TabsTrigger value="collections" className="gap-2">
+                            <Library className="w-4 h-4" /> المجموعات
+                        </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="overview">
@@ -1005,6 +1009,10 @@ export default function AdminDashboard() {
 
                     <TabsContent value="awards">
                         <AwardsAdmin />
+                    </TabsContent>
+
+                    <TabsContent value="collections">
+                        <CollectionsAdmin />
                     </TabsContent>
 
                     <TabsContent value="subscriptions">

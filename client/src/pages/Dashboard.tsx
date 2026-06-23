@@ -1693,7 +1693,7 @@ function ReaderLibraryContent({ user }: { user: any }) {
                                 </DialogContent>
                               </Dialog>
                             ) : item.type === 'collection' ? (
-                              <Link href={`/collection/${item.collectionId}`}>
+                              <Link href={`/collections/${item.collectionId}`}>
                                 <Button size="sm" className="rounded-full bg-amber-500 hover:bg-amber-600 text-black font-bold shadow-lg">
                                   <Sparkles className="w-4 h-4 mr-1.5" /> {t("common.view") || "View"}
                                 </Button>

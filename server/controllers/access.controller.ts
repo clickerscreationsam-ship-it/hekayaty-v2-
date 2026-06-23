@@ -166,6 +166,39 @@ export async function canUserAccessProduct(
     };
   }
 
+  // ── Step 4.5: Collection purchase check ───────────────────────────────────
+  // Check if the product belongs to a collection the user has purchased
+  const { data: collectionsContainingProduct } = await supabaseAdmin
+    .from("collection_items")
+    .select("collection_id")
+    .eq("story_id", productId);
+
+  if (collectionsContainingProduct && collectionsContainingProduct.length > 0) {
+    const collectionIds = collectionsContainingProduct.map(c => c.collection_id);
+    
+    // Check if the user purchased any of these collections
+    const { data: purchasedCollections } = await supabaseAdmin
+      .from("order_items")
+      .select("id, order:order_id(id, is_verified, user_id)")
+      .in("collection_id", collectionIds)
+      .limit(20);
+
+    const hasPurchasedCollection = (purchasedCollections || []).some((item: any) => {
+      const order = item.order;
+      return order && order.is_verified === true && order.user_id === userId;
+    });
+
+    if (hasPurchasedCollection) {
+      return {
+        hasAccess: true,
+        reason: "purchased",
+        subscriptionExpiry: null,
+        planName: null,
+        creatorUsername: null,
+      };
+    }
+  }
+
   // ── Step 5: Also check the `purchases` table (legacy) ────────────────────
   const { data: legacyPurchase } = await supabaseAdmin
     .from("purchases")
