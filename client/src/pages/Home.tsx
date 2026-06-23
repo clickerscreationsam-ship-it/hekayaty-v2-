@@ -424,6 +424,36 @@ export default function Home() {
         </motion.div>
       </section>
 
+      {/* ===== COLLECTIONS ===== */}
+      <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] border-b border-white/5 section-offscreen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex justify-between items-end mb-8 sm:mb-12">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-2xl bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 shadow-xl shadow-yellow-500/10">
+                <LayoutGrid className="w-5 h-5 sm:w-8 sm:h-8" />
+              </div>
+              <div>
+                <h2 className="text-2xl sm:text-4xl font-serif font-bold mb-1 sm:mb-2">{t("home.collections.title")}</h2>
+                <p className="text-muted-foreground text-sm sm:text-base">{t("home.collections.subtitle")}</p>
+              </div>
+            </div>
+            <Link href="/marketplace?type=collection">
+              <button className="text-yellow-500 font-bold hover:underline flex items-center gap-1 sm:gap-2 text-sm px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 transition-all hover:bg-yellow-500/20">
+                {t("home.bestSellers.viewAll")} <ArrowRight className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", i18n.language === "ar" ? "rotate-180" : "")} />
+              </button>
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            {collections?.slice(0, 8).map((c: any) => (
+              <ProductCard key={c.id} collection={c} />
+            )) || <GridSkeleton count={8} />}
+            {collections && collections.length === 0 && (
+              <p className="col-span-4 text-center text-muted-foreground py-10">{t("home.collections.empty")}</p>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* ===== BEST SELLERS ===== */}
       <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] section-offscreen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -756,36 +786,6 @@ export default function Home() {
             )) || <GridSkeleton count={8} />}
             {merchandise && merchandise.length === 0 && (
               <p className="col-span-4 text-center text-muted-foreground py-10">{t("home.merchandise.empty")}</p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== COLLECTIONS ===== */}
-      <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] border-b border-white/5 section-offscreen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex justify-between items-end mb-8 sm:mb-12">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="p-2 sm:p-3 rounded-2xl bg-secondary/20 text-secondary border border-secondary/20 shadow-xl shadow-secondary/10">
-                <LayoutGrid className="w-5 h-5 sm:w-8 sm:h-8" />
-              </div>
-              <div>
-                <h2 className="text-2xl sm:text-4xl font-serif font-bold mb-1 sm:mb-2">{t("home.collections.title")}</h2>
-                <p className="text-muted-foreground text-sm sm:text-base">{t("home.collections.subtitle")}</p>
-              </div>
-            </div>
-            <Link href="/marketplace?type=collection">
-              <button className="text-secondary font-bold hover:underline flex items-center gap-1 sm:gap-2 text-sm px-3 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 transition-all hover:bg-secondary/20">
-                {t("home.bestSellers.viewAll")} <ArrowRight className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", i18n.language === "ar" ? "rotate-180" : "")} />
-              </button>
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-            {collections?.slice(0, 8).map((c: any) => (
-              <ProductCard key={c.id} collection={c} />
-            )) || <GridSkeleton count={8} />}
-            {collections && collections.length === 0 && (
-              <p className="col-span-4 text-center text-muted-foreground py-10">{t("home.collections.empty")}</p>
             )}
           </div>
         </div>

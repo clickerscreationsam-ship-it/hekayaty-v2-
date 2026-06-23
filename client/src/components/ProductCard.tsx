@@ -31,7 +31,7 @@ export function ProductCard({ product, collection, variant = "default", locked =
     label: collection.label || null,
     discount: collection.discount_percentage || collection.discountPercentage,
     originalPrice: collection.original_total_price || collection.originalTotalPrice,
-    storiesCount: collection.items?.length || 0,
+    storiesCount: collection.items?.length || collection.estimated_total_parts || collection.estimatedTotalParts || 0,
     genre: t("home.collections.badge"),
   } : null);
 
@@ -83,11 +83,20 @@ export function ProductCard({ product, collection, variant = "default", locked =
             {item.title}
           </h3>
           <div className="flex items-center gap-1 text-[10px] text-[#aaaaaa] mb-1">
-            <User size={10} />
-            <span className="flex items-center gap-0.5">
-              {writer?.displayName || t("common.author")}
-              {writer?.isVerified && <BadgeCheck className="w-2.5 h-2.5 text-primary" />}
-            </span>
+            {isCollection ? (
+              <span className="flex items-center gap-0.5 text-primary font-bold">
+                Hekayaty
+                <BadgeCheck className="w-2.5 h-2.5 text-primary" />
+              </span>
+            ) : (
+              <>
+                <User size={10} />
+                <span className="flex items-center gap-0.5">
+                  {writer?.displayName || t("common.author")}
+                  {writer?.isVerified && <BadgeCheck className="w-2.5 h-2.5 text-primary" />}
+                </span>
+              </>
+            )}
           </div>
           <span className="font-black text-primary text-sm mt-auto">
             {item.price > 0 ? `${item.price} ${t("common.egp")}` : t("dashboard.products.free")}
@@ -169,17 +178,31 @@ export function ProductCard({ product, collection, variant = "default", locked =
       <div className="flex flex-col flex-1 px-4 pt-3 pb-4 gap-2 bg-[#0d0a07]">
         {/* Author */}
         <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden shrink-0">
-            {writer?.avatarUrl ? (
-              <img src={writer.avatarUrl} className="w-full h-full object-cover" alt={writer.displayName} />
-            ) : (
-              <User size={10} className="text-[#aaaaaa]" />
-            )}
-          </div>
-          <span className="text-[#aaaaaa] text-[10px] font-bold truncate flex items-center gap-1">
-            {writer?.displayName || (isCollection ? t("home.collections.bundle") : t("common.author"))}
-            {writer?.isVerified && <BadgeCheck className="w-2.5 h-2.5 text-primary shrink-0" />}
-          </span>
+          {isCollection ? (
+            <>
+              <div className="w-5 h-5 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center overflow-hidden shrink-0">
+                <img src="/logo.png" className="w-3 h-3 object-contain opacity-90" alt="Hekayaty" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              </div>
+              <span className="text-primary text-[10px] font-bold truncate flex items-center gap-1">
+                Hekayaty
+                <BadgeCheck className="w-2.5 h-2.5 text-primary shrink-0" />
+              </span>
+            </>
+          ) : (
+            <>
+              <div className="w-5 h-5 rounded-full bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden shrink-0">
+                {writer?.avatarUrl ? (
+                  <img src={writer.avatarUrl} className="w-full h-full object-cover" alt={writer.displayName} />
+                ) : (
+                  <User size={10} className="text-[#aaaaaa]" />
+                )}
+              </div>
+              <span className="text-[#aaaaaa] text-[10px] font-bold truncate flex items-center gap-1">
+                {writer?.displayName || t("common.author")}
+                {writer?.isVerified && <BadgeCheck className="w-2.5 h-2.5 text-primary shrink-0" />}
+              </span>
+            </>
+          )}
         </div>
 
         {/* Title */}
