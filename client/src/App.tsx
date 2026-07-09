@@ -42,6 +42,7 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 const LeaderboardPage = lazy(() => import("@/pages/LeaderboardPage"));
 const HekayatyAwards = lazy(() => import("@/pages/HekayatyAwards"));
 const HallOfFame = lazy(() => import("@/pages/HallOfFame"));
+const SpotlightPage = lazy(() => import("@/pages/Spotlight"));
 
 function Router() {
   return (
@@ -78,6 +79,7 @@ function Router() {
         <Route path="/leaderboards/accounts" component={LeaderboardPage} />
         <Route path="/awards" component={HekayatyAwards} />
         <Route path="/hall-of-fame" component={HallOfFame} />
+        <Route path="/spotlight" component={SpotlightPage} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

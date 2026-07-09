@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Music, Loader2, Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { uploadMedia } from "@/lib/media-storage";
 
 interface CloudinaryUploadProps {
     onUpload: (url: string) => void;
@@ -66,43 +67,15 @@ export function CloudinaryUpload({
 
         setLoading(true);
 
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "hekayaty_preset");
-        formData.append("folder", folder);
-        if (resourceType !== "auto") {
-            formData.append("resource_type", resourceType);
-        }
-
         try {
-            const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-            if (!cloudName) {
-                throw new Error("Missing Cloudinary Cloud Name");
-            }
-
-            // Cloudinary requires resource_type in the URL or formData for some APIs
-            // Using 'auto' is usually safest for the base upload API if we don't know
-            const uploadType = resourceType === "auto" ? "auto" : resourceType;
-            const response = await fetch(
-                `https://api.cloudinary.com/v1_1/${cloudName}/${uploadType}/upload`,
-                {
-                    method: "POST",
-                    body: formData,
-                }
-            );
-
-            const data = await response.json();
-
-            if (data.secure_url) {
-                setImage(data.secure_url);
-                onUpload(data.secure_url);
-                toast({
-                    title: "Upload Successful",
-                    description: "Your image has been uploaded successfully.",
-                });
-            } else {
-                throw new Error(data.error?.message || "Upload failed");
-            }
+            const secure_url = await uploadMedia(file, folder, resourceType);
+            
+            setImage(secure_url);
+            onUpload(secure_url);
+            toast({
+                title: "Upload Successful",
+                description: "Your file has been uploaded successfully.",
+            });
         } catch (error: any) {
             console.error("Cloudinary upload error:", error);
             toast({

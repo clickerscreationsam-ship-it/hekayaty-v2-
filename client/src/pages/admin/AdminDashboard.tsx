@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, ExternalLink, AlertTriangle, Users, Lock, Unlock, Loader2, Wallet, Truck, History, PenTool, CreditCard, Video, Crown } from "lucide-react";
+import { CheckCircle, XCircle, ExternalLink, AlertTriangle, Users, Lock, Unlock, Loader2, Wallet, Truck, History, PenTool, CreditCard, Video, Crown, Sparkles } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
@@ -24,6 +24,7 @@ import { SettingsAdmin } from "./SettingsAdmin";
 import { LeaderboardAdmin } from "./LeaderboardAdmin";
 import { AwardsAdmin } from "./AwardsAdmin";
 import CollectionsAdmin from "./CollectionsAdmin";
+import SpotlightAdmin from "./SpotlightAdmin";
 import { formatDate, cn } from "@/lib/utils";
 import { useAdminPrivateMessages, useSendAdminPrivateMessage, useAdminAnnouncements, useCreateAdminAnnouncement, useDeleteAdminAnnouncement, useMarkMessageRead } from "@/hooks/use-admin-system";
 import { MessageSquare, Send, Megaphone, Trash2, Pin, Shield, Activity, Users as UsersIcon, Flag, BookMarked, DollarSign, Package, Settings, MessageCircle, Trophy, Library } from "lucide-react";
@@ -973,6 +974,9 @@ export default function AdminDashboard() {
                         <TabsTrigger value="collections" className="gap-2">
                             <Library className="w-4 h-4" /> المجموعات
                         </TabsTrigger>
+                        <TabsTrigger value="spotlight" className="gap-2">
+                            <Sparkles className="w-4 h-4 text-amber-400" /> Spotlight
+                        </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="overview">
@@ -1246,6 +1250,10 @@ export default function AdminDashboard() {
 
                     <TabsContent value="settings">
                         <SettingsAdmin />
+                    </TabsContent>
+
+                    <TabsContent value="spotlight">
+                        <SpotlightAdmin />
                     </TabsContent>
                 </Tabs>
             </div>

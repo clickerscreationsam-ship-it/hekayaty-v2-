@@ -5,7 +5,7 @@ import {
   type Earning, type InsertEarning, type Payout, type InsertPayout,
   type ShippingRate, type InsertShippingRate, type ShippingAddress, type InsertShippingAddress,
   type Notification, type InsertNotification, type NotificationSettings, type InsertNotificationSettings,
-  type MediaVideo, type InsertMediaVideo
+  type MediaVideo, type InsertMediaVideo, type SpotlightItem, type InsertSpotlightItem
 } from "@shared/schema";
 import session from "express-session";
 import { RedisStore } from "connect-redis";
@@ -129,6 +129,13 @@ export interface IStorage {
   createMediaVideo(video: InsertMediaVideo & { youtubeVideoId: string; thumbnailUrl: string; createdBy: string }): Promise<MediaVideo>;
   updateMediaVideo(id: string, video: Partial<InsertMediaVideo & { youtubeVideoId: string; thumbnailUrl: string }>): Promise<MediaVideo>;
   deleteMediaVideo(id: string): Promise<void>;
+
+  // Spotlight
+  getSpotlightItems(activeOnly?: boolean): Promise<(SpotlightItem & { product?: Product })[]>;
+  getSpotlightItemByProductId(productId: number): Promise<SpotlightItem | undefined>;
+  addSpotlightItem(item: InsertSpotlightItem): Promise<SpotlightItem>;
+  updateSpotlightItem(id: number, updates: Partial<InsertSpotlightItem>): Promise<SpotlightItem>;
+  removeSpotlightItem(id: number): Promise<void>;
 }
 
 export class SupabaseStorage implements IStorage {
@@ -759,6 +766,149 @@ export class SupabaseStorage implements IStorage {
 
   async deleteMediaVideo(id: string): Promise<void> {
     const { error } = await supabaseAdmin.from('media_videos').delete().eq('id', id);
+    if (error) throw error;
+  }
+
+  // --- Spotlight Implementation ---
+  
+  async getSpotlightItems(activeOnly: boolean = true): Promise<(SpotlightItem & { product?: Product })[]> {
+    let query = supabaseAdmin
+      .from('spotlight_items')
+      .select('*, product:products(*)');
+      
+    if (activeOnly) {
+      query = query.eq('is_active', true);
+    }
+    
+    const { data, error } = await query.order('order_index', { ascending: true }).order('created_at', { ascending: false });
+    
+    if (error || !data) {
+      console.error("[Storage] Error fetching spotlight items:", error);
+      return [];
+    }
+    
+    // Map snake_case to camelCase
+    return data.map(item => ({
+      ...item,
+      productId: item.product_id,
+      editorialNote: item.editorial_note,
+      orderIndex: item.order_index,
+      isActive: item.is_active,
+      createdBy: item.created_by,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at,
+      product: item.product ? {
+        ...item.product,
+        writerId: item.product.writer_id,
+        coverUrl: item.product.cover_url,
+        fileUrl: item.product.file_url,
+        isPublished: item.product.is_published,
+        reviewCount: item.product.review_count,
+        salePrice: item.product.sale_price,
+        discountPercentage: item.product.discount_percentage,
+        saleEndsAt: item.product.sale_ends_at,
+        licenseType: item.product.license_type,
+        stockQuantity: item.product.stock_quantity,
+        lowStockThreshold: item.product.low_stock_threshold,
+        requiresShipping: item.product.requires_shipping,
+        salesCount: item.product.sales_count,
+        appearanceSettings: item.product.appearance_settings,
+        merchandiseCategory: item.product.merchandise_category,
+        customFields: item.product.custom_fields,
+        productImages: item.product.product_images,
+        createdAt: item.product.created_at,
+        updatedAt: item.product.updated_at,
+        isSerialized: item.product.is_serialized,
+        seriesStatus: item.product.series_status,
+        lastChapterUpdatedAt: item.product.last_chapter_updated_at,
+        audioDuration: item.product.audio_duration,
+        audioPreviewUrl: item.product.audio_preview_url,
+        audioParts: item.product.audio_parts,
+      } : undefined
+    })) as any[];
+  }
+
+  async getSpotlightItemByProductId(productId: number): Promise<SpotlightItem | undefined> {
+    const { data, error } = await supabaseAdmin
+      .from('spotlight_items')
+      .select('*')
+      .eq('product_id', productId)
+      .eq('is_active', true)
+      .single();
+      
+    if (error || !data) return undefined;
+    
+    return {
+      ...data,
+      productId: data.product_id,
+      editorialNote: data.editorial_note,
+      orderIndex: data.order_index,
+      isActive: data.is_active,
+      createdBy: data.created_by,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at
+    } as SpotlightItem;
+  }
+
+  async addSpotlightItem(item: InsertSpotlightItem): Promise<SpotlightItem> {
+    const { data, error } = await supabaseAdmin
+      .from('spotlight_items')
+      .insert({
+        product_id: item.productId,
+        badge: item.badge,
+        editorial_note: item.editorialNote,
+        order_index: item.orderIndex || 0,
+        is_active: item.isActive !== undefined ? item.isActive : true,
+        created_by: item.createdBy
+      })
+      .select()
+      .single();
+      
+    if (error) throw error;
+    
+    return {
+      ...data,
+      productId: data.product_id,
+      editorialNote: data.editorial_note,
+      orderIndex: data.order_index,
+      isActive: data.is_active,
+      createdBy: data.created_by,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at
+    } as SpotlightItem;
+  }
+
+  async updateSpotlightItem(id: number, updates: Partial<InsertSpotlightItem>): Promise<SpotlightItem> {
+    const dbUpdates: any = {};
+    if (updates.badge !== undefined) dbUpdates.badge = updates.badge;
+    if (updates.editorialNote !== undefined) dbUpdates.editorial_note = updates.editorialNote;
+    if (updates.orderIndex !== undefined) dbUpdates.order_index = updates.orderIndex;
+    if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
+    dbUpdates.updated_at = new Date();
+
+    const { data, error } = await supabaseAdmin
+      .from('spotlight_items')
+      .update(dbUpdates)
+      .eq('id', id)
+      .select()
+      .single();
+      
+    if (error) throw error;
+    
+    return {
+      ...data,
+      productId: data.product_id,
+      editorialNote: data.editorial_note,
+      orderIndex: data.order_index,
+      isActive: data.is_active,
+      createdBy: data.created_by,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at
+    } as SpotlightItem;
+  }
+
+  async removeSpotlightItem(id: number): Promise<void> {
+    const { error } = await supabaseAdmin.from('spotlight_items').delete().eq('id', id);
     if (error) throw error;
   }
 }

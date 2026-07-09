@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import { cn, optimizeImage } from "@/lib/utils";
 import { PageSkeleton } from "@/components/ui/skeleton-loader";
 import { useProductAwardBadge } from "@/hooks/use-awards";
+import { useProductSpotlightStatus } from "@/hooks/use-spotlight";
 import { useProductAccess } from "@/hooks/use-product-access";
 import { useLibraryStatus, useAddToLibrary } from "@/hooks/use-library";
 import { ReportDialog } from "@/components/ReportDialog";
@@ -60,6 +61,7 @@ export default function ProductDetails() {
   const addToLibrary = useAddToLibrary();
 
   const { data: awardBadge } = useProductAwardBadge(id);
+  const { data: spotlightItem } = useProductSpotlightStatus(id);
 
   // canAccess combines all access vectors — owner, free, purchased, subscription
   const canAccess = hasAccess;
@@ -258,6 +260,13 @@ export default function ProductDetails() {
                   bookTitle={product.title}
                   writerId={product.writerId}
                 />
+              </div>
+            )}
+
+            {spotlightItem && (
+              <div className="mb-4 ml-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 shadow-[0_0_15px_rgba(245,192,0,0.15)] text-amber-400">
+                <Sparkles className="w-4 h-4" />
+                <span className="text-xs font-bold">{spotlightItem.badge}</span>
               </div>
             )}
 

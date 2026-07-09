@@ -12,6 +12,7 @@ import { useBestSellerProducts, useSerializedProducts, useProducts } from "@/hoo
 import { usePublicCollections } from "@/hooks/use-collections";
 import { useMediaVideos } from "@/hooks/use-media";
 import { usePublishedAwards, useHallOfFame } from "@/hooks/use-awards";
+import { useSpotlight } from "@/hooks/use-spotlight";
 import { FeaturedWriter } from "@/components/FeaturedWriter";
 import { ProductCard } from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
@@ -258,6 +259,7 @@ export default function Home() {
   const { data: stats } = usePlatformStats();
   const { data: awards } = usePublishedAwards();
   const { data: hallOfFame } = useHallOfFame();
+  const { data: spotlightItems } = useSpotlight();
 
   const writersMap = React.useMemo(
     () => Object.fromEntries(writers?.map((w) => [w.id, w.displayName]) || []),
@@ -453,6 +455,93 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ===== HEKAYATY SPOTLIGHT ===== */}
+      {spotlightItems && spotlightItems.length > 0 && (
+        <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] border-b border-amber-500/10 section-offscreen">
+          {/* Ambient glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(245,192,0,0.05)_0%,_transparent_70%)] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/5 blur-[120px] rounded-full pointer-events-none" />
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            {/* Header */}
+            <div className="flex justify-between items-end mb-10 sm:mb-14">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-2 sm:p-3 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-xl shadow-amber-500/10">
+                  <Sparkles className="w-5 h-5 sm:w-8 sm:h-8" />
+                </div>
+                <div>
+                  <h2 className="text-2xl sm:text-4xl font-serif font-bold mb-1 sm:mb-2">Hekayaty Spotlight</h2>
+                  <p className="text-muted-foreground text-sm sm:text-base">قصص اختارها فريق هكايتي بعناية لتستحق مكانها في الضوء</p>
+                </div>
+              </div>
+              <Link href="/spotlight">
+                <button className="text-amber-400 font-bold hover:underline flex items-center gap-1 sm:gap-2 text-sm px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 transition-all hover:bg-amber-500/20">
+                  عرض الكل <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 rotate-180" />
+                </button>
+              </Link>
+            </div>
+
+            {/* Spotlight Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+              {spotlightItems.slice(0, 6).map((item: any) => {
+                const product = item.product;
+                if (!product) return null;
+                const coverUrl = product.coverUrl || product.cover_url;
+                const note = item.editorialNote || item.editorial_note;
+                return (
+                  <Link key={item.id} href={`/product/${product.id}`}>
+                    <div className="group relative flex gap-4 p-4 rounded-2xl bg-white/3 border border-white/8 hover:border-amber-500/30 hover:bg-amber-500/5 transition-all duration-300 cursor-pointer overflow-hidden">
+                      {/* Hover glow */}
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(245,192,0,0.08)_0%,_transparent_60%)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {/* Book Cover */}
+                      <div className="relative flex-shrink-0">
+                        <img
+                          src={coverUrl}
+                          alt={product.title}
+                          className="w-20 h-28 object-cover rounded-xl shadow-2xl group-hover:shadow-amber-500/20 transition-shadow"
+                          onError={(e) => { (e.target as HTMLImageElement).src = "https://placehold.co/80x112/111/f5c000?text=📖"; }}
+                        />
+                        {/* Spotlight indicator */}
+                        <div className="absolute -top-1.5 -right-1.5 p-1 bg-amber-500 rounded-full shadow-lg">
+                          <Sparkles className="w-3 h-3 text-black" />
+                        </div>
+                      </div>
+                      {/* Info */}
+                      <div className="flex-1 min-w-0 flex flex-col justify-between relative z-10">
+                        <div>
+                          {/* Badge */}
+                          <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/25 mb-2">
+                            ✨ {item.badge}
+                          </span>
+                          <h3 className="font-bold text-base leading-snug group-hover:text-amber-300 transition-colors line-clamp-2">
+                            {product.title}
+                          </h3>
+                          {note && (
+                            <p className="text-xs text-muted-foreground mt-1.5 line-clamp-3 leading-relaxed" dir="rtl">
+                              &quot;{note}&quot;
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1.5 mt-3">
+                          <BookOpen className="w-3 h-3 text-amber-500/60" />
+                          <span className="text-xs text-muted-foreground font-medium">{product.type === "story" ? "قصة" : product.type === "novel" ? "رواية" : product.type}</span>
+                          {product.genre && (
+                            <>
+                              <span className="text-white/20">·</span>
+                              <span className="text-xs text-muted-foreground">{product.genre}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ===== BEST SELLERS ===== */}
       <section className="py-16 sm:py-24 relative overflow-hidden bg-[#000000] section-offscreen">

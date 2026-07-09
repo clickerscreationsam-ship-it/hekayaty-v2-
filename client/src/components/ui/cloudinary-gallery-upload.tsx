@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus, X, Image as ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { uploadMedia } from "@/lib/media-storage";
 
 interface CloudinaryGalleryUploadProps {
     onUpload: (urls: string[]) => void;
@@ -41,10 +42,7 @@ export function CloudinaryGalleryUpload({
         const newUrls: string[] = [...images];
 
         try {
-            const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-            const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "hekayaty_preset";
-
-            if (!cloudName) throw new Error("Missing Cloudinary Cloud Name");
+            const uploadPromises: Promise<string>[] = [];
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
@@ -52,21 +50,11 @@ export function CloudinaryGalleryUpload({
                 if (!file.type.startsWith("image/")) continue;
                 if (file.size > 5 * 1024 * 1024) continue;
 
-                const formData = new FormData();
-                formData.append("file", file);
-                formData.append("upload_preset", uploadPreset);
-                formData.append("folder", folder);
-
-                const response = await fetch(
-                    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-                    { method: "POST", body: formData }
-                );
-
-                const data = await response.json();
-                if (data.secure_url) {
-                    newUrls.push(data.secure_url);
-                }
+                uploadPromises.push(uploadMedia(file, folder, "image"));
             }
+
+            const uploadedUrls = await Promise.all(uploadPromises);
+            newUrls.push(...uploadedUrls);
 
             setImages(newUrls);
             onUpload(newUrls);

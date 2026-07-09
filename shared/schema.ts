@@ -750,6 +750,19 @@ export const storeAnalytics = pgTable("store_analytics", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// === 8. HEKAYATY SPOTLIGHT ===
+export const spotlightItems = pgTable("spotlight_items", {
+  id: serial("id").primaryKey(),
+  productId: integer("product_id").notNull(), // references products.id
+  badge: text("badge").notNull().default("Editor's Pick"),
+  editorialNote: text("editorial_note"),
+  orderIndex: integer("order_index").default(0),
+  isActive: boolean("is_active").default(true),
+  createdBy: text("created_by").notNull(), // Admin user ID
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // === SCHEMAS & TYPES ===
 
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
@@ -791,6 +804,8 @@ export const insertNotificationSettingsSchema = createInsertSchema(notificationS
 export const insertMediaVideoSchema = createInsertSchema(mediaVideos, {
   relatedStoryId: z.number().nullable().optional(),
 }).omit({ id: true, createdAt: true, updatedAt: true, youtubeVideoId: true, thumbnailUrl: true, createdBy: true });
+
+export const insertSpotlightItemSchema = createInsertSchema(spotlightItems).omit({ id: true, createdAt: true, updatedAt: true });
 
 
 export type User = typeof users.$inferSelect;
@@ -849,6 +864,9 @@ export type InsertDesignRequest = z.infer<typeof insertDesignRequestSchema>;
 
 export type DesignMessage = typeof designMessages.$inferSelect;
 export type InsertDesignMessage = z.infer<typeof insertDesignMessageSchema>;
+
+export type SpotlightItem = typeof spotlightItems.$inferSelect;
+export type InsertSpotlightItem = z.infer<typeof insertSpotlightItemSchema>;
 
 export type Collection = typeof collections.$inferSelect;
 export type InsertCollection = z.infer<typeof insertCollectionSchema>;

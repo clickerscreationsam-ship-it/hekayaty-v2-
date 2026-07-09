@@ -14,6 +14,7 @@ import { calculateCommission } from "./utils/financial";
 import { enqueueOrRun, payoutQueue, notificationQueue } from "./queue";
 import { canUserAccessProduct, getSubscriptionLibrary } from "./controllers/access.controller";
 import { createCollection, getAdminCollections, updateCollection, getPublicCollections, getCollectionBySlug, deleteCollection } from "./controllers/collections.controller";
+import { getPublicSpotlight, getAdminSpotlight, addSpotlightItem, updateSpotlightItem, removeSpotlightItem, getProductSpotlightStatus } from "./controllers/spotlight.controller";
 
 import os from "os";
 
@@ -96,6 +97,14 @@ export async function registerRoutes(
   app.delete("/api/admin/collections/:id", deleteCollection);
   app.get("/api/collections", getPublicCollections);
   app.get("/api/collections/:slug", getCollectionBySlug);
+
+  // === HEKAYATY SPOTLIGHT ===
+  app.get("/api/spotlight", getPublicSpotlight);
+  app.get("/api/spotlight/product/:productId", getProductSpotlightStatus);
+  app.get("/api/admin/spotlight", getAdminSpotlight);
+  app.post("/api/admin/spotlight", addSpotlightItem);
+  app.patch("/api/admin/spotlight/:id", updateSpotlightItem);
+  app.delete("/api/admin/spotlight/:id", removeSpotlightItem);
 
   // === USERS & SOCIAL ===
 
